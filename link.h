@@ -17,8 +17,9 @@ class Link {
         virtual ~Link();
 
         size_t getIndex();
+        Link * getNext();
 
-        void insert(Link * iOther);
+        bool insert(Link * iOther);
 
         Link * find(size_t iIndex);
 };

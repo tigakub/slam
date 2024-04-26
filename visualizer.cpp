@@ -22,61 +22,67 @@ void gFramebufferSizeCallback(GLFWwindow * iWindow, int iWidth, int iHeight) {
     ptr->framebufferSizeCallback(iWidth, iHeight);
 }
 
-Visualizer::Visualizer(const string &iWindowTitle, size_t iWidth, size_t iHeight)
-: width(iWidth), height(iHeight), lastTimeStamp(), frequency(0.0) {
+Visualizer::Visualizer(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupancyQueueMutex, const string &iWindowTitle, size_t iWidth, size_t iHeight)
+: glAvailable(false), width(iWidth), height(iHeight), lastTimeStamp(), frequency(0.0), occupancyQueue(iOccupancyQueue), occupancyQueueMutex(iOccupancyQueueMutex) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    THROW_IF_NULL(window = glfwCreateWindow(width, height, iWindowTitle.c_str(), NULL, NULL), "Failed to create GLFW window");
+    try {
+        THROW_IF_NULL(window = glfwCreateWindow(width, height, iWindowTitle.c_str(), NULL, NULL), "Failed to create GLFW window");
 
-    glfwMakeContextCurrent(window);
-    glfwSetWindowUserPointer(window, this);
-    glfwSetFramebufferSizeCallback(window, gFramebufferSizeCallback);
+        glfwMakeContextCurrent(window);
+        glfwSetWindowUserPointer(window, this);
+        glfwSetFramebufferSizeCallback(window, gFramebufferSizeCallback);
 
-    THROW_IF_NOT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress), "Failed to initialize GLAD");
+        THROW_IF_NOT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress), "Failed to initialize GLAD");
 
-    int success;
-    char infoLog[512];
+        int success;
+        char infoLog[512];
 
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
+        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+        glCompileShader(vertexShader);
 
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+            glDeleteShader(vertexShader);
+            THROW(string("Error: failed to compile vertex shader: ") + infoLog);
+        }
+
+        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+        glCompileShader(fragmentShader);
+        
+        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+            glDeleteShader(fragmentShader);
+            THROW(string("Error: failed to compile fragment shader: ") + infoLog);
+        }
+
+        shaderProgram = glCreateProgram();
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
+
+        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+        if (!success) {
+            glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+            glDeleteProgram(shaderProgram);
+            shaderProgram = 0;
+            THROW(string("Error: failed to link shader program: ") + infoLog);
+        }
+
         glDeleteShader(vertexShader);
-        THROW(string("Error: failed to compile vertex shader: ") + infoLog);
-    }
-
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
         glDeleteShader(fragmentShader);
-        THROW(string("Error: failed to compile fragment shader: ") + infoLog);
+
+        glAvailable = true;
+    } catch (Exception e) {
+
     }
-
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        glDeleteProgram(shaderProgram);
-        shaderProgram = 0;
-        THROW(string("Error: failed to link shader program: ") + infoLog);
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
 }
 
 Visualizer::~Visualizer() {
@@ -85,34 +91,48 @@ Visualizer::~Visualizer() {
 }
 
 int Visualizer::loop() {
-    if (glfwWindowShouldClose(window)) return 0;
-    
     auto currentTimeStamp = chrono::high_resolution_clock::now();
     auto elapsed = chrono::duration_cast<chrono::microseconds>(currentTimeStamp - lastTimeStamp).count();
     if(elapsed >= 8333) {
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        if (glAvailable) {
+            if (glfwWindowShouldClose(window)) return 0;
 
-        glUseProgram(shaderProgram);
-        
-        render();
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-        glfwSwapBuffers(window);
+            glUseProgram(shaderProgram);
+            
+            render();
 
+            glfwSwapBuffers(window);
+
+            glfwPollEvents();
+
+            processInput();
+        }
         frequency = 1000000.0 / double(elapsed);
-
         lastTimeStamp = currentTimeStamp;
-    }
-
-    glfwPollEvents();
-
-    processInput();
+    }   
 
     return 1;
 }
 
-void Visualizer::render() {
+void Visualizer::update() {
+    OccupancyGrid *grid = nullptr;
+    occupancyQueueMutex.lock();
+    if(occupancyQueue.size() > 0) {
+        grid = occupancyQueue.front();
+        occupancyQueue.pop_front();
+    }
+    occupancyQueueMutex.unlock();
 
+    if(grid) {
+        grid->map(*this);
+        delete grid;
+    }
+}
+
+void Visualizer::render() {
 }
 
 void Visualizer::framebufferSizeCallback(size_t iWidth, size_t iHeight) {
@@ -127,4 +147,8 @@ void Visualizer::processInput() {
 
 double Visualizer::getFrequency() const {
     return frequency;
+}
+
+void Visualizer::operator()(size_t x, size_t y, size_t z) {
+    
 }

@@ -1,7 +1,8 @@
 #include "lidar.h"
 #include "exception.h"
 
-Lidar::Lidar(const string &iPortName) {
+Lidar::Lidar(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupancyQueueMutex, const string &iPortName)
+: occupancyQueue(iOccupancyQueue), occupancyQueueMutex(iOccupancyQueueMutex) {
     reader = createUnitreeLidarReader();    
     int cloudScanNum = 18;
     
@@ -75,7 +76,7 @@ void Lidar::loop() {
     usleep(timeDelay);
 }
 
-void Lidar::processIMU(const IMUUnitree &iImu) const {
+void Lidar::processIMU(const IMUUnitree & iImu) const {
     auto stamp = iImu.stamp;
     auto id = iImu.id;
     auto &q0 = iImu.quaternion[0];
@@ -85,7 +86,7 @@ void Lidar::processIMU(const IMUUnitree &iImu) const {
     auto timeDelay = reader->getTimeDelay();
 }
 
-void Lidar::processPointCloud(const PointCloudUnitree &iCloud) const {
+void Lidar::processPointCloud(const PointCloudUnitree & iCloud) const {
     auto stamp = iCloud.stamp;
     auto id = iCloud.id;
     auto ringNum = iCloud.ringNum;
@@ -106,12 +107,16 @@ void Lidar::processPointCloud(const PointCloudUnitree &iCloud) const {
         if(maxz < point.z) maxz = point.z;
     }
 
-    OccupancyGrid grid(1000, 1000, 1000, minx, maxx, miny, maxy, minz, maxz);
+    OccupancyGrid *grid = new OccupancyGrid(1000, 1000, 1000, minx, maxx, miny, maxy, minz, maxz);
 
     for(size_t i = 0; i < pointCount; i++) {
         auto point = points[i];
-        grid.insertCell(point.x, point.y, point.z);
+        grid->insertCell(point.x, point.y, point.z);
     }
+
+    occupancyQueueMutex.lock();
+    occupancyQueue.push_back(grid);
+    occupancyQueueMutex.unlock();
     
     auto timeDelay = reader->getTimeDelay();
 }

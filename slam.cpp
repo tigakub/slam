@@ -8,6 +8,9 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <vector>
+#include <deque>
+#include <mutex>
 
 #include "exception.h"
 #include "lidar.h"
@@ -58,6 +61,9 @@ class Slam {
         mutex lidarFreqMutex;
 
         mutex outputMutex;
+
+        deque<OccupancyGrid *> occupancyQueue;
+        mutex occupancyQueueMutex;
 
     public:
         Slam()
@@ -150,32 +156,21 @@ class Slam {
  
     protected:
         void visProc() {
-            try {
-                Visualizer visualizer(string("slam"));
+            Visualizer visualizer(occupancyQueue, occupancyQueueMutex, string("slam"));
 
-                auto lastTime = chrono::high_resolution_clock::now();
-                while(!terminate) {
-                    if(!visualizer.loop()) {
-                        setShouldTerminate(true);
-                    }
-                    setVisFreq(visualizer.getFrequency());
-                    /*
-                    auto currentTime = chrono::high_resolution_clock::now();
-                    auto us = chrono::duration_cast<chrono::microseconds>(currentTime - lastTime).count();
-                    setVisFreq(visAvgFreq(1000000.0 / double(us)));
-                    lastTime = currentTime;
-                    */
+            auto lastTime = chrono::high_resolution_clock::now();
+            while(!terminate) {
+                visualizer.update();
+                if(!visualizer.loop()) {
+                    setShouldTerminate(true);
                 }
-            } catch(Exception e) {
-                lockOutput();
-                cerr << e << endl;
-                unlockOutput();
+                setVisFreq(visualizer.getFrequency());
             }
         }
 
         void lidarProc() {
             try {
-                Lidar lidar;
+                Lidar lidar(occupancyQueue, occupancyQueueMutex);
                 
                 // lidar.setMode(STANDBY);
                 // sleep(1);
@@ -196,7 +191,7 @@ class Slam {
                     auto start = chrono::high_resolution_clock::now();
                     lidar.loop();
                     auto end = chrono::high_resolution_clock::now();
-                    usleep(4166 - chrono::duration_cast<chrono::microseconds>(end - start).count());
+                    usleep(8250 - chrono::duration_cast<chrono::microseconds>(end - start).count());
 
                     auto currentTime = chrono::high_resolution_clock::now();
                     auto us = chrono::duration_cast<chrono::microseconds>(currentTime - lastTime).count();
@@ -225,19 +220,6 @@ int main(int argc, char **argv) {
     }
 
     slam.join();
-    /*
-    try {
-        thread visThread(visProc);
-        thread lidarThread(lidarProc);
-
-        visThread.join();
-        lidarThread.join();
-
-    } catch(Exception e) {
-        cout << e << endl;
-        exit(-1);
-    }
-    */
 
     return 0;
 }

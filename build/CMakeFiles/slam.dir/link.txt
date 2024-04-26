@@ -1,0 +1,1 @@
+/usr/bin/aarch64-linux-gnu-g++ -g CMakeFiles/slam.dir/slam.cpp.o CMakeFiles/slam.dir/glad.c.o CMakeFiles/slam.dir/lidar.cpp.o CMakeFiles/slam.dir/visualizer.cpp.o CMakeFiles/slam.dir/container.cpp.o CMakeFiles/slam.dir/link.cpp.o CMakeFiles/slam.dir/occupancyGrid.cpp.o -o slam  ../unitree_lidar_sdk/lib/aarch64/libunitree_lidar_sdk.a -ldl -lglfw 

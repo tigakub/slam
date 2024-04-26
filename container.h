@@ -2,6 +2,7 @@
 #define __CONTAINER_H__
 
 #include <stdio.h>
+#include <utility>
 
 #include "link.h"
 
@@ -13,9 +14,11 @@ class Container {
 
     public:
         Container();
+        Container(Container &&iOther);
         virtual ~Container();
 
-        Link * getLink(size_t iIndex, bool iCreateIfNeeded = false);
+        Link * getLink(size_t iIndex, bool &ioCreateIfNeeded);
+        Link * getHead();
 
     protected:
         virtual Link * create(size_t iIndex) = 0;

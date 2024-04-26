@@ -2,6 +2,8 @@
 #define __LIDAR_H__
 
 #include <string>
+#include <deque>
+#include <mutex>
 
 #include "unitree_lidar_sdk.h"
 #include "occupancyGrid.h"
@@ -11,11 +13,14 @@ using namespace unitree_lidar_sdk;
 
 class Lidar {
     protected:
-        UnitreeLidarReader *reader;
+        UnitreeLidarReader * reader;
         uint32_t timeDelay;
 
+        deque<OccupancyGrid *> & occupancyQueue;
+        mutex & occupancyQueueMutex;
+
     public:
-        Lidar(const string &iPortName = string("/dev/serial/by-id/usb-Silicon_Labs_CP2104_USB_to_UART_Bridge_Controller_02AF54A2-if00-port0"));
+        Lidar(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupancyQueueMutex, const string & iPortName = string("/dev/serial/by-id/usb-Silicon_Labs_CP2104_USB_to_UART_Bridge_Controller_02AF54A2-if00-port0"));
         virtual ~Lidar();
 
         void setMode(LidarWorkingMode);
@@ -30,8 +35,8 @@ class Lidar {
 
         void loop();
 
-        void processIMU(const IMUUnitree &iImu) const;
-        void processPointCloud(const PointCloudUnitree &iCloud) const;
+        void processIMU(const IMUUnitree & iImu) const;
+        void processPointCloud(const PointCloudUnitree & iCloud) const;
 };
 
 #endif

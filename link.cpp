@@ -9,17 +9,22 @@ size_t Link::getIndex() {
     return index;
 }
 
-void Link::insert(Link * iOther) {
-    if(index == iOther->index) return;
+Link * Link::getNext() {
+    return next;
+}
+
+bool Link::insert(Link * iOther) {
+    if(index == iOther->index) return false;
     if(index < iOther->index) {
         if(next && next->index < iOther->index) {
-            next->insert(iOther);
+            return next->insert(iOther);
         } else {
             iOther->next = next;
             next = iOther;
+            return true;
         }
-        return;
     }
+    return false;
 }
 
 Link * Link::find(size_t iIndex) {
