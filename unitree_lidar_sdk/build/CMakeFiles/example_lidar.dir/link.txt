@@ -1,0 +1,1 @@
+/usr/bin/c++ -std=c++14  -O3 -Wall -DNDEBUG -rdynamic CMakeFiles/example_lidar.dir/examples/example_lidar.cpp.o -o ../bin/example_lidar   -L/home/tigakub/Documents/Robotics/unitree/unilidar_sdk/unitree_lidar_sdk/lib/aarch64  -Wl,-rpath,/home/tigakub/Documents/Robotics/unitree/unilidar_sdk/unitree_lidar_sdk/lib/aarch64 -Wl,-Bstatic -lunitree_lidar_sdk -Wl,-Bdynamic 

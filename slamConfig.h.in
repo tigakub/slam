@@ -1,0 +1,2 @@
+#define slam_VERSION_MAJOR @slam_VERSION_MAJOR@
+#define slam_VERSION_MINOR @slam_VERSION_MINOR@
