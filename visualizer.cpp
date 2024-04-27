@@ -1,16 +1,57 @@
 #include "visualizer.h"
 #include "exception.h"
+#include "vis/shaderData.h"
 
 const char *Visualizer::vertexShaderSource = R"0B3R0N(
-    #version 330 core
+    #version 450 core
     layout (location = 0) in vec3 aPos;
+
     void main() {
-        gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+        gl_Position = vec4(aPos.x, aPos.y, aPos.x, 1.0);
+    }
+)0B3R0N";
+
+const char *Visualizer::vertexShaderSource2 = R"0B3R0N(
+    #version 450 core
+
+    layout(std140, binding = UB_CAMERA) uniform Camera {
+        CameraData data;
+    } ub_Camera;
+    
+    uniform vec4 uColor;
+
+    layout (location = IN_POSITION) in vec3 aPos;
+    layout (location = IN_NORMAL) in vec3 aNorm;
+    layout (location = IN_TEXCOORD) in vec2 aUV;
+
+    out vec3 normal;
+    out vec4 color;
+    noperspective centroid out vec2 uv;
+    
+    void main() {
+        gl_Position = uModelView * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+        normal = uModelView * vec4(aNorm.x, aNorm.u, aNorm.z, 0.0);
+        color = uColor;
+        uv = vec2(aUV.x, aUV.y);
     }
 )0B3R0N";
 
 const char *Visualizer::fragmentShaderSource = R"0B3R0N(
-    #version 330 core
+    #version 450 core
+    
+    out vec4 FragColor;
+    void main() {
+        FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    }
+)0B3R0N";
+
+const char *Visualizer::fragmentShaderSource2 = R"0B3R0N(
+    #version 450 core
+    
+    in vec3 normal;
+    in vec4 color;
+    noperspective centroid in vec2 uv;
+
     out vec4 FragColor;
     void main() {
         FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
@@ -36,7 +77,7 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupa
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, gFramebufferSizeCallback);
 
-        THROW_IF_NOT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress), "Failed to initialize GLAD");
+        THROW_IF_NOT(gladLoadGL(glfwGetProcAddress), "Failed to initialize GLAD");
 
         int success;
         char infoLog[512];
@@ -97,7 +138,7 @@ int Visualizer::loop() {
         if (glAvailable) {
             if (glfwWindowShouldClose(window)) return 0;
 
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClearColor(0.6f, 0.4f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
             glUseProgram(shaderProgram);

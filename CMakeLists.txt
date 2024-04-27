@@ -8,11 +8,25 @@ project(slam VERSION 0.1)
 
 configure_file(slamConfig.h.in ../slamConfig.h)
 
-add_executable(slam slam.cpp glad.c lidar.cpp visualizer.cpp container.cpp link.cpp occupancyGrid.cpp)
+add_executable(slam 
+    slam.cpp 
+    gl.c 
+    lidar.cpp 
+    visualizer.cpp 
+    container.cpp 
+    link.cpp 
+    occupancyGrid.cpp
+    vis/aabb.cpp
+    vis/box.cpp
+    vis/camera.cpp
+    vis/light.cpp
+    vis/framebuffer.cpp
+)
 
 target_include_directories(slam PUBLIC 
     "${PROJECT_SOURCE_DIR}"
-    "${PROJECT_SOURCE_DIR}/unitree_lidar_sdk/include")
+    "${PROJECT_SOURCE_DIR}/unitree_lidar_sdk/include"
+    "${PROJECT_SOURCE_DIR}/unitree_lidar_sdk/include*")
 
 link_directories("${PROJECT_SOURCE_DIR}/unitree_lidar_sdk/lib/aarch64")
 add_library(libunitree_lidar_sdk STATIC IMPORTED)

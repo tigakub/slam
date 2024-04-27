@@ -153,29 +153,29 @@ container.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/container.cpp.s
 .PHONY : container.cpp.s
 
-glad.o: glad.c.o
-.PHONY : glad.o
+gl.o: gl.c.o
+.PHONY : gl.o
 
 # target to build an object file
-glad.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/glad.c.o
-.PHONY : glad.c.o
+gl.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/gl.c.o
+.PHONY : gl.c.o
 
-glad.i: glad.c.i
-.PHONY : glad.i
+gl.i: gl.c.i
+.PHONY : gl.i
 
 # target to preprocess a source file
-glad.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/glad.c.i
-.PHONY : glad.c.i
+gl.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/gl.c.i
+.PHONY : gl.c.i
 
-glad.s: glad.c.s
-.PHONY : glad.s
+gl.s: gl.c.s
+.PHONY : gl.s
 
 # target to generate assembly for a file
-glad.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/glad.c.s
-.PHONY : glad.c.s
+gl.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/gl.c.s
+.PHONY : gl.c.s
 
 lidar.o: lidar.cpp.o
 .PHONY : lidar.o
@@ -273,6 +273,126 @@ slam.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/slam.cpp.s
 .PHONY : slam.cpp.s
 
+vis/aabb.o: vis/aabb.cpp.o
+.PHONY : vis/aabb.o
+
+# target to build an object file
+vis/aabb.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/aabb.cpp.o
+.PHONY : vis/aabb.cpp.o
+
+vis/aabb.i: vis/aabb.cpp.i
+.PHONY : vis/aabb.i
+
+# target to preprocess a source file
+vis/aabb.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/aabb.cpp.i
+.PHONY : vis/aabb.cpp.i
+
+vis/aabb.s: vis/aabb.cpp.s
+.PHONY : vis/aabb.s
+
+# target to generate assembly for a file
+vis/aabb.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/aabb.cpp.s
+.PHONY : vis/aabb.cpp.s
+
+vis/box.o: vis/box.cpp.o
+.PHONY : vis/box.o
+
+# target to build an object file
+vis/box.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/box.cpp.o
+.PHONY : vis/box.cpp.o
+
+vis/box.i: vis/box.cpp.i
+.PHONY : vis/box.i
+
+# target to preprocess a source file
+vis/box.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/box.cpp.i
+.PHONY : vis/box.cpp.i
+
+vis/box.s: vis/box.cpp.s
+.PHONY : vis/box.s
+
+# target to generate assembly for a file
+vis/box.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/box.cpp.s
+.PHONY : vis/box.cpp.s
+
+vis/camera.o: vis/camera.cpp.o
+.PHONY : vis/camera.o
+
+# target to build an object file
+vis/camera.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/camera.cpp.o
+.PHONY : vis/camera.cpp.o
+
+vis/camera.i: vis/camera.cpp.i
+.PHONY : vis/camera.i
+
+# target to preprocess a source file
+vis/camera.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/camera.cpp.i
+.PHONY : vis/camera.cpp.i
+
+vis/camera.s: vis/camera.cpp.s
+.PHONY : vis/camera.s
+
+# target to generate assembly for a file
+vis/camera.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/camera.cpp.s
+.PHONY : vis/camera.cpp.s
+
+vis/framebuffer.o: vis/framebuffer.cpp.o
+.PHONY : vis/framebuffer.o
+
+# target to build an object file
+vis/framebuffer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/framebuffer.cpp.o
+.PHONY : vis/framebuffer.cpp.o
+
+vis/framebuffer.i: vis/framebuffer.cpp.i
+.PHONY : vis/framebuffer.i
+
+# target to preprocess a source file
+vis/framebuffer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/framebuffer.cpp.i
+.PHONY : vis/framebuffer.cpp.i
+
+vis/framebuffer.s: vis/framebuffer.cpp.s
+.PHONY : vis/framebuffer.s
+
+# target to generate assembly for a file
+vis/framebuffer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/framebuffer.cpp.s
+.PHONY : vis/framebuffer.cpp.s
+
+vis/light.o: vis/light.cpp.o
+.PHONY : vis/light.o
+
+# target to build an object file
+vis/light.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/light.cpp.o
+.PHONY : vis/light.cpp.o
+
+vis/light.i: vis/light.cpp.i
+.PHONY : vis/light.i
+
+# target to preprocess a source file
+vis/light.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/light.cpp.i
+.PHONY : vis/light.cpp.i
+
+vis/light.s: vis/light.cpp.s
+.PHONY : vis/light.s
+
+# target to generate assembly for a file
+vis/light.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/light.cpp.s
+.PHONY : vis/light.cpp.s
+
 visualizer.o: visualizer.cpp.o
 .PHONY : visualizer.o
 
@@ -309,9 +429,9 @@ help:
 	@echo "... container.o"
 	@echo "... container.i"
 	@echo "... container.s"
-	@echo "... glad.o"
-	@echo "... glad.i"
-	@echo "... glad.s"
+	@echo "... gl.o"
+	@echo "... gl.i"
+	@echo "... gl.s"
 	@echo "... lidar.o"
 	@echo "... lidar.i"
 	@echo "... lidar.s"
@@ -324,6 +444,21 @@ help:
 	@echo "... slam.o"
 	@echo "... slam.i"
 	@echo "... slam.s"
+	@echo "... vis/aabb.o"
+	@echo "... vis/aabb.i"
+	@echo "... vis/aabb.s"
+	@echo "... vis/box.o"
+	@echo "... vis/box.i"
+	@echo "... vis/box.s"
+	@echo "... vis/camera.o"
+	@echo "... vis/camera.i"
+	@echo "... vis/camera.s"
+	@echo "... vis/framebuffer.o"
+	@echo "... vis/framebuffer.i"
+	@echo "... vis/framebuffer.s"
+	@echo "... vis/light.o"
+	@echo "... vis/light.i"
+	@echo "... vis/light.s"
 	@echo "... visualizer.o"
 	@echo "... visualizer.i"
 	@echo "... visualizer.s"

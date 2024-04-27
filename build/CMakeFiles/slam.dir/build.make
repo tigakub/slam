@@ -83,19 +83,19 @@ CMakeFiles/slam.dir/slam.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/slam.dir/slam.cpp.s"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tigakub/Documents/Robotics/slam/slam.cpp -o CMakeFiles/slam.dir/slam.cpp.s
 
-CMakeFiles/slam.dir/glad.c.o: CMakeFiles/slam.dir/flags.make
-CMakeFiles/slam.dir/glad.c.o: ../glad.c
-CMakeFiles/slam.dir/glad.c.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/slam.dir/glad.c.o"
-	/usr/bin/aarch64-linux-gnu-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/slam.dir/glad.c.o -MF CMakeFiles/slam.dir/glad.c.o.d -o CMakeFiles/slam.dir/glad.c.o -c /home/tigakub/Documents/Robotics/slam/glad.c
+CMakeFiles/slam.dir/gl.c.o: CMakeFiles/slam.dir/flags.make
+CMakeFiles/slam.dir/gl.c.o: ../gl.c
+CMakeFiles/slam.dir/gl.c.o: CMakeFiles/slam.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/slam.dir/gl.c.o"
+	/usr/bin/aarch64-linux-gnu-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/slam.dir/gl.c.o -MF CMakeFiles/slam.dir/gl.c.o.d -o CMakeFiles/slam.dir/gl.c.o -c /home/tigakub/Documents/Robotics/slam/gl.c
 
-CMakeFiles/slam.dir/glad.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/slam.dir/glad.c.i"
-	/usr/bin/aarch64-linux-gnu-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/tigakub/Documents/Robotics/slam/glad.c > CMakeFiles/slam.dir/glad.c.i
+CMakeFiles/slam.dir/gl.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/slam.dir/gl.c.i"
+	/usr/bin/aarch64-linux-gnu-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/tigakub/Documents/Robotics/slam/gl.c > CMakeFiles/slam.dir/gl.c.i
 
-CMakeFiles/slam.dir/glad.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/slam.dir/glad.c.s"
-	/usr/bin/aarch64-linux-gnu-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/tigakub/Documents/Robotics/slam/glad.c -o CMakeFiles/slam.dir/glad.c.s
+CMakeFiles/slam.dir/gl.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/slam.dir/gl.c.s"
+	/usr/bin/aarch64-linux-gnu-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/tigakub/Documents/Robotics/slam/gl.c -o CMakeFiles/slam.dir/gl.c.s
 
 CMakeFiles/slam.dir/lidar.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/lidar.cpp.o: ../lidar.cpp
@@ -167,30 +167,110 @@ CMakeFiles/slam.dir/occupancyGrid.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/slam.dir/occupancyGrid.cpp.s"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tigakub/Documents/Robotics/slam/occupancyGrid.cpp -o CMakeFiles/slam.dir/occupancyGrid.cpp.s
 
+CMakeFiles/slam.dir/vis/aabb.cpp.o: CMakeFiles/slam.dir/flags.make
+CMakeFiles/slam.dir/vis/aabb.cpp.o: ../vis/aabb.cpp
+CMakeFiles/slam.dir/vis/aabb.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/slam.dir/vis/aabb.cpp.o"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/aabb.cpp.o -MF CMakeFiles/slam.dir/vis/aabb.cpp.o.d -o CMakeFiles/slam.dir/vis/aabb.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/aabb.cpp
+
+CMakeFiles/slam.dir/vis/aabb.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/slam.dir/vis/aabb.cpp.i"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tigakub/Documents/Robotics/slam/vis/aabb.cpp > CMakeFiles/slam.dir/vis/aabb.cpp.i
+
+CMakeFiles/slam.dir/vis/aabb.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/slam.dir/vis/aabb.cpp.s"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tigakub/Documents/Robotics/slam/vis/aabb.cpp -o CMakeFiles/slam.dir/vis/aabb.cpp.s
+
+CMakeFiles/slam.dir/vis/box.cpp.o: CMakeFiles/slam.dir/flags.make
+CMakeFiles/slam.dir/vis/box.cpp.o: ../vis/box.cpp
+CMakeFiles/slam.dir/vis/box.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/slam.dir/vis/box.cpp.o"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/box.cpp.o -MF CMakeFiles/slam.dir/vis/box.cpp.o.d -o CMakeFiles/slam.dir/vis/box.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/box.cpp
+
+CMakeFiles/slam.dir/vis/box.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/slam.dir/vis/box.cpp.i"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tigakub/Documents/Robotics/slam/vis/box.cpp > CMakeFiles/slam.dir/vis/box.cpp.i
+
+CMakeFiles/slam.dir/vis/box.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/slam.dir/vis/box.cpp.s"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tigakub/Documents/Robotics/slam/vis/box.cpp -o CMakeFiles/slam.dir/vis/box.cpp.s
+
+CMakeFiles/slam.dir/vis/camera.cpp.o: CMakeFiles/slam.dir/flags.make
+CMakeFiles/slam.dir/vis/camera.cpp.o: ../vis/camera.cpp
+CMakeFiles/slam.dir/vis/camera.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/slam.dir/vis/camera.cpp.o"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/camera.cpp.o -MF CMakeFiles/slam.dir/vis/camera.cpp.o.d -o CMakeFiles/slam.dir/vis/camera.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/camera.cpp
+
+CMakeFiles/slam.dir/vis/camera.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/slam.dir/vis/camera.cpp.i"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tigakub/Documents/Robotics/slam/vis/camera.cpp > CMakeFiles/slam.dir/vis/camera.cpp.i
+
+CMakeFiles/slam.dir/vis/camera.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/slam.dir/vis/camera.cpp.s"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tigakub/Documents/Robotics/slam/vis/camera.cpp -o CMakeFiles/slam.dir/vis/camera.cpp.s
+
+CMakeFiles/slam.dir/vis/light.cpp.o: CMakeFiles/slam.dir/flags.make
+CMakeFiles/slam.dir/vis/light.cpp.o: ../vis/light.cpp
+CMakeFiles/slam.dir/vis/light.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/slam.dir/vis/light.cpp.o"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/light.cpp.o -MF CMakeFiles/slam.dir/vis/light.cpp.o.d -o CMakeFiles/slam.dir/vis/light.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/light.cpp
+
+CMakeFiles/slam.dir/vis/light.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/slam.dir/vis/light.cpp.i"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tigakub/Documents/Robotics/slam/vis/light.cpp > CMakeFiles/slam.dir/vis/light.cpp.i
+
+CMakeFiles/slam.dir/vis/light.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/slam.dir/vis/light.cpp.s"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tigakub/Documents/Robotics/slam/vis/light.cpp -o CMakeFiles/slam.dir/vis/light.cpp.s
+
+CMakeFiles/slam.dir/vis/framebuffer.cpp.o: CMakeFiles/slam.dir/flags.make
+CMakeFiles/slam.dir/vis/framebuffer.cpp.o: ../vis/framebuffer.cpp
+CMakeFiles/slam.dir/vis/framebuffer.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/slam.dir/vis/framebuffer.cpp.o"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/framebuffer.cpp.o -MF CMakeFiles/slam.dir/vis/framebuffer.cpp.o.d -o CMakeFiles/slam.dir/vis/framebuffer.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/framebuffer.cpp
+
+CMakeFiles/slam.dir/vis/framebuffer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/slam.dir/vis/framebuffer.cpp.i"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tigakub/Documents/Robotics/slam/vis/framebuffer.cpp > CMakeFiles/slam.dir/vis/framebuffer.cpp.i
+
+CMakeFiles/slam.dir/vis/framebuffer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/slam.dir/vis/framebuffer.cpp.s"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tigakub/Documents/Robotics/slam/vis/framebuffer.cpp -o CMakeFiles/slam.dir/vis/framebuffer.cpp.s
+
 # Object files for target slam
 slam_OBJECTS = \
 "CMakeFiles/slam.dir/slam.cpp.o" \
-"CMakeFiles/slam.dir/glad.c.o" \
+"CMakeFiles/slam.dir/gl.c.o" \
 "CMakeFiles/slam.dir/lidar.cpp.o" \
 "CMakeFiles/slam.dir/visualizer.cpp.o" \
 "CMakeFiles/slam.dir/container.cpp.o" \
 "CMakeFiles/slam.dir/link.cpp.o" \
-"CMakeFiles/slam.dir/occupancyGrid.cpp.o"
+"CMakeFiles/slam.dir/occupancyGrid.cpp.o" \
+"CMakeFiles/slam.dir/vis/aabb.cpp.o" \
+"CMakeFiles/slam.dir/vis/box.cpp.o" \
+"CMakeFiles/slam.dir/vis/camera.cpp.o" \
+"CMakeFiles/slam.dir/vis/light.cpp.o" \
+"CMakeFiles/slam.dir/vis/framebuffer.cpp.o"
 
 # External object files for target slam
 slam_EXTERNAL_OBJECTS =
 
 slam: CMakeFiles/slam.dir/slam.cpp.o
-slam: CMakeFiles/slam.dir/glad.c.o
+slam: CMakeFiles/slam.dir/gl.c.o
 slam: CMakeFiles/slam.dir/lidar.cpp.o
 slam: CMakeFiles/slam.dir/visualizer.cpp.o
 slam: CMakeFiles/slam.dir/container.cpp.o
 slam: CMakeFiles/slam.dir/link.cpp.o
 slam: CMakeFiles/slam.dir/occupancyGrid.cpp.o
+slam: CMakeFiles/slam.dir/vis/aabb.cpp.o
+slam: CMakeFiles/slam.dir/vis/box.cpp.o
+slam: CMakeFiles/slam.dir/vis/camera.cpp.o
+slam: CMakeFiles/slam.dir/vis/light.cpp.o
+slam: CMakeFiles/slam.dir/vis/framebuffer.cpp.o
 slam: CMakeFiles/slam.dir/build.make
 slam: ../unitree_lidar_sdk/lib/aarch64/libunitree_lidar_sdk.a
 slam: CMakeFiles/slam.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable slam"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable slam"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/slam.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

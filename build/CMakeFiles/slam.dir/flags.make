@@ -5,13 +5,13 @@
 # compile CXX with /usr/bin/aarch64-linux-gnu-g++
 C_DEFINES = 
 
-C_INCLUDES = -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include
+C_INCLUDES = -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*"
 
 C_FLAGS = -g
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include
+CXX_INCLUDES = -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*"
 
 CXX_FLAGS = -g -std=gnu++20
 
