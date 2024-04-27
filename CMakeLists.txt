@@ -8,6 +8,10 @@ project(slam VERSION 0.1)
 
 configure_file(slamConfig.h.in ../slamConfig.h)
 
+add_custom_target(embeddedShaderData 
+    COMMAND cd .. && ./generateEmbeddedShaderData.sh
+)
+
 add_executable(slam 
     slam.cpp 
     gl.c 
@@ -22,6 +26,8 @@ add_executable(slam
     vis/light.cpp
     vis/framebuffer.cpp
 )
+
+add_dependencies(slam embeddedShaderData)
 
 target_include_directories(slam PUBLIC 
     "${PROJECT_SOURCE_DIR}"

@@ -156,15 +156,22 @@ class Slam {
  
     protected:
         void visProc() {
-            Visualizer visualizer(occupancyQueue, occupancyQueueMutex, string("slam"));
+            try {
+                Visualizer visualizer(occupancyQueue, occupancyQueueMutex, string("slam"));
 
-            auto lastTime = chrono::high_resolution_clock::now();
-            while(!terminate) {
-                visualizer.update();
-                if(!visualizer.loop()) {
-                    setShouldTerminate(true);
+                auto lastTime = chrono::high_resolution_clock::now();
+                while(!shouldTerminate()) {
+                    visualizer.update();
+                    if(!visualizer.loop()) {
+                        setShouldTerminate(true);
+                    }
+                    setVisFreq(visualizer.getFrequency());
                 }
-                setVisFreq(visualizer.getFrequency());
+            } catch (Exception e) {
+                setShouldTerminate(true);
+                lockOutput();
+                cerr << e << endl;
+                unlockOutput();
             }
         }
 

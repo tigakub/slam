@@ -45,6 +45,9 @@ class Visualizer: OccupancyGrid::Functor {
         double getFrequency() const;
 
         virtual void operator()(size_t x, size_t y, size_t z);
+
+    protected:
+        string processGLSLSource(const char *iSource);
 };
 
 #endif

@@ -1,3 +1,5 @@
+const char * embeddedShaderData = R"0B3R0N(
+
 #ifdef __cplusplus
 #pragma once
 #include <glad/gl.h>
@@ -53,3 +55,5 @@ struct LightData {
 
 #define OUT_COLOR       0
 #define NUM_FRAG_OUT    1
+
+)0B3R0N";

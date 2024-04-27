@@ -1,19 +1,24 @@
 #include "visualizer.h"
 #include "exception.h"
 #include "vis/shaderData.h"
+#include "vis/embeddedShaderData.h"
 
 const char *Visualizer::vertexShaderSource = R"0B3R0N(
-    #version 450 core
-    layout (location = 0) in vec3 aPos;
+    layout (location = IN_POSITION) in vec3 aPos;
 
     void main() {
         gl_Position = vec4(aPos.x, aPos.y, aPos.x, 1.0);
     }
 )0B3R0N";
 
-const char *Visualizer::vertexShaderSource2 = R"0B3R0N(
-    #version 450 core
+const char *Visualizer::fragmentShaderSource = R"0B3R0N(
+    layout (location = OUT_COLOR) out vec4 fragColor;
+    void main() {
+        fragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    }
+)0B3R0N";
 
+const char *Visualizer::vertexShaderSource2 = R"0B3R0N(
     layout(std140, binding = UB_CAMERA) uniform Camera {
         CameraData data;
     } ub_Camera;
@@ -36,18 +41,7 @@ const char *Visualizer::vertexShaderSource2 = R"0B3R0N(
     }
 )0B3R0N";
 
-const char *Visualizer::fragmentShaderSource = R"0B3R0N(
-    #version 450 core
-    
-    out vec4 FragColor;
-    void main() {
-        FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-    }
-)0B3R0N";
-
 const char *Visualizer::fragmentShaderSource2 = R"0B3R0N(
-    #version 450 core
-    
     in vec3 normal;
     in vec4 color;
     noperspective centroid in vec2 uv;
@@ -70,60 +64,60 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupa
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    try {
-        THROW_IF_NULL(window = glfwCreateWindow(width, height, iWindowTitle.c_str(), NULL, NULL), "Failed to create GLFW window");
+    THROW_IF_NULL(window = glfwCreateWindow(width, height, iWindowTitle.c_str(), NULL, NULL), "Failed to create GLFW window");
 
-        glfwMakeContextCurrent(window);
-        glfwSetWindowUserPointer(window, this);
-        glfwSetFramebufferSizeCallback(window, gFramebufferSizeCallback);
+    glfwMakeContextCurrent(window);
+    glfwSetWindowUserPointer(window, this);
+    glfwSetFramebufferSizeCallback(window, gFramebufferSizeCallback);
 
-        THROW_IF_NOT(gladLoadGL(glfwGetProcAddress), "Failed to initialize GLAD");
+    THROW_IF_NOT(gladLoadGL(glfwGetProcAddress), "Failed to initialize GLAD");
 
-        int success;
-        char infoLog[512];
+    int success;
+    char infoLog[512];
 
-        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-        glCompileShader(vertexShader);
+    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    string vertexSource(processGLSLSource(vertexShaderSource));
+    const char * vtxSrc = vertexSource.c_str();
+    glShaderSource(vertexShader, 1, &vtxSrc, NULL);
+    glCompileShader(vertexShader);
 
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-            glDeleteShader(vertexShader);
-            THROW(string("Error: failed to compile vertex shader: ") + infoLog);
-        }
-
-        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-        glCompileShader(fragmentShader);
-        
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-            glDeleteShader(fragmentShader);
-            THROW(string("Error: failed to compile fragment shader: ") + infoLog);
-        }
-
-        shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
-        glLinkProgram(shaderProgram);
-
-        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-        if (!success) {
-            glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-            glDeleteProgram(shaderProgram);
-            shaderProgram = 0;
-            THROW(string("Error: failed to link shader program: ") + infoLog);
-        }
-
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-
-        glAvailable = true;
-    } catch (Exception e) {
-
+        THROW(string("Error: failed to compile vertex shader: ") + infoLog);
     }
+
+    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    string fragmentSource(processGLSLSource(fragmentShaderSource));
+    const char * frgSrc = fragmentSource.c_str();
+    glShaderSource(fragmentShader, 1, &frgSrc, NULL);
+    glCompileShader(fragmentShader);
+    
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        glDeleteShader(fragmentShader);
+        THROW(string("Error: failed to compile fragment shader: ") + infoLog);
+    }
+
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        glDeleteProgram(shaderProgram);
+        shaderProgram = 0;
+        THROW(string("Error: failed to link shader program: ") + infoLog);
+    }
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    glAvailable = true;
 }
 
 Visualizer::~Visualizer() {
@@ -192,4 +186,13 @@ double Visualizer::getFrequency() const {
 
 void Visualizer::operator()(size_t x, size_t y, size_t z) {
     
+}
+
+string Visualizer::processGLSLSource(const char * iSource) {
+    string output("#version 450 core\n\n");
+    output += embeddedShaderData;
+    output += "\n\n";
+    output += iSource;
+    output += "\n";
+    return output;
 }
