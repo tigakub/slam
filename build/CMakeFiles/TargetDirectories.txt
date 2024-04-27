@@ -1,3 +1,0 @@
-/home/tigakub/Documents/Robotics/slam/build/CMakeFiles/slam.dir
-/home/tigakub/Documents/Robotics/slam/build/CMakeFiles/edit_cache.dir
-/home/tigakub/Documents/Robotics/slam/build/CMakeFiles/rebuild_cache.dir
