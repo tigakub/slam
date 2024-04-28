@@ -7,23 +7,34 @@
 
 #include <vector>
 
+#include "vertex.h"
+#include "elementBuffer.h"
+#include "vertexBuffer.h"
+#include "vertexArray.h"
+
+#include "usedsa.h"
+#include "aabb.h"
+
 using namespace std;
 using namespace glm;
 
-struct Vertex {
-    vec3 position;
-    vec3 normal;
-    vec3 color;
-    vec2 uv;
-};
-
 class Box {
     protected:
+        vector<GLuint> elements;
         vector<Vertex> vertices;
-        vector<uint32_t> elements;
+
+        ElementBuffer<GLuint> ebo;
+        VertexBuffer<Vertex> vbo;
+        VertexArray vao;
 
     public:
-        Box(float iWidth = 1.0f, float iHeight = 1.0f, float iDepth = 1.0f);
+        Box(float iWidth = 100.0f, float iHeight = 100.0f, float iDepth = 100.0f);
+
+        void init();
+        
+        void draw();
+
+        void expand(AABB &ioBoundingBox);
 };
 
 #endif

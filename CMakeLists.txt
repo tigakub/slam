@@ -21,6 +21,10 @@ add_executable(slam
     link.cpp 
     occupancyGrid.cpp
     vis/aabb.cpp
+    vis/uniformBuffer.cpp
+    vis/vertexBuffer.cpp
+    vis/elementBuffer.cpp
+    vis/vertexArray.cpp
     vis/box.cpp
     vis/camera.cpp
     vis/light.cpp

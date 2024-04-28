@@ -7,6 +7,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "usedsa.h"
+
 using namespace glm;
 
 class Framebuffer {
@@ -19,8 +21,9 @@ class Framebuffer {
 
     public:
         Framebuffer(int iWidth, int iHeight);
-
-        bool initialize();
+        virtual ~Framebuffer();
+        
+        bool init();
 
         int getWidth() const { return width; }
         int getHeight() const { return height; }
@@ -28,6 +31,7 @@ class Framebuffer {
         void resize(int iWidth, int iHeight);
         void clear();
         void bind();
+        void unbind();
         void blt();
 };
 

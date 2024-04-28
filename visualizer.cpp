@@ -19,37 +19,37 @@ const char *Visualizer::fragmentShaderSource = R"0B3R0N(
 )0B3R0N";
 
 const char *Visualizer::vertexShaderSource2 = R"0B3R0N(
-    layout(std140, binding = UB_CAMERA) uniform Camera {
-        CameraData data;
-    } ub_Camera;
-    
-    uniform vec4 uColor;
 
-    layout (location = IN_POSITION) in vec3 aPos;
-    layout (location = IN_NORMAL) in vec3 aNorm;
-    layout (location = IN_TEXCOORD) in vec2 aUV;
+layout(std140, binding = UB_CAMERA) uniform Camera {
+    CameraData data;
+} ubCamera;
 
-    out vec3 normal;
-    out vec4 color;
-    noperspective centroid out vec2 uv;
-    
-    void main() {
-        gl_Position = uModelView * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-        normal = uModelView * vec4(aNorm.x, aNorm.u, aNorm.z, 0.0);
-        color = uColor;
-        uv = vec2(aUV.x, aUV.y);
-    }
+layout(location = IN_POSITION) in vec3 aPos;
+layout(location = IN_COLOR) in vec3 aColor;
+
+out Frag {
+    vec3 color;
+} outFrag;
+
+void main() {
+    gl_Position = ubCamera.data.projMatrix * ubCamera.data.mvMatrix * vec4(aPos, 1.0f);
+    outFrag.color = aColor;
+}
+
 )0B3R0N";
 
 const char *Visualizer::fragmentShaderSource2 = R"0B3R0N(
-    in vec3 normal;
-    in vec4 color;
-    noperspective centroid in vec2 uv;
 
-    out vec4 FragColor;
-    void main() {
-        FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-    }
+in Frag {
+    vec3 color;
+} inFrag;
+
+layout(location = OUT_COLOR) out vec4 outColor;
+
+void main() {
+    outColor = vec4(inFrag.color, 1.0f);
+}
+
 )0B3R0N";
 
 void gFramebufferSizeCallback(GLFWwindow * iWindow, int iWidth, int iHeight) {
@@ -57,8 +57,16 @@ void gFramebufferSizeCallback(GLFWwindow * iWindow, int iWidth, int iHeight) {
     ptr->framebufferSizeCallback(iWidth, iHeight);
 }
 
-Visualizer::Visualizer(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupancyQueueMutex, const string &iWindowTitle, size_t iWidth, size_t iHeight)
-: glAvailable(false), width(iWidth), height(iHeight), lastTimeStamp(), frequency(0.0), occupancyQueue(iOccupancyQueue), occupancyQueueMutex(iOccupancyQueueMutex) {
+Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccupancyQueueMutex, const string &iWindowTitle, size_t iWidth, size_t iHeight)
+: glAvailable(false), 
+  width(iWidth), height(iHeight), 
+  lastTimeStamp(), frequency(0.0), 
+  occupancyQueue(ioOccupancyQueue), 
+  occupancyQueueMutex(ioOccupancyQueueMutex),
+  framebuffer(800, 600),
+  camera(800, 600, 0, true),
+  light(1, false),
+  testBox() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -76,7 +84,7 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupa
     char infoLog[512];
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    string vertexSource(processGLSLSource(vertexShaderSource));
+    string vertexSource(processGLSLSource(vertexShaderSource2));
     const char * vtxSrc = vertexSource.c_str();
     glShaderSource(vertexShader, 1, &vtxSrc, NULL);
     glCompileShader(vertexShader);
@@ -89,7 +97,7 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupa
     }
 
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    string fragmentSource(processGLSLSource(fragmentShaderSource));
+    string fragmentSource(processGLSLSource(fragmentShaderSource2));
     const char * frgSrc = fragmentSource.c_str();
     glShaderSource(fragmentShader, 1, &frgSrc, NULL);
     glCompileShader(fragmentShader);
@@ -117,6 +125,19 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupa
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    framebuffer.init();
+
+    testBox.expand(boundingBox);
+    testBox.init();
+
+    camera.setFocus(boundingBox);
+    camera.init();
+
+    light.init();
+    
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
     glAvailable = true;
 }
 
@@ -128,16 +149,25 @@ Visualizer::~Visualizer() {
 int Visualizer::loop() {
     auto currentTimeStamp = chrono::high_resolution_clock::now();
     auto elapsed = chrono::duration_cast<chrono::microseconds>(currentTimeStamp - lastTimeStamp).count();
-    if(elapsed >= 8333) {
+    if(elapsed >= 2083) {
         if (glAvailable) {
             if (glfwWindowShouldClose(window)) return 0;
 
-            glClearColor(0.6f, 0.4f, 0.0f, 1.0f);
+            camera.update();
+            light.update();
+
+            glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
             glUseProgram(shaderProgram);
+
+            camera.bind();
+            light.bind();
             
             render();
+
+            light.unbind();
+            camera.unbind();
 
             glfwSwapBuffers(window);
 
@@ -153,6 +183,9 @@ int Visualizer::loop() {
 }
 
 void Visualizer::update() {
+    camera.update();
+    light.update();
+    
     OccupancyGrid *grid = nullptr;
     occupancyQueueMutex.lock();
     if(occupancyQueue.size() > 0) {
@@ -168,6 +201,7 @@ void Visualizer::update() {
 }
 
 void Visualizer::render() {
+    testBox.draw();
 }
 
 void Visualizer::framebufferSizeCallback(size_t iWidth, size_t iHeight) {
@@ -195,4 +229,26 @@ string Visualizer::processGLSLSource(const char * iSource) {
     output += iSource;
     output += "\n";
     return output;
+}
+
+bool Visualizer::isDSACompatible() {
+    const char * version = (const char *) glGetString(GL_VERSION);
+    if (version) {
+        float openGLVersion = atof(version);
+        return openGLVersion >= 4.5;
+    }
+    return false;
+}
+
+bool Visualizer::isDSAExtensionAvailable() {
+    GLint numExtensions;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+
+    for (int i = 0; i < numExtensions; i++) {
+        const char * ext = (const char *) glGetStringi(GL_EXTENSIONS, i);
+        if (string(ext) == string("GL_ARB_direct_state_access"))
+            return true;
+    }
+
+    return false;
 }

@@ -1,9 +1,24 @@
 #include "lidar.h"
 #include "exception.h"
 
-Lidar::Lidar(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupancyQueueMutex, const string &iPortName)
-: occupancyQueue(iOccupancyQueue), occupancyQueueMutex(iOccupancyQueueMutex) {
-    reader = createUnitreeLidarReader();    
+Lidar::Lidar(
+  deque<OccupancyGrid *> & ioOccupancyQueue, 
+  mutex & ioOccupancyQueueMutex, 
+  atomic<uint64_t> & ioImuHeartBeat, 
+  atomic<uint64_t> & ioLidarHeartBeat, 
+  atomic<double> & ioImuFreq, 
+  atomic<double> & ioLidarFreq, const string &iPortName
+)
+: reader(createUnitreeLidarReader()), timeDelay(0), 
+  occupancyQueue(ioOccupancyQueue), 
+  occupancyQueueMutex(ioOccupancyQueueMutex),
+  imuHeartBeat(ioImuHeartBeat),
+  lidarHeartBeat(ioLidarHeartBeat), 
+  imuFreq(ioImuFreq), imuAvgFreq(100),
+  lastImuTimeStamp(chrono::high_resolution_clock::now()),
+  lidarFreq(ioLidarFreq), lidarAvgFreq(100),
+  lastLidarTimeStamp(chrono::high_resolution_clock::now())
+{
     int cloudScanNum = 18;
     
     THROW_IF(
@@ -68,10 +83,23 @@ void Lidar::setLEDMode(LEDDisplayMode iMode) {
 
 void Lidar::loop() {
     MessageType result = reader->runParse();
+    auto currentTime = chrono::high_resolution_clock::now();
 
     switch (result) {
-        case IMU: processIMU(reader->getIMU()); break;
-        case POINTCLOUD: processPointCloud(reader->getCloud()); break;
+        case IMU:
+            processIMU(reader->getIMU());
+            imuHeartBeat++;
+            imuFreq = imuAvgFreq(1000000.0 / double(chrono::duration_cast<chrono::microseconds>(currentTime - lastImuTimeStamp).count()));
+            lastImuTimeStamp = currentTime;
+            break;
+        case POINTCLOUD:
+            processPointCloud(reader->getCloud());
+            lidarHeartBeat++;
+            lidarFreq = lidarAvgFreq(1000000.0 / double(chrono::duration_cast<chrono::microseconds>(currentTime - lastLidarTimeStamp).count()));
+            lastLidarTimeStamp = currentTime;
+            break;
+        default:
+            break;
     }
     usleep(timeDelay);
 }

@@ -1,5 +1,15 @@
 {
     "files.associations": {
-        "string": "cpp"
+        "string": "cpp",
+        "*.tcc": "cpp",
+        "compare": "cpp",
+        "memory_resource": "cpp",
+        "type_traits": "cpp",
+        "chrono": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "vector": "cpp",
+        "string_view": "cpp"
     }
 }

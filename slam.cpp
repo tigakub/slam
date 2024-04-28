@@ -10,55 +10,31 @@
 #include <chrono>
 #include <vector>
 #include <deque>
+#include <atomic>
 #include <mutex>
 
+#include "average.h"
 #include "exception.h"
 #include "lidar.h"
 #include "visualizer.h"
 
 using namespace std;
 
-class Average {
-    protected:
-        int periods;
-        double *buffer;
-        int index;
-
-    public:
-        Average(int iPeriods): periods(iPeriods), buffer(new double[periods]), index(0) {
-            for(int i = 0; i < periods; i++) {
-                buffer[i] = 0.0;
-            }
-        }
-        virtual ~Average() {
-            if(buffer) delete [] buffer;
-        }
-
-        double operator()(double iCurrent) {
-            buffer[index] = iCurrent;
-            double sum = 0.0;
-            for(int i = 0; i < periods; i++) {
-                sum += buffer[i];
-            }
-            index = (index + 1) % periods;
-            return sum / double(periods);
-        }
-};
-
 class Slam {
     protected:
-        bool terminate;
-        mutex terminateMutex;
+        atomic<bool> terminate;
 
         thread * visThreadPtr;
         thread * lidarThreadPtr;
 
-        double visFreq;
+        atomic<double> visFreq;
         Average visAvgFreq;
-        mutex visFreqMutex;
-        double lidarFreq;
-        Average lidarAvgFreq;
-        mutex lidarFreqMutex;
+        
+        atomic<double> imuFreq;
+        atomic<double> lidarFreq;
+
+        atomic<uint64_t> imuHeartBeat;
+        atomic<uint64_t> lidarHeartBeat;
 
         mutex outputMutex;
 
@@ -67,11 +43,15 @@ class Slam {
 
     public:
         Slam()
-        : terminate(false), terminateMutex(), 
+        : terminate(false), 
           visThreadPtr(nullptr), lidarThreadPtr(nullptr),
-          visFreq(0.0), visAvgFreq(100), visFreqMutex(),
-          lidarFreq(0.0), lidarAvgFreq(100), lidarFreqMutex(),
-          outputMutex()
+          visFreq(0.0), visAvgFreq(100),
+          imuFreq(0.0),
+          lidarFreq(0.0),
+          imuHeartBeat(0), lidarHeartBeat(0),
+          outputMutex(),
+          occupancyQueue(),
+          occupancyQueueMutex()
         { }
 
         virtual ~Slam() {
@@ -79,17 +59,11 @@ class Slam {
         }
 
         bool shouldTerminate() {
-            bool should = false;
-            terminateMutex.lock();
-            should = terminate;
-            terminateMutex.unlock();
-            return should;
+            return terminate;
         }
 
         void setShouldTerminate(bool iShould) {
-            terminateMutex.lock();
             terminate = iShould;
-            terminateMutex.unlock();
         }
 
         void start() {
@@ -119,31 +93,27 @@ class Slam {
         }
 
         double getVisFreq() {
-            double freq;
-            visFreqMutex.lock();
-            freq = visFreq;
-            visFreqMutex.unlock();
-            return freq;
+            return visFreq;
         }
 
         void setVisFreq(double iFreq) {
-            visFreqMutex.lock();
             visFreq = iFreq;
-            visFreqMutex.unlock();
+        }
+
+        double getImuFreq() {
+            return imuFreq;
         }
 
         double getLidarFreq() {
-            double freq;
-            lidarFreqMutex.lock();
-            freq = lidarFreq;
-            lidarFreqMutex.unlock();
-            return freq;
+            return lidarFreq;
         }
 
-        void setLidarFreq(double iFreq) {
-            lidarFreqMutex.lock();
-            lidarFreq = iFreq;
-            lidarFreqMutex.unlock();
+        uint64_t getImuHeartBeat() {
+            return imuHeartBeat;
+        }
+
+        uint64_t getLidarHeartBeat() {
+            return lidarHeartBeat;
         }
 
         void lockOutput() {
@@ -177,7 +147,7 @@ class Slam {
 
         void lidarProc() {
             try {
-                Lidar lidar(occupancyQueue, occupancyQueueMutex);
+                Lidar lidar(occupancyQueue, occupancyQueueMutex, imuHeartBeat, lidarHeartBeat, imuFreq, lidarFreq);
                 
                 // lidar.setMode(STANDBY);
                 // sleep(1);
@@ -193,17 +163,11 @@ class Slam {
                 cout << "unitree_lidar_sdk version " << sdkVersion << endl;
                 unlockOutput();
 
-                auto lastTime = chrono::high_resolution_clock::now();
                 while(!terminate) {
                     auto start = chrono::high_resolution_clock::now();
                     lidar.loop();
                     auto end = chrono::high_resolution_clock::now();
-                    usleep(8250 - chrono::duration_cast<chrono::microseconds>(end - start).count());
-
-                    auto currentTime = chrono::high_resolution_clock::now();
-                    auto us = chrono::duration_cast<chrono::microseconds>(currentTime - lastTime).count();
-                    setLidarFreq(lidarAvgFreq(1000000.0 / double(us)));
-                    lastTime = currentTime;
+                    // usleep(8250 - chrono::duration_cast<chrono::microseconds>(end - start).count());
                 }
             } catch (Exception e) {
                 lockOutput();
@@ -219,9 +183,20 @@ int main(int argc, char **argv) {
 
     while(!slam.shouldTerminate()) {
         auto visFreq = slam.getVisFreq();
+        auto imuHeartBeat = slam.getImuHeartBeat();
+        auto imuFreq = slam.getImuFreq();
+        auto lidarHeartBeat = slam.getLidarHeartBeat();
         auto lidarFreq = slam.getLidarFreq();
+
         slam.lockOutput();
-        cout << setw(6) << setprecision(0) << fixed << "vis freq: " << visFreq << "    lidar freq: " << lidarFreq << "\r";
+        cout 
+            << setw(6) << setprecision(0) << fixed 
+            << " visfreq: " << visFreq 
+             << setprecision(2) << " imuFreq: " << imuFreq
+            << " imuHB: " << imuHeartBeat 
+            << " lidarFreq: " << lidarFreq
+             << setprecision(2) << " lidarHB: " << lidarHeartBeat 
+            << "           \r";
         cout.flush();
         slam.unlockOutput();
     }

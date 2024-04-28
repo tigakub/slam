@@ -8,16 +8,19 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "shaderData.h"
+#include "uniformBuffer.h"
 
-class Light {
+class Light: public UniformBuffer {
     protected:
         LightData data;
-        unsigned int ubo;
 
     public:
-        Light();
+        Light(GLuint iBindPoint = 0, bool iIsDynamic = false);
+        virtual ~Light();
 
-        bool init();
+    protected:
+        virtual const void *getData() const;
+        virtual GLuint getDataSize() const;
 };
 
 #endif

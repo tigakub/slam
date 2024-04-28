@@ -7,16 +7,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
+#include "uniformBuffer.h"
 #include "shaderData.h"
 #include "aabb.h"
 
 using namespace glm;
 
-class Camera {
+class Camera: public UniformBuffer {
     protected:
-        bool dirty;
-        float fovy;
         int width;
         int height;
         float fov;
@@ -25,18 +23,19 @@ class Camera {
         vec3 up;
         CameraData data;
 
-        unsigned int ubo;
-
     public:
-        Camera(int iWidth, int iHeight);
+        Camera(int iWidth, int iHeight, GLuint iBindPoint = 0, bool iIsDynamic = false);
         virtual ~Camera();
 
-        bool init(const AABB &iBoundingBox);
-
-        void resize(int iWidth, int iHeight);
         void setFocus(const AABB &iBoundingBox);
 
-        void update();
+        void resize(int iWidth, int iHeight);
+
+        virtual void update();
+
+    protected:
+        virtual const void *getData() const;
+        virtual GLuint getDataSize() const;
 };
 
 #endif

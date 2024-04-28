@@ -7,9 +7,16 @@
 
 #include <string>
 #include <deque>
+#include <atomic>
 #include <mutex>
 
 #include <occupancyGrid.h>
+
+#include "vis/framebuffer.h"
+#include "vis/camera.h"
+#include "vis/light.h"
+#include "vis/aabb.h"
+#include "vis/box.h"
 
 using namespace std;
 
@@ -31,8 +38,15 @@ class Visualizer: OccupancyGrid::Functor {
         deque<OccupancyGrid *> & occupancyQueue;
         mutex & occupancyQueueMutex;
 
+        Framebuffer framebuffer;
+        Camera camera;
+        Light light;
+        AABB boundingBox;
+
+        Box testBox;
+
     public:
-        Visualizer(deque<OccupancyGrid *> & iOccupancyQueue, mutex & iOccupancyQueueMutex, const string &iWindowTitle, size_t iWidth = 800, size_t iHeight = 600);
+        Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccupancyQueueMutex, const string &iWindowTitle, size_t iWidth = 800, size_t iHeight = 600);
         virtual ~Visualizer();
 
         virtual int loop();
@@ -48,6 +62,9 @@ class Visualizer: OccupancyGrid::Functor {
 
     protected:
         string processGLSLSource(const char *iSource);
+
+        bool isDSACompatible();
+        bool isDSAExtensionAvailable();
 };
 
 #endif

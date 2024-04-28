@@ -1,28 +1,19 @@
 #include "camera.h"
+#include "usedsa.h"
 
-Camera::Camera(int iWidth, int iHeight)
-: dirty(true),
-  width(iWidth),
+Camera::Camera(int iWidth, int iHeight, GLuint iBindPoint, bool iIsDynamic)
+: width(iWidth),
   height(iHeight),
   fov(radians(60.0f)),
   eye(vec3(0.0f, 10.0f, 0.0f)),
   center(vec3(0.0f, 0.0f, 0.0f)),
   up(vec3(0.0f, 0.0f, 1.0f)),
-  ubo(0) { }
+  data() { }
 
 Camera::~Camera() {
-    if(ubo) glDeleteBuffers(1, &ubo);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    if (ubo) glDeleteBuffers(1, &ubo);
 }
-
-bool Camera::init(const AABB &iBoundingBox) {
-    setFocus(iBoundingBox);
-
-    glCreateBuffers(1, &ubo);
-    glNamedBufferStorage(ubo, sizeof(CameraData), &data, GL_DYNAMIC_STORAGE_BIT);
-
-    return true;
-}
-
 
 void Camera::resize(int iWidth, int iHeight) {
     width = iWidth;
@@ -56,7 +47,14 @@ void Camera::update() {
     if(dirty) {
         data.mvMatrix = lookAt(eye, center, up);
         data.projMatrix = perspective(fov, ((float) width / height), 0.1f, 1000.0f) * data.mvMatrix;
-        glNamedBufferSubData(ubo, 0, sizeof(CameraData), &data);
-        dirty = false;
     }
+    UniformBuffer::update();
+}
+
+const void *Camera::getData() const {
+    return (void *) &data;
+}
+
+GLuint Camera::getDataSize() const {
+    return (GLuint) sizeof(data);
 }
