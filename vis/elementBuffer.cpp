@@ -9,14 +9,16 @@ ElementBufferBase::~ElementBufferBase() {
 }
 
 void ElementBufferBase::init() {
-    #ifdef USEDSA
-        glCreateBuffers(1, &ebo);
-        glNamedBufferStorage(ebo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW_BIT : 0);
-    #else
-        glGenBuffers(1, &ebo);
-        bind();
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-    #endif
+    if(getData() && getDataSize()) {
+        #ifdef USEDSA
+            glCreateBuffers(1, &ebo);
+            glNamedBufferStorage(ebo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW_BIT : 0);
+        #else
+            glGenBuffers(1, &ebo);
+            bind();
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+        #endif
+    }
 }
 
 #ifdef USEDSA
@@ -26,7 +28,7 @@ void ElementBufferBase::attachToVAO(GLuint iVao) {
 #endif
 
 void ElementBufferBase::update() {
-    if(dirty) {
+    if(dirty && getData() && getDataSize()) {
         #ifdef USDSA
             glNamedBufferSubData(vbo, 0, getDataSize(), getData());
         #else

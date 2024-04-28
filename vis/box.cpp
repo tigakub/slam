@@ -64,9 +64,17 @@ Box::Box(float iWidth, float iHeight, float iDepth)
 }
 
 void Box::init() {
+	vao.init();
 	ebo.init();
 	vbo.init();
-	vao.init();
+	vbo.unbind();
+	ebo.unbind();
+	vao.unbind();
+}
+
+void Box::update() {
+	ebo.update();
+	vbo.update();
 }
 
 void Box::draw() {

@@ -44,10 +44,13 @@ class Visualizer: OccupancyGrid::Functor {
         AABB boundingBox;
 
         Box testBox;
+        GLuint testTriangleVAO;
 
     public:
         Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccupancyQueueMutex, const string &iWindowTitle, size_t iWidth = 800, size_t iHeight = 600);
         virtual ~Visualizer();
+
+        void debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message) const;
 
         virtual int loop();
         virtual void update();

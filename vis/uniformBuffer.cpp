@@ -9,29 +9,29 @@ UniformBuffer::~UniformBuffer() {
 }
 
 bool UniformBuffer::init() {
-    #ifdef USEDSA
-        glCreateBuffers(1, (GLuint *) &data);
-        glNamedBufferStorage(ubo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_STORAGE_BIT : GL_STATIC_STORAGE_BIT);
-    #else
-        glGenBuffers(1, &ubo);
-        bind();
-        if(getData() && getDataSize()) {
+    if(getData() && getDataSize()) {
+        #ifdef USEDSA
+            glCreateBuffers(1, (GLuint *) &data);
+            glNamedBufferStorage(ubo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_STORAGE_BIT : GL_STATIC_STORAGE_BIT);
+        #else
+            glGenBuffers(1, &ubo);
+            bind();
             glBufferData(GL_UNIFORM_BUFFER, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-        }
-        unbind();
-    #endif
+            unbind();
+        #endif
+   }
 
     return true;
 }
 
 void UniformBuffer::update() {
-    if(dirty) {
+    if(dirty && getData() && getDataSize()) {
         #ifdef USEDSA
             glNamedBufferSubData(ubo, 0, getDataSize(), getData());
         #else
-            glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+            bind();
             glBufferSubData(GL_UNIFORM_BUFFER, 0, getDataSize(), getData());
-            glBindBuffer(GL_UNIFORM_BUFFER, 0);
+            unbind();
         #endif
         dirty = false;
     }

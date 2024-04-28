@@ -5,7 +5,7 @@ Camera::Camera(int iWidth, int iHeight, GLuint iBindPoint, bool iIsDynamic)
 : width(iWidth),
   height(iHeight),
   fov(radians(60.0f)),
-  eye(vec3(0.0f, 10.0f, 0.0f)),
+  eye(vec3(2.5f, 10.0f, 0.0f)),
   center(vec3(0.0f, 0.0f, 0.0f)),
   up(vec3(0.0f, 0.0f, 1.0f)),
   data() { }

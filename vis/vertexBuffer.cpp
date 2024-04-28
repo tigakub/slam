@@ -9,14 +9,16 @@ VertexBufferBase::~VertexBufferBase() {
 }
 
 void VertexBufferBase::init() {
-    #ifdef USEDSA
-        glCreateBuffers(1, &vbo);
-        glNamedBufferStorage(vbo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW_BIT : 0);
-    #else
-        glGenBuffers(1, &vbo);
-        bind();
-        glBufferData(GL_ARRAY_BUFFER, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-    #endif
+    if(getData() && getDataSize()) {
+        #ifdef USEDSA
+            glCreateBuffers(1, &vbo);
+            glNamedBufferStorage(vbo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW_BIT : 0);
+        #else
+            glGenBuffers(1, &vbo);
+            bind();
+            glBufferData(GL_ARRAY_BUFFER, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+        #endif
+    }
 }
 
 #ifdef USEDSA
@@ -26,12 +28,12 @@ void VertexBufferBase::attachToVAO(GLuint iVao, GLuint iBindPoint, GLint iOffset
 #endif
 
 void VertexBufferBase::update() {
-    if(dirty) {
+    if(dirty && getData() && getDataSize()) {
         #ifdef USDSA
             glNamedBufferSubData(vbo, 0, getDataSize(), getData());
         #else
             bind();
-            glBufferSubData(GL_UNIFORM_BUFFER, 0, getDataSize(), getData());
+            glBufferSubData(GL_ARRAY_BUFFER, 0, getDataSize(), getData());
             unbind();
         #endif
     }

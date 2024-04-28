@@ -24,8 +24,14 @@ layout(std140, binding = UB_CAMERA) uniform Camera {
     CameraData data;
 } ubCamera;
 
+layout(std140, binding = UB_LIGHT) uniform Light {
+    LightData data;
+} ubLight;
+
 layout(location = IN_POSITION) in vec3 aPos;
+layout(location = IN_NORMAL) in vec4 aNorm;
 layout(location = IN_COLOR) in vec3 aColor;
+layout(location = IN_TEXCOORD) in vec3 aUV;
 
 out Frag {
     vec3 color;
@@ -57,6 +63,12 @@ void gFramebufferSizeCallback(GLFWwindow * iWindow, int iWidth, int iHeight) {
     ptr->framebufferSizeCallback(iWidth, iHeight);
 }
 
+void gDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message, const void * userParam) {
+    const Visualizer *ptr = static_cast<const Visualizer *>(userParam);
+    if(ptr) ptr->debugMessageCallback(source, type, id, severity, length, message);
+
+}
+
 Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccupancyQueueMutex, const string &iWindowTitle, size_t iWidth, size_t iHeight)
 : glAvailable(false), 
   width(iWidth), height(iHeight), 
@@ -80,11 +92,14 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
 
     THROW_IF_NOT(gladLoadGL(glfwGetProcAddress), "Failed to initialize GLAD");
 
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(gDebugMessageCallback, static_cast<void *>(this));
+
     int success;
     char infoLog[512];
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    string vertexSource(processGLSLSource(vertexShaderSource2));
+    string vertexSource(processGLSLSource(vertexShaderSource));
     const char * vtxSrc = vertexSource.c_str();
     glShaderSource(vertexShader, 1, &vtxSrc, NULL);
     glCompileShader(vertexShader);
@@ -97,7 +112,7 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
     }
 
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    string fragmentSource(processGLSLSource(fragmentShaderSource2));
+    string fragmentSource(processGLSLSource(fragmentShaderSource));
     const char * frgSrc = fragmentSource.c_str();
     glShaderSource(fragmentShader, 1, &frgSrc, NULL);
     glCompileShader(fragmentShader);
@@ -125,17 +140,41 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    /*
     framebuffer.init();
 
     testBox.expand(boundingBox);
     testBox.init();
+    testBox.update();
 
     camera.setFocus(boundingBox);
     camera.init();
+    camera.update();
 
     light.init();
-    
-    glEnable(GL_DEPTH_TEST);
+    light.update();
+    */
+
+    float vertices[] = {
+        -0.5f, -0.5f,  0.0f,
+         0.5f, -0.5f,  0.0f,
+         0.0f,  0.5f,  0.0f,
+    };
+
+    glGenVertexArrays(1, &testTriangleVAO);
+    glBindVertexArray(testTriangleVAO);
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
     glAvailable = true;
@@ -146,28 +185,28 @@ Visualizer::~Visualizer() {
     glfwTerminate();
 }
 
+void Visualizer::debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message) const {
+    cerr << message << endl;
+}
+
 int Visualizer::loop() {
     auto currentTimeStamp = chrono::high_resolution_clock::now();
     auto elapsed = chrono::duration_cast<chrono::microseconds>(currentTimeStamp - lastTimeStamp).count();
     if(elapsed >= 2083) {
         if (glAvailable) {
             if (glfwWindowShouldClose(window)) return 0;
-
-            camera.update();
-            light.update();
-
-            glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+            glViewport(0, 0, width, height);
+            glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-
             glUseProgram(shaderProgram);
 
-            camera.bind();
-            light.bind();
+            // camera.bind();
+            // light.bind();
             
             render();
 
-            light.unbind();
-            camera.unbind();
+            // light.unbind();
+            // camera.unbind();
 
             glfwSwapBuffers(window);
 
@@ -183,8 +222,8 @@ int Visualizer::loop() {
 }
 
 void Visualizer::update() {
-    camera.update();
-    light.update();
+    // camera.update();
+    // light.update();
     
     OccupancyGrid *grid = nullptr;
     occupancyQueueMutex.lock();
@@ -201,7 +240,10 @@ void Visualizer::update() {
 }
 
 void Visualizer::render() {
-    testBox.draw();
+    // testBox.draw();
+    glBindVertexArray(testTriangleVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
 }
 
 void Visualizer::framebufferSizeCallback(size_t iWidth, size_t iHeight) {

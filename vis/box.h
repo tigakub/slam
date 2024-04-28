@@ -31,6 +31,7 @@ class Box {
         Box(float iWidth = 100.0f, float iHeight = 100.0f, float iDepth = 100.0f);
 
         void init();
+        void update();
         
         void draw();
 
