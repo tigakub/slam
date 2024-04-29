@@ -16,6 +16,7 @@
 #include "vis/camera.h"
 #include "vis/light.h"
 #include "vis/aabb.h"
+#include "vis/triangle.h"
 #include "vis/box.h"
 
 using namespace std;
@@ -43,7 +44,8 @@ class Visualizer: OccupancyGrid::Functor {
         Light light;
         AABB boundingBox;
 
-        Box testBox;
+        // Box testBox;
+        Triangle testTriangle;
         GLuint testTriangleVAO;
 
     public:

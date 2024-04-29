@@ -20,6 +20,7 @@ class UniformBuffer {
         virtual ~UniformBuffer();
 
         virtual bool init();
+        virtual void cleanUp();
         virtual void update();
         virtual void bind();
         virtual void unbind();

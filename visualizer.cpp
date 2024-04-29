@@ -4,17 +4,21 @@
 #include "vis/embeddedShaderData.h"
 
 const char *Visualizer::vertexShaderSource = R"0B3R0N(
-    layout (location = IN_POSITION) in vec3 aPos;
+    layout (location = 0) in vec3 viPos;
+    layout (location = 1) in vec4 viColor;
 
+    out vec4 fiColor;
     void main() {
-        gl_Position = vec4(aPos.x, aPos.y, aPos.x, 1.0);
+        gl_Position = vec4(viPos.x, viPos.y, viPos.z, 1.0);
+        fiColor = viColor;
     }
 )0B3R0N";
 
 const char *Visualizer::fragmentShaderSource = R"0B3R0N(
+    in vec4 fiColor;
     layout (location = OUT_COLOR) out vec4 fragColor;
     void main() {
-        fragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+        fragColor = fiColor;
     }
 )0B3R0N";
 
@@ -78,7 +82,7 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
   framebuffer(800, 600),
   camera(800, 600, 0, true),
   light(1, false),
-  testBox() {
+  testTriangle() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -93,6 +97,7 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
     THROW_IF_NOT(gladLoadGL(glfwGetProcAddress), "Failed to initialize GLAD");
 
     glEnable(GL_DEBUG_OUTPUT);
+
     glDebugMessageCallback(gDebugMessageCallback, static_cast<void *>(this));
 
     int success;
@@ -145,20 +150,19 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
 
     testBox.expand(boundingBox);
     testBox.init();
-    testBox.update();
 
     camera.setFocus(boundingBox);
     camera.init();
-    camera.update();
 
     light.init();
-    light.update();
     */
 
+    testTriangle.init();
+
     float vertices[] = {
-        -0.5f, -0.5f,  0.0f,
-         0.5f, -0.5f,  0.0f,
-         0.0f,  0.5f,  0.0f,
+        -1.0f, -0.5f,  0.0f, 1.0, 0.0, 0.0, 1.0,
+         0.0f, -0.5f,  0.0f, 0.0, 1.0, 0.0, 1.0,
+        -0.5f,  0.5f,  0.0f, 0.0, 0.0, 1.0, 1.0
     };
 
     glGenVertexArrays(1, &testTriangleVAO);
@@ -168,8 +172,11 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) uint64_t(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -182,6 +189,10 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
 
 Visualizer::~Visualizer() {
     if(shaderProgram) glDeleteProgram(shaderProgram);
+    framebuffer.cleanUp();
+    camera.cleanUp();
+    light.cleanUp();
+    testTriangle.cleanUp();
     glfwTerminate();
 }
 
@@ -192,7 +203,7 @@ void Visualizer::debugMessageCallback(GLenum source, GLenum type, GLuint id, GLe
 int Visualizer::loop() {
     auto currentTimeStamp = chrono::high_resolution_clock::now();
     auto elapsed = chrono::duration_cast<chrono::microseconds>(currentTimeStamp - lastTimeStamp).count();
-    if(elapsed >= 2083) {
+    if(elapsed >= 16666) {
         if (glAvailable) {
             if (glfwWindowShouldClose(window)) return 0;
             glViewport(0, 0, width, height);
@@ -241,9 +252,12 @@ void Visualizer::update() {
 
 void Visualizer::render() {
     // testBox.draw();
+    
     glBindVertexArray(testTriangleVAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glBindVertexArray(0);
+    
+    testTriangle.draw();
 }
 
 void Visualizer::framebufferSizeCallback(size_t iWidth, size_t iHeight) {

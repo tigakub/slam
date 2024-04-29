@@ -1,20 +1,13 @@
 #include "vertexArray.h"
 
-VertexArray::VertexArray(ElementBufferBase & iEBuf, VertexBufferBase * iVBuf)
-: elementBuffer(iEBuf), vertexBuffers() {
-    vertexBuffers.push_back(iVBuf);
- }
+VertexArray::VertexArray()
+: vao(0) { }
 
 VertexArray::~VertexArray() {
-    unbind();
-    if(vao) glDeleteVertexArrays(1, &vao);
 }
 
-void VertexArray::addVertexBuffer(VertexBufferBase * iVBuf) {
-    vertexBuffers.push_back(iVBuf);
-}
 
-void VertexArray::init() {
+void VertexArray::init(ElementBufferBase & iEBuf, VertexBufferBase & iVBuf) {
     #ifdef USEDSA
         glCreateVertexArrays(1, &vao);
         
@@ -31,19 +24,26 @@ void VertexArray::init() {
         glGenVertexArrays(1, &vao);
         bind();
 
+        const BufferFormat & bufferFormat = iVBuf.getBufferFormat();
+
+        iVBuf.init();
         GLuint i = 0;
-
-        for(auto vBuf: vertexBuffers) {
-            vBuf->init();
-
-            glVertexAttribPointer(i, vBuf->getComponentCount(), vBuf->getComponentType(), GL_FALSE, vBuf->getVertexSize(), (void *) 0 );
+        GLuint offset = 0;
+        for(auto & vtxFmt: bufferFormat.format) {
+            glVertexAttribPointer(i, vtxFmt.componentCount, vtxFmt.componentType, GL_FALSE, bufferFormat.byteStride, (void *) (uint64_t) offset );
             glEnableVertexAttribArray(i);
-            
             i++;
+            offset += vtxFmt.byteSize;
         }
 
-        elementBuffer.init();
+        iEBuf.init();
     #endif
+}
+
+void VertexArray::cleanUp() {
+    unbind();
+    if(vao) glDeleteVertexArrays(1, &vao);
+
 }
 
 void VertexArray::bind() {

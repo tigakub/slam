@@ -24,7 +24,11 @@ class ElementBufferBase {
         ElementBufferBase(bool iIsDynamic = false);
         virtual ~ElementBufferBase();
 
+        virtual size_t getCount() const = 0;
+        virtual GLenum getPrimitiveType() const = 0;
+
         virtual void init();
+        virtual void cleanUp();
         #ifdef USEDSA
         void attachToVAO(GLuint iVao);
         #endif
@@ -38,7 +42,7 @@ class ElementBufferBase {
         virtual GLsizei getElementSize() const = 0;
 };
 
-template <typename DataType>
+template <typename DataType, GLenum iPrimitiveType>
 class ElementBuffer: public ElementBufferBase {
     protected:
         vector<DataType> data;
@@ -47,13 +51,20 @@ class ElementBuffer: public ElementBufferBase {
         ElementBuffer(bool iIsDynamic = false)
         : ElementBufferBase(iIsDynamic) { }
 
+        virtual size_t getCount() const { return data.size(); }
+        virtual GLenum getPrimitiveType() const { return iPrimitiveType; }
+
+        vector<DataType> &getElements() {
+            return data;
+        }
+
         void addElement(DataType iElement) {
             data.push_back(iElement);
         }
 
     protected:
         virtual const void *getData() const { return (void *) &data[0]; }
-        virtual GLuint getDataSize() const { return (GLuint) data.size(); }
+        virtual GLuint getDataSize() const { return (GLuint) (data.size() * sizeof(DataType)); }
         virtual GLsizei getElementSize() const { return (GLsizei) sizeof(DataType); }
 };
 

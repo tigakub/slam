@@ -18,6 +18,7 @@
 using namespace std;
 using namespace glm;
 
+/*
 class Box {
     protected:
         vector<GLuint> elements;
@@ -37,5 +38,6 @@ class Box {
 
         void expand(AABB &ioBoundingBox);
 };
+*/
 
 #endif

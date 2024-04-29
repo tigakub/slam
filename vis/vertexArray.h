@@ -16,17 +16,14 @@ using namespace glm;
 
 class VertexArray {
     protected:
-        ElementBufferBase &elementBuffer;
-        vector<VertexBufferBase *> vertexBuffers;
         GLuint vao;
 
     public:
-        VertexArray(ElementBufferBase & iEBuf, VertexBufferBase * iVBuf);
+        VertexArray();
         virtual ~VertexArray();
 
-        void addVertexBuffer(VertexBufferBase * iVBuf);
-
-        virtual void init();
+        virtual void init(ElementBufferBase & iEBuf, VertexBufferBase & iVBuf);
+        virtual void cleanUp();
         virtual void bind();
         virtual void unbind();
 };

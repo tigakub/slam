@@ -11,6 +11,9 @@ Camera::Camera(int iWidth, int iHeight, GLuint iBindPoint, bool iIsDynamic)
   data() { }
 
 Camera::~Camera() {
+}
+
+void Camera::cleanUp() {
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     if (ubo) glDeleteBuffers(1, &ubo);
 }

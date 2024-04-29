@@ -1,6 +1,7 @@
 #include "box.h"
 #include "shaderData.h"
 
+/*
 Box::Box(float iWidth, float iHeight, float iDepth)
 : ebo(), vbo(), vao(ebo, &vbo) {
 	
@@ -65,8 +66,8 @@ Box::Box(float iWidth, float iHeight, float iDepth)
 
 void Box::init() {
 	vao.init();
-	ebo.init();
 	vbo.init();
+	ebo.init();
 	vbo.unbind();
 	ebo.unbind();
 	vao.unbind();
@@ -88,3 +89,4 @@ void Box::expand(AABB &ioBoundingBox) {
         ioBoundingBox.expand(v.position);
     }
 }
+*/

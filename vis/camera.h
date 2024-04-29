@@ -27,6 +27,8 @@ class Camera: public UniformBuffer {
         Camera(int iWidth, int iHeight, GLuint iBindPoint = 0, bool iIsDynamic = false);
         virtual ~Camera();
 
+        void cleanUp();
+        
         void setFocus(const AABB &iBoundingBox);
 
         void resize(int iWidth, int iHeight);

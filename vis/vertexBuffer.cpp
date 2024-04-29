@@ -1,11 +1,9 @@
 #include "vertexBuffer.h"
 
 VertexBufferBase::VertexBufferBase(bool iIsDynamic)
-: isDynamic(iIsDynamic), dirty(false), vbo(0) { }
+: vbo(0), isDynamic(iIsDynamic), dirty(false) { }
 
 VertexBufferBase::~VertexBufferBase() {
-    unbind();
-    if(vbo) glDeleteBuffers(1, &vbo);
 }
 
 void VertexBufferBase::init() {
@@ -19,6 +17,11 @@ void VertexBufferBase::init() {
             glBufferData(GL_ARRAY_BUFFER, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
         #endif
     }
+}
+
+void VertexBufferBase::cleanUp() {
+    unbind();
+    if(vbo) glDeleteBuffers(1, &vbo);
 }
 
 #ifdef USEDSA
