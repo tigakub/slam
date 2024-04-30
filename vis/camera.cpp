@@ -44,7 +44,7 @@ void Camera::setFocus(const AABB &iBoundingBox) {
 }
 void Camera::initData() {
     fov = radians(60.0f);
-    eye = vec3(1.6f, -1.0f, 1.0f);
+    eye = vec3(0.8f, -1.0f, 0.5f);
     center = vec3(0.0f, -0.5f, 0.0f);
     up = vec3(0.0f, 1.0f, 0.0f);
     dirty = true;

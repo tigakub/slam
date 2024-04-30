@@ -182,7 +182,7 @@ int main(int argc, char **argv) {
     slam.start();
 
     while(!slam.shouldTerminate()) {
-        /*
+        
         auto visFreq = slam.getVisFreq();
         auto imuHeartBeat = slam.getImuHeartBeat();
         auto imuFreq = slam.getImuFreq();
@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
             << "           \r";
         cout.flush();
         slam.unlockOutput();
-        */
+        
     }
 
     slam.join();

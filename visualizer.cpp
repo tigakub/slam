@@ -41,7 +41,7 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
         vec4 position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0);
         gl_Position = position;
         fiColor = viColor;
-        gl_PointSize = 1.0 + (1.0 - gl_Position.z / gl_Position.w) * 50.0;
+        gl_PointSize = 1.0 + (1.0 - gl_Position.z / gl_Position.w) * 100.0;
     }
 )0B3R0N";
 
@@ -49,7 +49,7 @@ const char *Visualizer::pointFragmentShaderSource = R"0B3R0N(
     in vec4 fiColor;
     layout (location = OUT_COLOR) out vec4 fragColor;
     void main() {
-        /*
+        
         vec2 coord = gl_PointCoord - vec2(0.5, 0.5);
         float radius = 0.5;
         float distance = length(coord);
@@ -57,7 +57,7 @@ const char *Visualizer::pointFragmentShaderSource = R"0B3R0N(
         if(distance > radius) {
             discard;
         }
-        */
+        
 
         fragColor = fiColor;
     }
