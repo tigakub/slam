@@ -47,30 +47,6 @@ class VertexBufferBase {
         */
 };
 
-/*
-class InterleavedVertexBuffer: public VertexBufferBase {
-    friend class vertexArray;
-
-    protected:
-        vector<GLfloat> data;
-        vector<VertexBufferBase *> vertexBuffers;
-
-    public:
-        InterleavedVertexBuffer(VertexBufferBase * iVBufs, int iVBufCount, bool iIsDynamic = false)
-        : VertexBufferBase(iIsDynamic), data(), vertexBuffers() {
-            for(int i = 0; i < iVBufCount; i++) {
-                vertexBuffers.push_back(iVBufs + i);
-            }
-        }
-rm
-    protected:
-        virtual const void *getData() const;
-        virtual GLuint getDataSize() const;
-        virtual GLsizei getVertexSize() const;
-        virtual GLuint getComponentCount() const;
-        virtual GLenum getComponentType() const;
-};
-*/
 
 template <typename DataType, const BufferFormat & iBufferFormat>
 class VertexBuffer: public VertexBufferBase {

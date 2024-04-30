@@ -8,6 +8,7 @@ VertexBufferBase::~VertexBufferBase() {
 
 void VertexBufferBase::init() {
     if(getData() && getDataSize()) {
+        dirty = true;
         #ifdef USEDSA
             glCreateBuffers(1, &vbo);
             glNamedBufferStorage(vbo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW_BIT : 0);

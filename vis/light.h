@@ -15,10 +15,11 @@ class Light: public UniformBuffer {
         LightData data;
 
     public:
-        Light(GLuint iBindPoint = 0, bool iIsDynamic = false);
+        Light(bool iIsDynamic = false);
         virtual ~Light();
 
     protected:
+        virtual void initData();
         virtual const void *getData() const;
         virtual GLuint getDataSize() const;
 };

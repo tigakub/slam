@@ -10,6 +10,7 @@ ElementBufferBase::~ElementBufferBase() {
 
 void ElementBufferBase::init() {
     if(getData() && getDataSize()) {
+        dirty = true;
         #ifdef USEDSA
             glCreateBuffers(1, &ebo);
             glNamedBufferStorage(ebo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW_BIT : 0);

@@ -1,15 +1,18 @@
 #include "uniformBuffer.h"
 
-UniformBuffer::UniformBuffer(GLuint iBindPoint, bool iIsDynamic)
-: bindPoint(iBindPoint), isDynamic(iIsDynamic), dirty(false), ubo(0) { }
+UniformBuffer::UniformBuffer(bool iIsDynamic)
+: bindPoint(0), isDynamic(iIsDynamic), dirty(false), ubo(0) { }
 
 UniformBuffer::~UniformBuffer() {
     // unbind();
     // if(ubo) glDeleteBuffers(1, &ubo);
 }
 
-bool UniformBuffer::init() {
+bool UniformBuffer::init(GLuint iBindPoint) {
+    initData();
+    bindPoint = iBindPoint;
     if(getData() && getDataSize()) {
+        dirty = true;
         #ifdef USEDSA
             glCreateBuffers(1, (GLuint *) &data);
             glNamedBufferStorage(ubo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_STORAGE_BIT : GL_STATIC_STORAGE_BIT);

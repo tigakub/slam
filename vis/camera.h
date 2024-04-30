@@ -24,7 +24,7 @@ class Camera: public UniformBuffer {
         CameraData data;
 
     public:
-        Camera(int iWidth, int iHeight, GLuint iBindPoint = 0, bool iIsDynamic = false);
+        Camera(int iWidth, int iHeight, bool iIsDynamic = true);
         virtual ~Camera();
 
         void cleanUp();
@@ -36,6 +36,7 @@ class Camera: public UniformBuffer {
         virtual void update();
 
     protected:
+        virtual void initData();
         virtual const void *getData() const;
         virtual GLuint getDataSize() const;
 };

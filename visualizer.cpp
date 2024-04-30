@@ -4,12 +4,16 @@
 #include "vis/embeddedShaderData.h"
 
 const char *Visualizer::vertexShaderSource = R"0B3R0N(
+    layout (std140, binding = 0) uniform Camera {
+        CameraData data;
+    } uiCamera;
+
     layout (location = 0) in vec3 viPos;
     layout (location = 1) in vec4 viColor;
 
     out vec4 fiColor;
     void main() {
-        gl_Position = vec4(viPos.x, viPos.y, viPos.z, 1.0);
+        gl_Position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0);
         fiColor = viColor;
     }
 )0B3R0N";
@@ -80,8 +84,8 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
   occupancyQueue(ioOccupancyQueue), 
   occupancyQueueMutex(ioOccupancyQueueMutex),
   framebuffer(800, 600),
-  camera(800, 600, 0, true),
-  light(1, false),
+  camera(800, 600, true),
+  light(false),
   testTriangle() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -142,22 +146,26 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
         THROW(string("Error: failed to link shader program: ") + infoLog);
     }
 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    // GLint bindPoint = glGetUniformLocation(shaderProgram, "camera");
 
+    // camera.setFocus(boundingBox);
+    camera.init(0);
+
+    /*
+    bindPoint = glGetUniformLocation(vertexShader, "light0");
+    light.init(bindPoint);
+    */
     /*
     framebuffer.init();
 
     testBox.expand(boundingBox);
     testBox.init();
-
-    camera.setFocus(boundingBox);
-    camera.init();
-
-    light.init();
     */
 
     testTriangle.init();
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
 
     float vertices[] = {
         -1.0f, -0.5f,  0.0f, 1.0, 0.0, 0.0, 1.0,
@@ -181,7 +189,8 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
 
     glAvailable = true;
@@ -208,16 +217,18 @@ int Visualizer::loop() {
             if (glfwWindowShouldClose(window)) return 0;
             glViewport(0, 0, width, height);
             glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClearDepth(1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
             glUseProgram(shaderProgram);
 
-            // camera.bind();
+            camera.bind();
             // light.bind();
             
             render();
 
             // light.unbind();
-            // camera.unbind();
+            camera.unbind();
 
             glfwSwapBuffers(window);
 
@@ -233,7 +244,7 @@ int Visualizer::loop() {
 }
 
 void Visualizer::update() {
-    // camera.update();
+    camera.update();
     // light.update();
     
     OccupancyGrid *grid = nullptr;

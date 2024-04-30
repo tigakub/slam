@@ -6,7 +6,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <string>
+
 #include "usedsa.h"
+
+using namespace std;
 
 class UniformBuffer {
     protected:
@@ -16,16 +20,17 @@ class UniformBuffer {
         bool dirty;
 
     public:
-        UniformBuffer(GLuint iBindPoint = 0, bool iIsDynamic = false);
+        UniformBuffer(bool iIsDynamic = false);
         virtual ~UniformBuffer();
 
-        virtual bool init();
+        virtual bool init(GLuint iBindPoint);
         virtual void cleanUp();
         virtual void update();
         virtual void bind();
         virtual void unbind();
 
     protected:
+        virtual void initData() = 0;
         virtual const void *getData() const = 0;
         virtual GLuint getDataSize() const = 0;
 };
