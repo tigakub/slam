@@ -13,8 +13,10 @@ const char *Visualizer::vertexShaderSource = R"0B3R0N(
 
     out vec4 fiColor;
     void main() {
-        gl_Position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0);
+        vec4 position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0);
+        gl_Position = position;
         fiColor = viColor;
+        gl_PointSize = 1.0 + (1.0 - gl_Position.z) * 50.0;
     }
 )0B3R0N";
 
@@ -26,44 +28,39 @@ const char *Visualizer::fragmentShaderSource = R"0B3R0N(
     }
 )0B3R0N";
 
-const char *Visualizer::vertexShaderSource2 = R"0B3R0N(
+const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
+    layout (std140, binding = 0) uniform Camera {
+        CameraData data;
+    } uiCamera;
 
-layout(std140, binding = UB_CAMERA) uniform Camera {
-    CameraData data;
-} ubCamera;
+    layout (location = 0) in vec3 viPos;
+    layout (location = 1) in vec4 viColor;
 
-layout(std140, binding = UB_LIGHT) uniform Light {
-    LightData data;
-} ubLight;
-
-layout(location = IN_POSITION) in vec3 aPos;
-layout(location = IN_NORMAL) in vec4 aNorm;
-layout(location = IN_COLOR) in vec3 aColor;
-layout(location = IN_TEXCOORD) in vec3 aUV;
-
-out Frag {
-    vec3 color;
-} outFrag;
-
-void main() {
-    gl_Position = ubCamera.data.projMatrix * ubCamera.data.mvMatrix * vec4(aPos, 1.0f);
-    outFrag.color = aColor;
-}
-
+    out vec4 fiColor;
+    void main() {
+        vec4 position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0);
+        gl_Position = position;
+        fiColor = viColor;
+        gl_PointSize = 1.0 + (1.0 - gl_Position.z / gl_Position.w) * 50.0;
+    }
 )0B3R0N";
 
-const char *Visualizer::fragmentShaderSource2 = R"0B3R0N(
+const char *Visualizer::pointFragmentShaderSource = R"0B3R0N(
+    in vec4 fiColor;
+    layout (location = OUT_COLOR) out vec4 fragColor;
+    void main() {
+        /*
+        vec2 coord = gl_PointCoord - vec2(0.5, 0.5);
+        float radius = 0.5;
+        float distance = length(coord);
 
-in Frag {
-    vec3 color;
-} inFrag;
+        if(distance > radius) {
+            discard;
+        }
+        */
 
-layout(location = OUT_COLOR) out vec4 outColor;
-
-void main() {
-    outColor = vec4(inFrag.color, 1.0f);
-}
-
+        fragColor = fiColor;
+    }
 )0B3R0N";
 
 void gFramebufferSizeCallback(GLFWwindow * iWindow, int iWidth, int iHeight) {
@@ -108,7 +105,7 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
     char infoLog[512];
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    string vertexSource(processGLSLSource(vertexShaderSource));
+    string vertexSource(processGLSLSource(pointVertexShaderSource));
     const char * vtxSrc = vertexSource.c_str();
     glShaderSource(vertexShader, 1, &vtxSrc, NULL);
     glCompileShader(vertexShader);
@@ -121,7 +118,7 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
     }
 
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    string fragmentSource(processGLSLSource(fragmentShaderSource));
+    string fragmentSource(processGLSLSource(pointFragmentShaderSource));
     const char * frgSrc = fragmentSource.c_str();
     glShaderSource(fragmentShader, 1, &frgSrc, NULL);
     glCompileShader(fragmentShader);
@@ -190,8 +187,10 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LESS);                                                                                                                                           
     glEnable(GL_CULL_FACE);
+    glEnable(GL_PROGRAM_POINT_SIZE);
+    //glPointSize(5.0);
 
     glAvailable = true;
 }
@@ -216,7 +215,7 @@ int Visualizer::loop() {
         if (glAvailable) {
             if (glfwWindowShouldClose(window)) return 0;
             glViewport(0, 0, width, height);
-            glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClearDepth(1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -265,7 +264,7 @@ void Visualizer::render() {
     // testBox.draw();
     
     glBindVertexArray(testTriangleVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_POINTS, 0, 3);
     glBindVertexArray(0);
     
     testTriangle.draw();
