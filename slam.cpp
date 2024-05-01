@@ -12,11 +12,13 @@
 #include <deque>
 #include <atomic>
 #include <mutex>
+#include <semaphore>
 
 #include "average.h"
 #include "exception.h"
 #include "lidar.h"
 #include "visualizer.h"
+#include "vis/pointCloud.h"
 
 using namespace std;
 
@@ -36,10 +38,15 @@ class Slam {
         atomic<uint64_t> imuHeartBeat;
         atomic<uint64_t> lidarHeartBeat;
 
+        atomic<uint64_t> pointCount;
+
         mutex outputMutex;
+        binary_semaphore waitForFirstPointCloud;
 
         deque<OccupancyGrid *> occupancyQueue;
         mutex occupancyQueueMutex;
+
+        PointCloud pointCloud;
 
     public:
         Slam()
@@ -50,8 +57,10 @@ class Slam {
           lidarFreq(0.0),
           imuHeartBeat(0), lidarHeartBeat(0),
           outputMutex(),
+          waitForFirstPointCloud(1),
           occupancyQueue(),
-          occupancyQueueMutex()
+          occupancyQueueMutex(),
+          pointCloud()
         { }
 
         virtual ~Slam() {
@@ -67,10 +76,13 @@ class Slam {
         }
 
         void start() {
-            if(!visThreadPtr)
-                visThreadPtr = new thread(&Slam::visProc, this);
-            if(!lidarThreadPtr)
+            if(!lidarThreadPtr) {
+                waitForFirstPointCloud.acquire();
                 lidarThreadPtr = new thread(&Slam::lidarProc, this);
+            }
+            if(!visThreadPtr) {
+                visThreadPtr = new thread(&Slam::visProc, this);
+            }
         }
 
         void stop() {
@@ -116,6 +128,10 @@ class Slam {
             return lidarHeartBeat;
         }
 
+        size_t getPointCount() {
+            return pointCount;
+        }
+
         void lockOutput() {
             outputMutex.lock();
         }
@@ -127,16 +143,21 @@ class Slam {
     protected:
         void visProc() {
             try {
-                Visualizer visualizer(occupancyQueue, occupancyQueueMutex, string("slam"));
+                waitForFirstPointCloud.acquire();                
+                Visualizer visualizer(occupancyQueue, occupancyQueueMutex, string("slam"), pointCloud);
+                waitForFirstPointCloud.release();
 
                 auto lastTime = chrono::high_resolution_clock::now();
                 while(!shouldTerminate()) {
+                    waitForFirstPointCloud.acquire();                
                     visualizer.update();
                     if(!visualizer.loop()) {
                         setShouldTerminate(true);
                     }
+                    waitForFirstPointCloud.release();
                     setVisFreq(visualizer.getFrequency());
                 }
+
             } catch (Exception e) {
                 setShouldTerminate(true);
                 lockOutput();
@@ -147,7 +168,7 @@ class Slam {
 
         void lidarProc() {
             try {
-                Lidar lidar(occupancyQueue, occupancyQueueMutex, imuHeartBeat, lidarHeartBeat, imuFreq, lidarFreq);
+                Lidar lidar(occupancyQueue, occupancyQueueMutex, imuHeartBeat, lidarHeartBeat, imuFreq, lidarFreq, pointCount, pointCloud, waitForFirstPointCloud);
                 
                 // lidar.setMode(STANDBY);
                 // sleep(1);
@@ -188,15 +209,17 @@ int main(int argc, char **argv) {
         auto imuFreq = slam.getImuFreq();
         auto lidarHeartBeat = slam.getLidarHeartBeat();
         auto lidarFreq = slam.getLidarFreq();
+        auto pointCount = slam.getPointCount();
 
         slam.lockOutput();
         cout 
             << setw(6) << setprecision(0) << fixed 
             << " visfreq: " << visFreq 
-             << setprecision(2) << " imuFreq: " << imuFreq
+            << setprecision(2) << " imuFreq: " << imuFreq
             << " imuHB: " << imuHeartBeat 
             << " lidarFreq: " << lidarFreq
-             << setprecision(2) << " lidarHB: " << lidarHeartBeat 
+            << setprecision(2) << " lidarHB: " << lidarHeartBeat 
+            << " point count: " << pointCount
             << "           \r";
         cout.flush();
         slam.unlockOutput();

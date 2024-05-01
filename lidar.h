@@ -5,10 +5,12 @@
 #include <deque>
 #include <atomic>
 #include <mutex>
+#include <semaphore>
 
 #include "average.h"
 #include "unitree_lidar_sdk.h"
 #include "occupancyGrid.h"
+#include "vis/pointCloud.h"
 
 using namespace std;
 using namespace unitree_lidar_sdk;
@@ -32,6 +34,12 @@ class Lidar {
         atomic<double> & lidarFreq;
         Average lidarAvgFreq;
 
+        atomic<size_t> & pointCount;
+        PointCloud & pointCloud;
+
+        binary_semaphore & signalFirstPointCloud;
+        bool firstPointCloud;
+
     public:
         Lidar(  
             deque<OccupancyGrid *> & ioOccupancyQueue, 
@@ -40,7 +48,11 @@ class Lidar {
             atomic<uint64_t> & ioLidarHeartBeat, 
             atomic<double> & ioImuFreq, 
             atomic<double> & ioLidarFreq, 
+            atomic<size_t> & ioPointCount,
+            PointCloud & ioPointCloud,
+            binary_semaphore & ioSignalFirstPointCloud,
             const string & iPortName = string("/dev/serial/by-id/usb-Silicon_Labs_CP2104_USB_to_UART_Bridge_Controller_02AF54A2-if00-port0"));
+
         virtual ~Lidar();
 
         void setMode(LidarWorkingMode);
@@ -56,7 +68,7 @@ class Lidar {
         void loop();
 
         void processIMU(const IMUUnitree & iImu) const;
-        void processPointCloud(const PointCloudUnitree & iCloud) const;
+        void processPointCloud(const PointCloudUnitree & iCloud);
 };
 
 #endif

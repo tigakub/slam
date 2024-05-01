@@ -34,6 +34,8 @@ class VertexBufferBase {
         void attachToVAO(GLuint iVao, GLuint iBindPoint, GLint iOffset);
         #endif
         virtual void update();
+        virtual void mark();
+        virtual void unmark();
         virtual void bind();
         virtual void unbind();
 
@@ -48,7 +50,7 @@ class VertexBufferBase {
 };
 
 
-template <typename DataType, const BufferFormat & iBufferFormat>
+template <typename DataType, const BufferFormat & iBufferFormat, bool iIsFixedSize = false, GLsizei iBufferSize = 0>
 class VertexBuffer: public VertexBufferBase {
     friend class VertexArray;
 
@@ -77,7 +79,7 @@ class VertexBuffer: public VertexBufferBase {
 
     protected:
         virtual const void *getData() const { return (void *) &data[0]; }
-        virtual GLsizei getDataSize() const { return (GLsizei) (data.size() * sizeof(DataType)); }
+        virtual GLsizei getDataSize() const { return (GLsizei) (iIsFixedSize ? iBufferSize : data.size() * sizeof(DataType)); }
         virtual GLsizei getVertexSize() const { return (GLsizei) sizeof(DataType); }
         /*
         virtual GLuint getComponentCount() const { return componentCount; }

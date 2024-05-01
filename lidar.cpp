@@ -7,7 +7,11 @@ Lidar::Lidar(
   atomic<uint64_t> & ioImuHeartBeat, 
   atomic<uint64_t> & ioLidarHeartBeat, 
   atomic<double> & ioImuFreq, 
-  atomic<double> & ioLidarFreq, const string &iPortName
+  atomic<double> & ioLidarFreq, 
+  atomic<size_t> & ioPointCount,
+  PointCloud & ioPointCloud,
+  binary_semaphore & ioSignalFirstPointCloud,
+  const string & iPortName
 )
 : reader(createUnitreeLidarReader()), timeDelay(0), 
   occupancyQueue(ioOccupancyQueue), 
@@ -17,7 +21,11 @@ Lidar::Lidar(
   imuFreq(ioImuFreq), imuAvgFreq(100),
   lastImuTimeStamp(chrono::high_resolution_clock::now()),
   lidarFreq(ioLidarFreq), lidarAvgFreq(100),
-  lastLidarTimeStamp(chrono::high_resolution_clock::now())
+  lastLidarTimeStamp(chrono::high_resolution_clock::now()),
+  pointCount(ioPointCount),
+  pointCloud(ioPointCloud),
+  signalFirstPointCloud(ioSignalFirstPointCloud),
+  firstPointCloud(true)
 {
     int cloudScanNum = 18;
     
@@ -114,18 +122,27 @@ void Lidar::processIMU(const IMUUnitree & iImu) const {
     auto timeDelay = reader->getTimeDelay();
 }
 
-void Lidar::processPointCloud(const PointCloudUnitree & iCloud) const {
+void Lidar::processPointCloud(const PointCloudUnitree & iCloud) {
     auto stamp = iCloud.stamp;
     auto id = iCloud.id;
     auto ringNum = iCloud.ringNum;
     auto &points = iCloud.points;
-    auto pointCount = points.size();
+    auto localPointCount = points.size();
+    pointCount = localPointCount;
 
+    pointCloud.setPoints(points);
+
+    if(firstPointCloud) {
+        firstPointCloud = false;
+        signalFirstPointCloud.release();
+    }
+
+    /*
     float minx = 1000.0, maxx = -1000.0;
     float miny = 1000.0, maxy = -1000.0;
     float minz = 1000.0, maxz = -1000.0;
 
-    for(size_t i = 0; i < pointCount; i++) {
+    for(size_t i = 0; i < localPointCount; i++) {
         auto point = points[i];
         if(point.x < minx) minx = point.x;
         if(maxx < point.x) maxx = point.x;
@@ -135,6 +152,7 @@ void Lidar::processPointCloud(const PointCloudUnitree & iCloud) const {
         if(maxz < point.z) maxz = point.z;
     }
 
+    /*
     OccupancyGrid *grid = new OccupancyGrid(1000, 1000, 1000, minx, maxx, miny, maxy, minz, maxz);
 
     for(size_t i = 0; i < pointCount; i++) {
@@ -145,6 +163,7 @@ void Lidar::processPointCloud(const PointCloudUnitree & iCloud) const {
     occupancyQueueMutex.lock();
     occupancyQueue.push_back(grid);
     occupancyQueueMutex.unlock();
-    
+    */
+
     auto timeDelay = reader->getTimeDelay();
 }

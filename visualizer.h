@@ -18,6 +18,7 @@
 #include "vis/aabb.h"
 #include "vis/triangle.h"
 #include "vis/box.h"
+#include "vis/pointCloud.h"
 
 using namespace std;
 
@@ -44,12 +45,14 @@ class Visualizer: OccupancyGrid::Functor {
         Light light;
         AABB boundingBox;
 
+        PointCloud &pointCloud;
+        
         // Box testBox;
         Triangle testTriangle;
         GLuint testTriangleVAO;
 
     public:
-        Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccupancyQueueMutex, const string &iWindowTitle, size_t iWidth = 800, size_t iHeight = 600);
+        Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccupancyQueueMutex, const string &iWindowTitle, PointCloud &iPointCloud, size_t iWidth = 800, size_t iHeight = 600);
         virtual ~Visualizer();
 
         void debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message) const;

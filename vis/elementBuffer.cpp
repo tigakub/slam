@@ -45,6 +45,14 @@ void ElementBufferBase::update() {
     }
 }
 
+void ElementBufferBase:: mark() {
+    dirty = true;
+}
+
+void ElementBufferBase:: unmark() {
+    dirty = false;
+}
+
 void ElementBufferBase::bind() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 }

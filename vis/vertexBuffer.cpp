@@ -43,6 +43,14 @@ void VertexBufferBase::update() {
     }
 }
 
+void VertexBufferBase::mark() {
+    dirty = true;
+}
+
+void VertexBufferBase::unmark() {
+    dirty = false;
+}
+
 void VertexBufferBase::bind() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 }

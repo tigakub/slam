@@ -28,6 +28,7 @@ add_executable(slam
     vis/vertexArray.cpp
     vis/box.cpp
     vis/triangle.cpp
+    vis/pointCloud.cpp
     vis/camera.cpp
     vis/light.cpp
     vis/framebuffer.cpp

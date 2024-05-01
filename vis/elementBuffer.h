@@ -33,16 +33,18 @@ class ElementBufferBase {
         void attachToVAO(GLuint iVao);
         #endif
         virtual void update();
+        virtual void mark();
+        virtual void unmark();
         virtual void bind();
         virtual void unbind();
 
     protected:
         virtual const void *getData() const = 0;
-        virtual GLuint getDataSize() const = 0;
+        virtual GLsizei getDataSize() const = 0;
         virtual GLsizei getElementSize() const = 0;
 };
 
-template <typename DataType, GLenum iPrimitiveType>
+template <typename DataType, GLenum iPrimitiveType, bool iIsFixedSize = false, GLsizei iBufferSize = 0>
 class ElementBuffer: public ElementBufferBase {
     protected:
         vector<DataType> data;
@@ -64,7 +66,7 @@ class ElementBuffer: public ElementBufferBase {
 
     protected:
         virtual const void *getData() const { return (void *) &data[0]; }
-        virtual GLuint getDataSize() const { return (GLuint) (data.size() * sizeof(DataType)); }
+        virtual GLsizei getDataSize() const { return (GLsizei) (iIsFixedSize ? iBufferSize : data.size() * sizeof(DataType)); }
         virtual GLsizei getElementSize() const { return (GLsizei) sizeof(DataType); }
 };
 

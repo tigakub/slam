@@ -38,10 +38,26 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
 
     out vec4 fiColor;
     void main() {
-        vec4 position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0);
-        gl_Position = position;
-        fiColor = viColor;
-        gl_PointSize = 1.0 + (1.0 - gl_Position.z / gl_Position.w) * 100.0;
+        gl_Position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0);
+        float d = (length(viPos) - 0.25) / 0.75;
+        if(d > 1.0) d = 1.0;
+
+        float r = 2.0 - 4.0 * d;
+        if(r < 0.0) r = 0.0;
+        if(r > 1.0) r = 1.0;
+        
+        float g = 1.0;
+        if(d < 0.25) g = 4.0 * d;
+        if(d > 0.75) g = 4.0 - 4.0 * d;
+        if(g < 0.0) g = 0.0;
+        if(g > 1.0) g = 1.0;
+        
+        float b = 4.0 * d - 2.0;
+        if(b < 0.0) b = 0.0;
+        if(b > 1.0) b = 1.0;
+        
+        fiColor = vec4(r, g, b, 1.0);
+        gl_PointSize = 1.0 + (0.5 - 0.5 * (gl_Position.z / gl_Position.w)) * 100.0;
     }
 )0B3R0N";
 
@@ -74,7 +90,7 @@ void gDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severit
 
 }
 
-Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccupancyQueueMutex, const string &iWindowTitle, size_t iWidth, size_t iHeight)
+Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccupancyQueueMutex, const string &iWindowTitle, PointCloud &iPointCloud, size_t iWidth, size_t iHeight)
 : glAvailable(false), 
   width(iWidth), height(iHeight), 
   lastTimeStamp(), frequency(0.0), 
@@ -83,6 +99,7 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
   framebuffer(800, 600),
   camera(800, 600, true),
   light(false),
+  pointCloud(iPointCloud),
   testTriangle() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -159,6 +176,7 @@ Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccu
     testBox.init();
     */
 
+    pointCloud.init();
     testTriangle.init();
 
     glDeleteShader(vertexShader);
@@ -244,6 +262,7 @@ int Visualizer::loop() {
 
 void Visualizer::update() {
     camera.update();
+    pointCloud.update();
     // light.update();
     
     OccupancyGrid *grid = nullptr;
@@ -262,12 +281,14 @@ void Visualizer::update() {
 
 void Visualizer::render() {
     // testBox.draw();
-    
+    /*
     glBindVertexArray(testTriangleVAO);
     glDrawArrays(GL_POINTS, 0, 3);
     glBindVertexArray(0);
     
-    testTriangle.draw();
+    */
+    // testTriangle.draw();
+    pointCloud.draw();
 }
 
 void Visualizer::framebufferSizeCallback(size_t iWidth, size_t iHeight) {
