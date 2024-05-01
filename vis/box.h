@@ -11,6 +11,7 @@
 #include "elementBuffer.h"
 #include "vertexBuffer.h"
 #include "vertexArray.h"
+#include "mesh.h"
 
 #include "usedsa.h"
 #include "aabb.h"
@@ -39,5 +40,16 @@ class Box {
         void expand(AABB &ioBoundingBox);
 };
 */
+
+class Box: public Mesh<PNCUVertex, PNCUVertex::bufferFormat, GL_TRIANGLES> {
+    protected:
+        float width, height, depth;
+
+    public:
+        Box(float iWidth = 0.1, float iHeight = 0.1, float iDepth = 0.1);
+
+    protected:
+        virtual void initGeometry();
+}; 
 
 #endif

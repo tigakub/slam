@@ -21,8 +21,8 @@ class MeshBase {
         virtual void expand(AABB &ioBoundingBox) = 0;
 
     protected:
-        virtual vector<PCVertex> & getVertexData() = 0;
-        virtual vector<GLuint> & getElementData() = 0;
+        // virtual vector<PCVertex> & getVertexData() = 0;
+        // virtual vector<GLuint> & getElementData() = 0;
 };
 
 template<class VertexType, const BufferFormat & iBufferFormat, GLenum iPrimitiveType, bool iEboIsFixedSize = false, GLsizei iEboSize = 0, bool iVboIsFixedSize = false, GLsizei iVboSize = 0>

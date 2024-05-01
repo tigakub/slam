@@ -3,31 +3,6 @@
 #include "vis/shaderData.h"
 #include "vis/embeddedShaderData.h"
 
-const char *Visualizer::vertexShaderSource = R"0B3R0N(
-    layout (std140, binding = 0) uniform Camera {
-        CameraData data;
-    } uiCamera;
-
-    layout (location = 0) in vec3 viPos;
-    layout (location = 1) in vec4 viColor;
-
-    out vec4 fiColor;
-    void main() {
-        vec4 position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0);
-        gl_Position = position;
-        fiColor = viColor;
-        gl_PointSize = 1.0 + (1.0 - gl_Position.z) * 50.0;
-    }
-)0B3R0N";
-
-const char *Visualizer::fragmentShaderSource = R"0B3R0N(
-    in vec4 fiColor;
-    layout (location = OUT_COLOR) out vec4 fragColor;
-    void main() {
-        fragColor = fiColor;
-    }
-)0B3R0N";
-
 const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
     layout (std140, binding = 0) uniform Camera {
         CameraData data;
@@ -36,6 +11,7 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
     layout (location = 0) in vec3 viPos;
     layout (location = 1) in vec4 viColor;
 
+    /*
     vec4 hamiltonion(vec4 a, vec4 b) {
         vec4 result;
         result.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
@@ -57,6 +33,7 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
     vec4 conjugate(vec4 p, vec4 q) {
         return hamiltonion(hamiltonion(q, p), invertQuaternion(q));
     }
+    */
 
     out vec4 fiColor;
     void main() {
@@ -105,6 +82,82 @@ const char *Visualizer::pointFragmentShaderSource = R"0B3R0N(
     }
 )0B3R0N";
 
+const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
+    layout (std140, binding = 0) uniform Camera {
+        CameraData data;
+    } uiCamera;
+    layout (std140, binding = 1) uniform Light {
+        LightData data;
+    } uiLight0;
+
+    layout (location = 0) in vec3 viPos;
+    layout (location = 1) in vec4 viNorm;
+    layout (location = 2) in vec4 viColor;
+    layout (location = 3) in vec2 vUV;
+
+    /*
+    vec4 hamiltonion(vec4 a, vec4 b) {
+        vec4 result;
+        result.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
+        result.y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x;
+        result.z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w;
+        result.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
+        return result;
+    }
+
+    vec4 invertQuaternion(vec4 q) {
+        vec4 result;
+        result.x = -q.x;
+        result.y = -q.y;
+        result.z = -q.z;
+        result.w = q.w;
+        return result;
+    }
+
+    vec4 conjugate(vec4 p, vec4 q) {
+        return hamiltonion(hamiltonion(q, p), invertQuaternion(q));
+    }
+    */
+
+    out vec4 fiColor;
+    void main() {
+        
+        vec4 imuPoint = conjugate(vec4(viPos.x, viPos.y, viPos.z, 0.0), uiCamera.data.imuQuat);
+        imuPoint.w = 1.0;
+        gl_Position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * imuPoint;
+        
+        vec3 ePos = vec3(uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0f));
+        vec3 eNorm = vec3(uiCamera.data.mvMatrix * vec4(viNorm.z, viNorm.y, viNorm.z, 0.0f));
+
+        vec3 diffuse = vec3(0.0f);
+        vec3 specular = vec3(0.0f);
+
+        const vec3 n = normalize(eNorm);
+        const vec3 l = normalize(-ePos);
+        
+        float diffuseIntensity = dot(n, l);
+
+        if (diffuseIntensity > 0.0f) {
+            diffuse = vec3(uiLight0.data.diffuse) * diffuseIntensity;
+
+            const vec3 r = reflect(-l, n);
+            const vec3 e = l;
+            const float specularIntensity = max(dot(r, e), 0.0f);
+            specular = vec3(uiLight0.data.specular) * pow(specularIntensity, 32.0f);
+        }
+
+        fiColor = vec4(vec3(viColor) * (vec3(uiLight0.data.ambient) + diffuse, + specular), 1.0f);
+    }
+)0B3R0N";
+
+const char *Visualizer::fragmentLitShaderSource = R"0B3R0N(
+    in vec4 fiColor;
+    layout (location = OUT_COLOR) out vec4 fragColor;
+    void main() {
+        fragColor = fiColor;
+    }
+)0B3R0N";
+
 void gFramebufferSizeCallback(GLFWwindow * iWindow, int iWidth, int iHeight) {
     Visualizer *ptr = static_cast<Visualizer *>(glfwGetWindowUserPointer(iWindow));
     ptr->framebufferSizeCallback(iWidth, iHeight);
@@ -132,6 +185,7 @@ Visualizer::Visualizer(
   camera(800, 600, true),
   light(false),
   pointCloud(iPointCloud),
+  testBox(),
   testTriangle() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -163,7 +217,7 @@ Visualizer::Visualizer(
     if (!success) {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         glDeleteShader(vertexShader);
-        THROW(string("Error: failed to compile vertex shader: ") + infoLog);
+        THROW(string("Error: failed to compile point vertex shader: ") + infoLog);
     }
 
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -176,27 +230,72 @@ Visualizer::Visualizer(
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
         glDeleteShader(fragmentShader);
-        THROW(string("Error: failed to compile fragment shader: ") + infoLog);
+        THROW(string("Error: failed to compile point fragment shader: ") + infoLog);
     }
 
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    pointShaderProgram = glCreateProgram();
+    glAttachShader(pointShaderProgram, vertexShader);
+    glAttachShader(pointShaderProgram, fragmentShader);
+    glLinkProgram(pointShaderProgram);
 
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetProgramiv(pointShaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        glDeleteProgram(shaderProgram);
-        shaderProgram = 0;
-        THROW(string("Error: failed to link shader program: ") + infoLog);
+        glGetProgramInfoLog(pointShaderProgram, 512, NULL, infoLog);
+        glDeleteProgram(pointShaderProgram);
+        pointShaderProgram = 0;
+        THROW(string("Error: failed to link point shader program: ") + infoLog);
     }
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    vertexSource = processGLSLSource(vertexLitShaderSource);
+    vtxSrc = vertexSource.c_str();
+    glShaderSource(vertexShader, 1, &vtxSrc, NULL);
+    glCompileShader(vertexShader);
+
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        glDeleteShader(vertexShader);
+        THROW(string("Error: failed to compile lit vertex shader: ") + infoLog + "\n\n" + vertexSource);
+    }
+
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    fragmentSource = processGLSLSource(fragmentLitShaderSource);
+    frgSrc = fragmentSource.c_str();
+    glShaderSource(fragmentShader, 1, &frgSrc, NULL);
+    glCompileShader(fragmentShader);
+    
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        glDeleteShader(fragmentShader);
+        THROW(string("Error: failed to compile lit fragment shader: ") + infoLog);
+    }
+
+    litShaderProgram = glCreateProgram();
+    glAttachShader(litShaderProgram, vertexShader);
+    glAttachShader(litShaderProgram, fragmentShader);
+    glLinkProgram(litShaderProgram);
+
+    glGetProgramiv(litShaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(litShaderProgram, 512, NULL, infoLog);
+        glDeleteProgram(litShaderProgram);
+        litShaderProgram = 0;
+        THROW(string("Error: failed to link lit shader program: ") + infoLog);
+    }
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
 
     // GLint bindPoint = glGetUniformLocation(shaderProgram, "camera");
 
     // camera.setFocus(boundingBox);
     camera.init(0);
-
+    light.init(1);
     /*
     bindPoint = glGetUniformLocation(vertexShader, "light0");
     light.init(bindPoint);
@@ -209,10 +308,8 @@ Visualizer::Visualizer(
     */
 
     pointCloud.init();
+    testBox.init();
     testTriangle.init();
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
 
     float vertices[] = {
         -1.0f, -0.5f,  0.0f, 1.0, 0.0, 0.0, 1.0,
@@ -246,10 +343,12 @@ Visualizer::Visualizer(
 }
 
 Visualizer::~Visualizer() {
-    if(shaderProgram) glDeleteProgram(shaderProgram);
+    if(pointShaderProgram) glDeleteProgram(pointShaderProgram);
+    if(litShaderProgram) glDeleteProgram(litShaderProgram);
     framebuffer.cleanUp();
     camera.cleanUp();
     light.cleanUp();
+    testBox.cleanUp();
     testTriangle.cleanUp();
     glfwTerminate();
 }
@@ -269,14 +368,12 @@ int Visualizer::loop() {
             glClearDepth(1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glUseProgram(shaderProgram);
-
             camera.bind();
-            // light.bind();
+            light.bind();
             
             render();
 
-            // light.unbind();
+            light.unbind();
             camera.unbind();
 
             glfwSwapBuffers(window);
@@ -320,7 +417,11 @@ void Visualizer::render() {
     
     */
     // testTriangle.draw();
+    glUseProgram(pointShaderProgram);
     pointCloud.draw();
+    
+    glUseProgram(litShaderProgram);
+    testBox.draw();
 }
 
 void Visualizer::framebufferSizeCallback(size_t iWidth, size_t iHeight) {

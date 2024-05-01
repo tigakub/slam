@@ -66,4 +66,28 @@ struct LightData {
 #define OUT_COLOR       0
 #define NUM_FRAG_OUT    1
 
+#ifndef __cplusplus
+vec4 hamiltonion(vec4 a, vec4 b) {
+    vec4 result;
+    result.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
+    result.y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x;
+    result.z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w;
+    result.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
+    return result;
+}
+
+vec4 invertQuaternion(vec4 q) {
+    vec4 result;
+    result.x = -q.x;
+    result.y = -q.y;
+    result.z = -q.z;
+    result.w = q.w;
+    return result;
+}
+
+vec4 conjugate(vec4 p, vec4 q) {
+    return hamiltonion(hamiltonion(q, p), invertQuaternion(q));
+}
+#endif
+
 )0B3R0N";

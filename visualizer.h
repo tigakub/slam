@@ -29,11 +29,12 @@ class Visualizer: OccupancyGrid::Functor {
         size_t width, height;
         GLFWwindow * window;
 
-        static const char *vertexShaderSource;
-        static const char *fragmentShaderSource;
         static const char *pointVertexShaderSource;
         static const char *pointFragmentShaderSource;
-        unsigned int shaderProgram;
+        static const char *vertexLitShaderSource;
+        static const char *fragmentLitShaderSource;
+        unsigned int pointShaderProgram;
+        unsigned int litShaderProgram;
 
         chrono::high_resolution_clock::time_point lastTimeStamp;
         double frequency;
@@ -48,7 +49,7 @@ class Visualizer: OccupancyGrid::Functor {
 
         PointCloud &pointCloud;
         
-        // Box testBox;
+        Box testBox;
         Triangle testTriangle;
         GLuint testTriangleVAO;
 
