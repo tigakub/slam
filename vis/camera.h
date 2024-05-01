@@ -10,6 +10,7 @@
 #include "uniformBuffer.h"
 #include "shaderData.h"
 #include "aabb.h"
+#include "vis/quaternion.h"
 
 using namespace glm;
 
@@ -21,6 +22,7 @@ class Camera: public UniformBuffer {
         vec3 eye;
         vec3 center;
         vec3 up;
+        vec4 imuQuat;
         CameraData data;
 
     public:
@@ -30,6 +32,7 @@ class Camera: public UniformBuffer {
         void cleanUp();
         
         void setFocus(const AABB &iBoundingBox);
+        void setImuQuat(const vec4 & iImuQuat);
 
         void resize(int iWidth, int iHeight);
 

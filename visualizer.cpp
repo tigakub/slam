@@ -36,10 +36,36 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
     layout (location = 0) in vec3 viPos;
     layout (location = 1) in vec4 viColor;
 
+    vec4 hamiltonion(vec4 a, vec4 b) {
+        vec4 result;
+        result.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
+        result.y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x;
+        result.z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w;
+        result.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
+        return result;
+    }
+
+    vec4 invertQuaternion(vec4 q) {
+        vec4 result;
+        result.x = -q.x;
+        result.y = -q.y;
+        result.z = -q.z;
+        result.w = q.w;
+        return result;
+    }
+
+    vec4 conjugate(vec4 p, vec4 q) {
+        return hamiltonion(hamiltonion(q, p), invertQuaternion(q));
+    }
+
     out vec4 fiColor;
     void main() {
-        gl_Position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0);
-        float d = (length(viPos) - 0.25) / 0.75;
+        
+        vec4 imuPoint = conjugate(vec4(viPos.x, viPos.y, viPos.z, 0.0), uiCamera.data.imuQuat);
+        imuPoint.w = 1.0;
+        gl_Position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * imuPoint;
+        
+        float d = (length(viPos) - 0.5);
         if(d > 1.0) d = 1.0;
 
         float r = 2.0 - 4.0 * d;
@@ -56,7 +82,7 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
         if(b < 0.0) b = 0.0;
         if(b > 1.0) b = 1.0;
         
-        fiColor = vec4(r, g, b, 1.0);
+        fiColor = vec4(r * (1.0 - d * d * d), g * (1.0 - d * d * d), b * (1.0 - d * d * d), 1.0 - d * d * d);
         gl_PointSize = 1.0 + (0.5 - 0.5 * (gl_Position.z / gl_Position.w)) * 100.0;
     }
 )0B3R0N";
@@ -90,7 +116,13 @@ void gDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severit
 
 }
 
-Visualizer::Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccupancyQueueMutex, const string &iWindowTitle, PointCloud &iPointCloud, size_t iWidth, size_t iHeight)
+Visualizer::Visualizer(
+    deque<OccupancyGrid *> & ioOccupancyQueue,
+    mutex & ioOccupancyQueueMutex,
+    const string &iWindowTitle,
+    PointCloud &iPointCloud, 
+    size_t iWidth, 
+    size_t iHeight)
 : glAvailable(false), 
   width(iWidth), height(iHeight), 
   lastTimeStamp(), frequency(0.0), 
@@ -338,4 +370,8 @@ bool Visualizer::isDSAExtensionAvailable() {
     }
 
     return false;
+}
+
+void Visualizer::setImuQuat(const vec4 & iImuQuat) {
+    camera.setImuQuat(iImuQuat);
 }

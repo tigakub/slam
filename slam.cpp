@@ -19,6 +19,7 @@
 #include "lidar.h"
 #include "visualizer.h"
 #include "vis/pointCloud.h"
+#include "vis/quaternion.h"
 
 using namespace std;
 
@@ -47,6 +48,9 @@ class Slam {
         mutex occupancyQueueMutex;
 
         PointCloud pointCloud;
+
+        vec4 imuQuat;
+        mutex imuQuatMutex;
 
     public:
         Slam()
@@ -149,7 +153,10 @@ class Slam {
 
                 auto lastTime = chrono::high_resolution_clock::now();
                 while(!shouldTerminate()) {
-                    waitForFirstPointCloud.acquire();                
+                    waitForFirstPointCloud.acquire();   
+                    imuQuatMutex.lock();
+                    visualizer.setImuQuat(imuQuat);
+                    imuQuatMutex.unlock();
                     visualizer.update();
                     if(!visualizer.loop()) {
                         setShouldTerminate(true);
@@ -184,8 +191,12 @@ class Slam {
                 cout << "unitree_lidar_sdk version " << sdkVersion << endl;
                 unlockOutput();
 
+
                 while(!terminate) {
                     auto start = chrono::high_resolution_clock::now();
+                    imuQuatMutex.lock();
+                    imuQuat = lidar.getImuQuat();
+                    imuQuatMutex.unlock();
                     lidar.loop();
                     auto end = chrono::high_resolution_clock::now();
                     // usleep(8250 - chrono::duration_cast<chrono::microseconds>(end - start).count());

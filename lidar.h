@@ -11,6 +11,7 @@
 #include "unitree_lidar_sdk.h"
 #include "occupancyGrid.h"
 #include "vis/pointCloud.h"
+#include "vis/quaternion.h"
 
 using namespace std;
 using namespace unitree_lidar_sdk;
@@ -40,6 +41,8 @@ class Lidar {
         binary_semaphore & signalFirstPointCloud;
         bool firstPointCloud;
 
+        vec4 imuQuat;
+
     public:
         Lidar(  
             deque<OccupancyGrid *> & ioOccupancyQueue, 
@@ -67,8 +70,10 @@ class Lidar {
 
         void loop();
 
-        void processIMU(const IMUUnitree & iImu) const;
+        void processIMU(const IMUUnitree & iImu);
         void processPointCloud(const PointCloudUnitree & iCloud);
+
+        vec4 getImuQuat() const;
 };
 
 #endif

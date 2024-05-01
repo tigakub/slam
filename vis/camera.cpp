@@ -42,11 +42,18 @@ void Camera::setFocus(const AABB &iBoundingBox) {
 
     dirty = true;
 }
+
+void Camera::setImuQuat(const vec4 & iImuQuat) {
+    imuQuat = iImuQuat;
+
+    dirty = true;
+}
+
 void Camera::initData() {
     fov = radians(90.0f);
-    eye = vec3(0.0f, -1.5f, 1.5f);
+    eye = vec3(0.0f, 0.0f, 2.0f);
     center = vec3(0.0f, 0.0f, 0.0f);
-    up = vec3(0.0f, 0.0f, 1.0f);
+    up = vec3(0.0f, 1.0f, 0.0f);
     dirty = true;
 }
 
@@ -54,7 +61,7 @@ void Camera::update() {
     if(dirty) {
         data.mvMatrix = lookAt(eye, center, up);
         data.projMatrix = perspective(fov, ((float) width / height), 0.1f, 1000.0f);
-        
+        data.imuQuat = imuQuat;
         UniformBuffer::update();
     }
 }

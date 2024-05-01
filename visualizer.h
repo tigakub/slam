@@ -19,6 +19,7 @@
 #include "vis/triangle.h"
 #include "vis/box.h"
 #include "vis/pointCloud.h"
+#include "vis/quaternion.h"
 
 using namespace std;
 
@@ -52,7 +53,13 @@ class Visualizer: OccupancyGrid::Functor {
         GLuint testTriangleVAO;
 
     public:
-        Visualizer(deque<OccupancyGrid *> & ioOccupancyQueue, mutex & ioOccupancyQueueMutex, const string &iWindowTitle, PointCloud &iPointCloud, size_t iWidth = 800, size_t iHeight = 600);
+        Visualizer(
+            deque<OccupancyGrid *> & ioOccupancyQueue, 
+            mutex & ioOccupancyQueueMutex, 
+            const string &iWindowTitle,
+            PointCloud &iPointCloud, 
+            size_t iWidth = 800, 
+            size_t iHeight = 600);
         virtual ~Visualizer();
 
         void debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message) const;
@@ -67,6 +74,8 @@ class Visualizer: OccupancyGrid::Functor {
         double getFrequency() const;
 
         virtual void operator()(size_t x, size_t y, size_t z);
+
+        void setImuQuat(const vec4 & iImuQuat);
 
     protected:
         string processGLSLSource(const char *iSource);

@@ -25,7 +25,8 @@ Lidar::Lidar(
   pointCount(ioPointCount),
   pointCloud(ioPointCloud),
   signalFirstPointCloud(ioSignalFirstPointCloud),
-  firstPointCloud(true)
+  firstPointCloud(true),
+  imuQuat(0.0, 0.0, 0.0, 1.0)
 {
     int cloudScanNum = 18;
     
@@ -112,13 +113,14 @@ void Lidar::loop() {
     usleep(timeDelay);
 }
 
-void Lidar::processIMU(const IMUUnitree & iImu) const {
+void Lidar::processIMU(const IMUUnitree & iImu) {
     auto stamp = iImu.stamp;
     auto id = iImu.id;
     auto &q0 = iImu.quaternion[0];
     auto &q1 = iImu.quaternion[1];
     auto &q2 = iImu.quaternion[2];
     auto &q3 = iImu.quaternion[3];
+    imuQuat = vec4(q0, q1, q2, q3);
     auto timeDelay = reader->getTimeDelay();
 }
 
@@ -166,4 +168,8 @@ void Lidar::processPointCloud(const PointCloudUnitree & iCloud) {
     */
 
     auto timeDelay = reader->getTimeDelay();
+}
+
+vec4 Lidar::getImuQuat() const {
+    return imuQuat;
 }

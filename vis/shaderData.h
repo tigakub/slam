@@ -25,8 +25,9 @@ struct FrustumData {
 struct CameraData {
     mat4 mvMatrix;
     mat4 projMatrix;
+    vec4 imuQuat;
     #ifdef __cplusplus
-    CameraData() : mvMatrix(1.0f), projMatrix(1.0f) { }
+    CameraData() : mvMatrix(1.0f), projMatrix(1.0f), imuQuat(vec4(0.0, 0.0, 0.0, 1.0)) { }
     #endif
 };
 

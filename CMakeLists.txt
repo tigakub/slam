@@ -20,6 +20,7 @@ add_executable(slam
     container.cpp 
     link.cpp 
     occupancyGrid.cpp
+    vis/quaternion.cpp
     vis/vertex.cpp
     vis/aabb.cpp
     vis/uniformBuffer.cpp
