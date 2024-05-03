@@ -28,7 +28,6 @@ class ElementBufferBase {
         virtual GLenum getPrimitiveType() const = 0;
 
         virtual void init();
-        virtual void cleanUp();
         #ifdef USEDSA
         void attachToVAO(GLuint iVao);
         #endif
@@ -52,6 +51,8 @@ class ElementBuffer: public ElementBufferBase {
     public:
         ElementBuffer(bool iIsDynamic = false)
         : ElementBufferBase(iIsDynamic) { }
+
+        virtual ~ElementBuffer() { }
 
         virtual size_t getCount() const { return data.size(); }
         virtual GLenum getPrimitiveType() const { return iPrimitiveType; }

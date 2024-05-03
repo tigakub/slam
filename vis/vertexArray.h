@@ -23,7 +23,6 @@ class VertexArray {
         virtual ~VertexArray();
 
         virtual void init(ElementBufferBase & iEBuf, VertexBufferBase & iVBuf);
-        virtual void cleanUp();
         virtual void bind();
         virtual void unbind();
 };

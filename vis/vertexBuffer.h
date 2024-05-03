@@ -29,7 +29,6 @@ class VertexBufferBase {
         virtual const BufferFormat &getBufferFormat() const = 0;
 
         virtual void init();
-        virtual void cleanUp();
         #ifdef USEDSA
         void attachToVAO(GLuint iVao, GLuint iBindPoint, GLint iOffset);
         #endif

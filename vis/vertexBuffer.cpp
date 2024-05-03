@@ -3,7 +3,9 @@
 VertexBufferBase::VertexBufferBase(bool iIsDynamic)
 : vbo(0), isDynamic(iIsDynamic), dirty(false) { }
 
-VertexBufferBase::~VertexBufferBase() {
+VertexBufferBase::~VertexBufferBase() { 
+    unbind();
+    if(vbo) glDeleteBuffers(1, &vbo);
 }
 
 void VertexBufferBase::init() {
@@ -20,11 +22,6 @@ void VertexBufferBase::init() {
     }
 }
 
-void VertexBufferBase::cleanUp() {
-    unbind();
-    if(vbo) glDeleteBuffers(1, &vbo);
-}
-
 #ifdef USEDSA
 void VertexBufferBase::attachToVAO(GLuint iVao, GLuint iBindPoint, GLint iOffset) {
     glVertexArrayVertexBuffer(iVao, iBindPoint, getData(), &iOffset, getVertexSize());
@@ -32,7 +29,7 @@ void VertexBufferBase::attachToVAO(GLuint iVao, GLuint iBindPoint, GLint iOffset
 #endif
 
 void VertexBufferBase::update() {
-    if(dirty && getData() && getDataSize()) {
+    if(dirty && isDynamic && getData() && getDataSize()) {
         #ifdef USDSA
             glNamedBufferSubData(vbo, 0, getDataSize(), getData());
         #else

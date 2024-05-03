@@ -13,6 +13,7 @@
 #include <atomic>
 #include <mutex>
 #include <semaphore>
+#include <memory> // for shared_ptr
 
 #include "average.h"
 #include "exception.h"
@@ -23,8 +24,16 @@
 
 using namespace std;
 
+class Slam;
+
+void gFramebufferSizeCallback(GLFWwindow * iWindow, int iWidth, int iHeight);
+void gDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message, const void * userParam);
+
 class Slam {
     protected:
+        GLFWwindow * window;
+        GLsizei width, height;
+
         atomic<bool> terminate;
 
         thread * visThreadPtr;
@@ -47,14 +56,17 @@ class Slam {
         deque<OccupancyGrid *> occupancyQueue;
         mutex occupancyQueueMutex;
 
-        PointCloud pointCloud;
+        // shared_ptr<PointCloud> pointCloud;
+        PointCloud * pointCloud;
 
         vec4 imuQuat;
         mutex imuQuatMutex;
 
     public:
         Slam()
-        : terminate(false), 
+        : window(nullptr),
+          width(800), height(600),
+          terminate(false), 
           visThreadPtr(nullptr), lidarThreadPtr(nullptr),
           visFreq(0.0), visAvgFreq(100),
           imuFreq(0.0),
@@ -64,11 +76,26 @@ class Slam {
           waitForFirstPointCloud(1),
           occupancyQueue(),
           occupancyQueueMutex(),
-          pointCloud()
-        { }
+          pointCloud(new PointCloud) { }
 
         virtual ~Slam() {
             stop();
+        }
+
+        void debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message) const {
+            cerr << message << endl;
+        }
+
+        void framebufferSizeCallback(size_t iWidth, size_t iHeight) {
+            width = iWidth;
+            height = iHeight;
+            glViewport(0, 0, iWidth, iWidth);
+        }
+
+        void processInput() {
+            if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                glfwSetWindowShouldClose(window, true);
+            }
         }
 
         bool shouldTerminate() {
@@ -146,23 +173,45 @@ class Slam {
  
     protected:
         void visProc() {
+            glfwInit();
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            window = glfwCreateWindow(width, height, "Unitree 4D LiDAR L1", NULL, NULL);
+            THROW_IF_NULL(window, "Failed to create GLFW window");
+
+            glfwMakeContextCurrent(window);
+            glfwSetWindowUserPointer(window, this);
+            glfwSetFramebufferSizeCallback(window, gFramebufferSizeCallback);
+
+            THROW_IF_NOT(gladLoadGL(glfwGetProcAddress), "Failed to initialize GLAD");
+
+            glEnable(GL_DEBUG_OUTPUT);
+
+            glDebugMessageCallback(gDebugMessageCallback, static_cast<void *>(this));
+
             try {
                 waitForFirstPointCloud.acquire();                
-                Visualizer visualizer(occupancyQueue, occupancyQueueMutex, string("slam"), pointCloud);
+                Visualizer visualizer(occupancyQueue, occupancyQueueMutex, *pointCloud, width, height);
                 waitForFirstPointCloud.release();
 
                 auto lastTime = chrono::high_resolution_clock::now();
                 while(!shouldTerminate()) {
+                    if(glfwWindowShouldClose(window)) {
+                        setShouldTerminate(true);
+                    }
+                    visualizer.setViewportSize(width, height);
                     waitForFirstPointCloud.acquire();   
                     imuQuatMutex.lock();
                     visualizer.setImuQuat(imuQuat);
                     imuQuatMutex.unlock();
                     visualizer.update();
-                    if(!visualizer.loop()) {
-                        setShouldTerminate(true);
-                    }
+                    visualizer.loop();
+                    glfwSwapBuffers(window);
+                    glfwPollEvents();
                     waitForFirstPointCloud.release();
                     setVisFreq(visualizer.getFrequency());
+                    processInput();
                 }
 
             } catch (Exception e) {
@@ -171,11 +220,14 @@ class Slam {
                 cerr << e << endl;
                 unlockOutput();
             }
+            if(pointCloud) delete pointCloud;
+            pointCloud = nullptr;
+            glfwTerminate();
         }
 
         void lidarProc() {
             try {
-                Lidar lidar(occupancyQueue, occupancyQueueMutex, imuHeartBeat, lidarHeartBeat, imuFreq, lidarFreq, pointCount, pointCloud, waitForFirstPointCloud);
+                Lidar lidar(occupancyQueue, occupancyQueueMutex, imuHeartBeat, lidarHeartBeat, imuFreq, lidarFreq, pointCount, *pointCloud, waitForFirstPointCloud);
                 
                 // lidar.setMode(STANDBY);
                 // sleep(1);
@@ -190,7 +242,6 @@ class Slam {
                 cout << "4D LiDAR L1 firmware version " << firmwareVersion << endl;
                 cout << "unitree_lidar_sdk version " << sdkVersion << endl;
                 unlockOutput();
-
 
                 while(!terminate) {
                     auto start = chrono::high_resolution_clock::now();
@@ -209,12 +260,23 @@ class Slam {
         }
 };
 
+void gFramebufferSizeCallback(GLFWwindow * iWindow, int iWidth, int iHeight) {
+    Slam *ptr = static_cast<Slam *>(glfwGetWindowUserPointer(iWindow));
+    ptr->framebufferSizeCallback(iWidth, iHeight);
+}
+
+void gDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message, const void * userParam) {
+    const Slam *ptr = static_cast<const Slam *>(userParam);
+    if(ptr) ptr->debugMessageCallback(source, type, id, severity, length, message);
+
+}
+
 int main(int argc, char **argv) {
     Slam slam;
     slam.start();
 
     while(!slam.shouldTerminate()) {
-        
+        /*
         auto visFreq = slam.getVisFreq();
         auto imuHeartBeat = slam.getImuHeartBeat();
         auto imuFreq = slam.getImuFreq();
@@ -234,7 +296,7 @@ int main(int argc, char **argv) {
             << "           \r";
         cout.flush();
         slam.unlockOutput();
-        
+        */
     }
 
     slam.join();

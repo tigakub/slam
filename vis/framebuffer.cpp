@@ -7,6 +7,8 @@ Framebuffer::Framebuffer(int iWidth, int iHeight)
 }
 
 Framebuffer::~Framebuffer() {
+    if(fbo) glDeleteFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 bool Framebuffer::init() {
@@ -96,12 +98,6 @@ bool Framebuffer::init() {
     #endif
     
     return true;
-}
-
-void Framebuffer::cleanUp() {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    if(fbo) glDeleteFramebuffers(1, &fbo);
-
 }
 
 void Framebuffer::resize(int iWidth, int iHeight) {

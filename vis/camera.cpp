@@ -1,24 +1,22 @@
 #include "camera.h"
 #include "usedsa.h"
 
-Camera::Camera(int iWidth, int iHeight, bool iIsDynamic)
+Camera::Camera(GLsizei iWidth, GLsizei iHeight, bool iIsDynamic)
 : UniformBuffer(iIsDynamic),
   width(iWidth),
   height(iHeight),
-  data() { }
+  data() {  }
 
-Camera::~Camera() {
-}
+Camera::~Camera() { }
 
-void Camera::cleanUp() {
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    if (ubo) glDeleteBuffers(1, &ubo);
-}
-
-void Camera::resize(int iWidth, int iHeight) {
+void Camera::resize(GLsizei iWidth, GLsizei iHeight) {
     width = iWidth;
     height = iHeight;
     dirty = true;
+}
+
+CameraData & Camera::getCameraData() {
+    return data;
 }
 
 void Camera::setFocus(const AABB &iBoundingBox) {
@@ -51,15 +49,15 @@ void Camera::setImuQuat(const vec4 & iImuQuat) {
 
 void Camera::initData() {
     fov = radians(90.0f);
-    eye = vec3(0.0f, 0.0f, 2.0f);
+    eye = vec3(0.3f, 0.3f, 0.3f);
     center = vec3(0.0f, 0.0f, 0.0f);
-    up = vec3(0.0f, 1.0f, 0.0f);
+    up = vec3(0.0f, 0.0f, 1.0f);
     dirty = true;
 }
 
 void Camera::update() {
     if(dirty) {
-        data.mvMatrix = lookAt(eye, center, up);
+        data.viewMatrix = lookAt(-eye, -center, -up);
         data.projMatrix = perspective(fov, ((float) width / height), 0.1f, 1000.0f);
         data.imuQuat = imuQuat;
         UniformBuffer::update();
@@ -70,6 +68,6 @@ const void *Camera::getData() const {
     return (void *) &data;
 }
 
-GLuint Camera::getDataSize() const {
-    return (GLuint) sizeof(data);
+GLsizei Camera::getDataSize() const {
+    return (GLsizei) sizeof(data);
 }

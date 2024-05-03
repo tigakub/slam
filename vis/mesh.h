@@ -12,11 +12,11 @@ class MeshBase {
         VertexArray vao;
 
     public:
-        MeshBase(): vao() { };
+        MeshBase(): vao() { }
+        virtual ~MeshBase() { }
 
         virtual void init() = 0;
         virtual void update() = 0;
-        virtual void cleanUp() = 0;
         virtual void draw() = 0;
         virtual void expand(AABB &ioBoundingBox) = 0;
 
@@ -35,6 +35,8 @@ class Mesh: public MeshBase {
         Mesh(bool iVboIsDynamic = false, bool iEboIsDynamic = false)
         : MeshBase(), ebo(iEboIsDynamic), vbo(iVboIsDynamic) { }
 
+        virtual ~Mesh() { }
+
         virtual void init() {
             initGeometry();
             vao.init(ebo, vbo);
@@ -43,11 +45,6 @@ class Mesh: public MeshBase {
         virtual void update() {
             ebo.update();
             vbo.update();
-        }
-
-        virtual void cleanUp() {
-            ebo.cleanUp();
-            vbo.cleanUp();
         }
         
         virtual void draw() {

@@ -4,8 +4,8 @@ UniformBuffer::UniformBuffer(bool iIsDynamic)
 : bindPoint(0), isDynamic(iIsDynamic), dirty(false), ubo(0) { }
 
 UniformBuffer::~UniformBuffer() {
-    // unbind();
-    // if(ubo) glDeleteBuffers(1, &ubo);
+    unbind();
+    if(ubo) glDeleteBuffers(1, &ubo);
 }
 
 bool UniformBuffer::init(GLuint iBindPoint) {
@@ -27,13 +27,16 @@ bool UniformBuffer::init(GLuint iBindPoint) {
     return true;
 }
 
-void UniformBuffer::cleanUp() {
-    unbind();
-    if(ubo) glDeleteBuffers(1, &ubo);
+void UniformBuffer::mark() {
+    dirty = true;
+}
+
+void UniformBuffer::unmark() {
+    dirty = false;
 }
 
 void UniformBuffer::update() {
-    if(dirty && getData() && getDataSize()) {
+    if(dirty && isDynamic && getData() && getDataSize()) {
         #ifdef USEDSA
             glNamedBufferSubData(ubo, 0, getDataSize(), getData());
         #else

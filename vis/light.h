@@ -21,7 +21,7 @@ class Light: public UniformBuffer {
     protected:
         virtual void initData();
         virtual const void *getData() const;
-        virtual GLuint getDataSize() const;
+        virtual GLsizei getDataSize() const;
 };
 
 #endif

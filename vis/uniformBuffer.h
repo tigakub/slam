@@ -24,7 +24,8 @@ class UniformBuffer {
         virtual ~UniformBuffer();
 
         virtual bool init(GLuint iBindPoint);
-        virtual void cleanUp();
+        virtual void mark();
+        virtual void unmark();
         virtual void update();
         virtual void bind();
         virtual void unbind();
@@ -32,7 +33,7 @@ class UniformBuffer {
     protected:
         virtual void initData() = 0;
         virtual const void *getData() const = 0;
-        virtual GLuint getDataSize() const = 0;
+        virtual GLsizei getDataSize() const = 0;
 };
 
 #endif

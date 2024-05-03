@@ -11,6 +11,7 @@ using namespace unitree_lidar_sdk;
 class PointCloud: public Mesh<PCVertex, PCVertex::bufferFormat, GL_POINTS, true, 2000 * sizeof(GLuint), true, 2000 * sizeof(PCVertex)> {
     public:
         PointCloud();
+        virtual ~PointCloud();
 
         void lockPoints();
         void setPoints(const vector<PointUnitree> &iUnitreePoints);
@@ -18,7 +19,6 @@ class PointCloud: public Mesh<PCVertex, PCVertex::bufferFormat, GL_POINTS, true,
 
         virtual void init();
         virtual void update();
-        virtual void cleanUp();
         virtual void draw();
         virtual void expand(AABB &ioBoundingBox);
         

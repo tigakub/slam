@@ -4,6 +4,8 @@ VertexArray::VertexArray()
 : vao(0) { }
 
 VertexArray::~VertexArray() {
+    unbind();
+    if(vao) glDeleteVertexArrays(1, &vao);
 }
 
 
@@ -38,12 +40,6 @@ void VertexArray::init(ElementBufferBase & iEBuf, VertexBufferBase & iVBuf) {
 
         iEBuf.init();
     #endif
-}
-
-void VertexArray::cleanUp() {
-    unbind();
-    if(vao) glDeleteVertexArrays(1, &vao);
-
 }
 
 void VertexArray::bind() {

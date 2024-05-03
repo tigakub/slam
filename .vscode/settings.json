@@ -12,6 +12,7 @@
         "vector": "cpp",
         "string_view": "cpp",
         "atomic": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "ostream": "cpp"
     }
 }

@@ -16,8 +16,8 @@ using namespace glm;
 
 class Camera: public UniformBuffer {
     protected:
-        int width;
-        int height;
+        GLsizei width;
+        GLsizei height;
         float fov;
         vec3 eye;
         vec3 center;
@@ -26,22 +26,22 @@ class Camera: public UniformBuffer {
         CameraData data;
 
     public:
-        Camera(int iWidth, int iHeight, bool iIsDynamic = true);
+        Camera(GLsizei iWidth, GLsizei iHeight, bool iIsDynamic = true);
         virtual ~Camera();
 
-        void cleanUp();
+        CameraData & getCameraData();
         
         void setFocus(const AABB &iBoundingBox);
         void setImuQuat(const vec4 & iImuQuat);
 
-        void resize(int iWidth, int iHeight);
+        void resize(GLsizei iWidth, GLsizei iHeight);
 
         virtual void update();
 
     protected:
         virtual void initData();
         virtual const void *getData() const;
-        virtual GLuint getDataSize() const;
+        virtual GLsizei getDataSize() const;
 };
 
 #endif

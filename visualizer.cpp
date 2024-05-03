@@ -1,46 +1,29 @@
 #include "visualizer.h"
 #include "exception.h"
 #include "vis/shaderData.h"
+#include "vis/geometry.h"
+#include "vis/node.h"
 #include "vis/embeddedShaderData.h"
 
 const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
     layout (std140, binding = 0) uniform Camera {
         CameraData data;
     } uiCamera;
+    layout (std140, binding = 1) uniform Contex {
+        ContextData data;
+    } uiContext;
 
     layout (location = 0) in vec3 viPos;
     layout (location = 1) in vec4 viColor;
 
-    /*
-    vec4 hamiltonion(vec4 a, vec4 b) {
-        vec4 result;
-        result.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
-        result.y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x;
-        result.z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w;
-        result.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
-        return result;
-    }
-
-    vec4 invertQuaternion(vec4 q) {
-        vec4 result;
-        result.x = -q.x;
-        result.y = -q.y;
-        result.z = -q.z;
-        result.w = q.w;
-        return result;
-    }
-
-    vec4 conjugate(vec4 p, vec4 q) {
-        return hamiltonion(hamiltonion(q, p), invertQuaternion(q));
-    }
-    */
-
     out vec4 fiColor;
     void main() {
-        
+        mat4 mvMatrix = uiCamera.data.viewMatrix; // * uiContext.data.modelMatrix;
+        mat4 matrix = uiCamera.data.projMatrix * mvMatrix;
+       
         vec4 imuPoint = conjugate(vec4(viPos.x, viPos.y, viPos.z, 0.0), uiCamera.data.imuQuat);
         imuPoint.w = 1.0;
-        gl_Position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * imuPoint;
+        gl_Position = matrix * imuPoint;
         
         float d = (length(viPos) - 0.5);
         if(d > 1.0) d = 1.0;
@@ -60,7 +43,7 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
         if(b > 1.0) b = 1.0;
         
         fiColor = vec4(r * (1.0 - d * d * d), g * (1.0 - d * d * d), b * (1.0 - d * d * d), 1.0 - d * d * d);
-        gl_PointSize = 1.0 + (0.5 - 0.5 * (gl_Position.z / gl_Position.w)) * 100.0;
+        gl_PointSize = 1.0 + (0.5 - 0.5 * (gl_Position.z / gl_Position.w)) * 20.0;
     }
 )0B3R0N";
 
@@ -86,7 +69,10 @@ const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
     layout (std140, binding = 0) uniform Camera {
         CameraData data;
     } uiCamera;
-    layout (std140, binding = 1) uniform Light {
+    layout (std140, binding = 1) uniform Context {
+        ContextData data;
+    } uiContext;
+    layout (std140, binding = 2) uniform Light {
         LightData data;
     } uiLight0;
 
@@ -95,58 +81,29 @@ const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
     layout (location = 2) in vec4 viColor;
     layout (location = 3) in vec2 vUV;
 
-    /*
-    vec4 hamiltonion(vec4 a, vec4 b) {
-        vec4 result;
-        result.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
-        result.y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x;
-        result.z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w;
-        result.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
-        return result;
-    }
-
-    vec4 invertQuaternion(vec4 q) {
-        vec4 result;
-        result.x = -q.x;
-        result.y = -q.y;
-        result.z = -q.z;
-        result.w = q.w;
-        return result;
-    }
-
-    vec4 conjugate(vec4 p, vec4 q) {
-        return hamiltonion(hamiltonion(q, p), invertQuaternion(q));
-    }
-    */
-
     out vec4 fiColor;
     void main() {
-        
+        mat4 mvMatrix = uiCamera.data.viewMatrix; // * uiContext.data.modelMatrix;
+        mat4 matrix = uiCamera.data.projMatrix * mvMatrix;
+        /*
         vec4 imuPoint = conjugate(vec4(viPos.x, viPos.y, viPos.z, 0.0), uiCamera.data.imuQuat);
         imuPoint.w = 1.0;
-        gl_Position = uiCamera.data.projMatrix * uiCamera.data.mvMatrix * imuPoint;
+        gl_Position = matrix * imuPoint;
+        */
+        gl_Position = matrix * vec4(viPos.x, viPos.y, viPos.z, 1.0f);
         
-        vec3 ePos = vec3(uiCamera.data.mvMatrix * vec4(viPos.x, viPos.y, viPos.z, 1.0f));
-        vec3 eNorm = vec3(uiCamera.data.mvMatrix * vec4(viNorm.z, viNorm.y, viNorm.z, 0.0f));
+        vec3 sNorm = vec3(mvMatrix * vec4(viNorm.x, viNorm.y, viNorm.z, 0.0f));
+        vec3 lNorm = vec3(mvMatrix * uiLight0.data.position);
 
-        vec3 diffuse = vec3(0.0f);
-        vec3 specular = vec3(0.0f);
-
-        const vec3 n = normalize(eNorm);
-        const vec3 l = normalize(-ePos);
+        const vec3 n = normalize(sNorm);
+        const vec3 l = normalize(-lNorm);
         
-        float diffuseIntensity = dot(n, l);
+        float cosAngle = dot(n, l);
 
-        if (diffuseIntensity > 0.0f) {
-            diffuse = vec3(uiLight0.data.diffuse) * diffuseIntensity;
-
-            const vec3 r = reflect(-l, n);
-            const vec3 e = l;
-            const float specularIntensity = max(dot(r, e), 0.0f);
-            specular = vec3(uiLight0.data.specular) * pow(specularIntensity, 32.0f);
-        }
-
-        fiColor = vec4(vec3(viColor) * (vec3(uiLight0.data.ambient) + diffuse, + specular), 1.0f);
+        fiColor = 
+            // vec4(1.0, 0.4, 0.0, 1.0);
+            vec4(vec3(viColor) * cosAngle, 1.0f);
+            // vec4(vec3(viColor) * (vec3(uiLight0.data.ambient) + vec3(uiLight0.data.diffuse) * cosAngle), 1.0f);
     }
 )0B3R0N";
 
@@ -158,22 +115,10 @@ const char *Visualizer::fragmentLitShaderSource = R"0B3R0N(
     }
 )0B3R0N";
 
-void gFramebufferSizeCallback(GLFWwindow * iWindow, int iWidth, int iHeight) {
-    Visualizer *ptr = static_cast<Visualizer *>(glfwGetWindowUserPointer(iWindow));
-    ptr->framebufferSizeCallback(iWidth, iHeight);
-}
-
-void gDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message, const void * userParam) {
-    const Visualizer *ptr = static_cast<const Visualizer *>(userParam);
-    if(ptr) ptr->debugMessageCallback(source, type, id, severity, length, message);
-
-}
-
 Visualizer::Visualizer(
     deque<OccupancyGrid *> & ioOccupancyQueue,
     mutex & ioOccupancyQueueMutex,
-    const string &iWindowTitle,
-    PointCloud &iPointCloud, 
+    PointCloud & ioPointCloud, 
     size_t iWidth, 
     size_t iHeight)
 : glAvailable(false), 
@@ -184,9 +129,12 @@ Visualizer::Visualizer(
   framebuffer(800, 600),
   camera(800, 600, true),
   light(false),
-  pointCloud(iPointCloud),
-  testBox(),
+  pointCloud(ioPointCloud),
+  context(camera),
+  rootNode(),
+  // testBox(),
   testTriangle() {
+    /*
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -203,6 +151,7 @@ Visualizer::Visualizer(
     glEnable(GL_DEBUG_OUTPUT);
 
     glDebugMessageCallback(gDebugMessageCallback, static_cast<void *>(this));
+    */
 
     int success;
     char infoLog[512];
@@ -295,7 +244,8 @@ Visualizer::Visualizer(
 
     // camera.setFocus(boundingBox);
     camera.init(0);
-    light.init(1);
+    context.init(1);
+    light.init(2);
     /*
     bindPoint = glGetUniformLocation(vertexShader, "light0");
     light.init(bindPoint);
@@ -307,8 +257,23 @@ Visualizer::Visualizer(
     testBox.init();
     */
 
-    pointCloud.init();
-    testBox.init();
+    Box * box = new Box;
+    Geometry<Box> * boxGeom = new Geometry<Box>(box, litShaderProgram);
+    Node * node = new Node;
+    node->addGeometry(boxGeom);
+    rootNode.addChild(node);
+
+    UnmanagedGeometry<PointCloud> * pointCloudGeom = new UnmanagedGeometry<PointCloud>(pointCloud, pointShaderProgram);
+    node = new Node;
+    // mat4 xRot = ::rotate(mat4(1.0f), (float) radians(180.0), vec3(0.0, 1.0, 0.0));
+    node->setTransform(mat4(1.0f));
+    node->addGeometry(pointCloudGeom);
+    rootNode.addChild(node);
+
+    boxGeom->init();
+    pointCloudGeom->init();
+    // pointCloud.init();
+    // testBox.init();
     testTriangle.init();
 
     float vertices[] = {
@@ -345,16 +310,19 @@ Visualizer::Visualizer(
 Visualizer::~Visualizer() {
     if(pointShaderProgram) glDeleteProgram(pointShaderProgram);
     if(litShaderProgram) glDeleteProgram(litShaderProgram);
+    /*
     framebuffer.cleanUp();
     camera.cleanUp();
     light.cleanUp();
-    testBox.cleanUp();
+    // testBox.cleanUp();
     testTriangle.cleanUp();
-    glfwTerminate();
+    */
 }
 
-void Visualizer::debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message) const {
-    cerr << message << endl;
+void Visualizer::setViewportSize(GLsizei iWidth, GLsizei iHeight) {
+    width = iWidth;
+    height = iHeight;
+    camera.resize(iWidth, iHeight);
 }
 
 int Visualizer::loop() {
@@ -362,8 +330,6 @@ int Visualizer::loop() {
     auto elapsed = chrono::duration_cast<chrono::microseconds>(currentTimeStamp - lastTimeStamp).count();
     if(elapsed >= 16666) {
         if (glAvailable) {
-            if (glfwWindowShouldClose(window)) return 0;
-            glViewport(0, 0, width, height);
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClearDepth(1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -375,12 +341,6 @@ int Visualizer::loop() {
 
             light.unbind();
             camera.unbind();
-
-            glfwSwapBuffers(window);
-
-            glfwPollEvents();
-
-            processInput();
         }
         frequency = 1000000.0 / double(elapsed);
         lastTimeStamp = currentTimeStamp;
@@ -391,7 +351,8 @@ int Visualizer::loop() {
 
 void Visualizer::update() {
     camera.update();
-    pointCloud.update();
+    // pointCloud.update();
+    rootNode.update();
     // light.update();
     
     OccupancyGrid *grid = nullptr;
@@ -417,21 +378,13 @@ void Visualizer::render() {
     
     */
     // testTriangle.draw();
-    glUseProgram(pointShaderProgram);
-    pointCloud.draw();
+    // glUseProgram(pointShaderProgram);
+    // pointCloud.draw();
     
-    glUseProgram(litShaderProgram);
-    testBox.draw();
-}
+    // glUseProgram(litShaderProgram);
+    // testBox.draw();
 
-void Visualizer::framebufferSizeCallback(size_t iWidth, size_t iHeight) {
-    glViewport(0, 0, width, height);
-}
-
-void Visualizer::processInput() {
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
+    rootNode.draw(context);
 }
 
 double Visualizer::getFrequency() const {

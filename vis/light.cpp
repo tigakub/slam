@@ -6,6 +6,7 @@ Light::Light(bool iIsDynamic)
 Light::~Light() { }
 
 void Light::initData() {
+    data.position = vec4(3.0f, 5.0f, 10.0f, 0.0f);
     data.ambient = vec4(0.2f, 0.2f, 0.2f, 1.0f);
     data.diffuse = vec4(1.0f);
     data.specular = vec4(0.5f);
@@ -15,6 +16,6 @@ const void *Light::getData() const {
     return (const void *) &data;
 }
 
-GLuint Light::getDataSize() const {
-    return (GLuint) sizeof(data);
+GLsizei Light::getDataSize() const {
+    return (GLsizei) sizeof(data);
 }

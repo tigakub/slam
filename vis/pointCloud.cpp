@@ -1,3 +1,7 @@
+#include <iostream>
+
+using namespace std;
+
 #include "pointCloud.h"
 
 PointCloud::PointCloud()
@@ -8,6 +12,8 @@ PointCloud::PointCloud()
     eData.reserve(2000);
 }
 
+PointCloud::~PointCloud() { }
+
 void PointCloud::lockPoints() {
     mtx.lock();
 }
@@ -16,7 +22,7 @@ void PointCloud::setPoints(const vector<PointUnitree> &iUnitreePoints) {
     lockPoints();
     size_t max =  2000;
     if(max < iUnitreePoints.size()) max = iUnitreePoints.size();
-    vector<PCVertex> & vData = getVertexData();
+    vector<PCVertex> & vData = vbo.getVertices(); // getVertexData();
     vData.clear();
     for(size_t i = 0; i < max; i++) {
         float x = iUnitreePoints[i].x;
@@ -53,12 +59,6 @@ void PointCloud::init() {
 void PointCloud::update() {
     lockPoints();
     Mesh<PCVertex, PCVertex::bufferFormat, GL_POINTS, true, 2000 * sizeof(GLuint), true, 2000 * sizeof(PCVertex)>::update();
-    unlockPoints();
-}
-
-void PointCloud::cleanUp() {
-    lockPoints();
-    Mesh<PCVertex, PCVertex::bufferFormat, GL_POINTS, true, 2000 * sizeof(GLuint), true, 2000 * sizeof(PCVertex)>::cleanUp();
     unlockPoints();
 }
 

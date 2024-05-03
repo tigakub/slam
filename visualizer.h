@@ -9,6 +9,7 @@
 #include <deque>
 #include <atomic>
 #include <mutex>
+#include <memory>
 
 #include <occupancyGrid.h>
 
@@ -18,8 +19,10 @@
 #include "vis/aabb.h"
 #include "vis/triangle.h"
 #include "vis/box.h"
+#include "vis/mesh.h"
 #include "vis/pointCloud.h"
 #include "vis/quaternion.h"
+#include "vis/node.h"
 
 using namespace std;
 
@@ -27,7 +30,6 @@ class Visualizer: OccupancyGrid::Functor {
     protected:
         bool glAvailable;
         size_t width, height;
-        GLFWwindow * window;
 
         static const char *pointVertexShaderSource;
         static const char *pointFragmentShaderSource;
@@ -47,9 +49,12 @@ class Visualizer: OccupancyGrid::Functor {
         Light light;
         AABB boundingBox;
 
-        PointCloud &pointCloud;
+        PointCloud & pointCloud;
         
-        Box testBox;
+        Context context;
+        Node rootNode;
+
+        // Box testBox;
         Triangle testTriangle;
         GLuint testTriangleVAO;
 
@@ -57,20 +62,15 @@ class Visualizer: OccupancyGrid::Functor {
         Visualizer(
             deque<OccupancyGrid *> & ioOccupancyQueue, 
             mutex & ioOccupancyQueueMutex, 
-            const string &iWindowTitle,
-            PointCloud &iPointCloud, 
+            PointCloud & ioPointCloud, 
             size_t iWidth = 800, 
             size_t iHeight = 600);
         virtual ~Visualizer();
-
-        void debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message) const;
-
+        
+        virtual void setViewportSize(GLsizei iWidth, GLsizei iHeight);
         virtual int loop();
         virtual void update();
         virtual void render();
-
-        void framebufferSizeCallback(size_t iWidth, size_t iHeight);
-        void processInput();
 
         double getFrequency() const;
 

@@ -23,15 +23,23 @@ struct FrustumData {
 };
 
 struct CameraData {
-    mat4 mvMatrix;
+    mat4 viewMatrix;
     mat4 projMatrix;
     vec4 imuQuat;
     #ifdef __cplusplus
-    CameraData() : mvMatrix(1.0f), projMatrix(1.0f), imuQuat(vec4(0.0, 0.0, 0.0, 1.0)) { }
+    CameraData() : viewMatrix(1.0f), projMatrix(1.0f), imuQuat(vec4(0.0, 0.0, 0.0, 1.0)) { }
+    #endif
+};
+
+struct ContextData {
+    mat4 modelMatrix;
+    #ifdef __cplusplus
+    ContextData(): modelMatrix(1.0f) { }
     #endif
 };
 
 struct LightData {
+    vec4 position;
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;

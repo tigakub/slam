@@ -33,6 +33,9 @@ add_executable(slam
     vis/camera.cpp
     vis/light.cpp
     vis/framebuffer.cpp
+    vis/context.cpp
+    vis/node.cpp
+    vis/geometry.cpp
 )
 
 add_dependencies(slam embeddedShaderData)
