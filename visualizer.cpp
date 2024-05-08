@@ -50,7 +50,7 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
         if(d > 1.0) d = 1.0;
 
         float logComp = 1.0 - d * d * d;
-        fiColor = vec4(r * comp, g * comp, b * logComp, comp);
+        fiColor = vec4(r * comp, g * comp * comp, b * logComp, comp);
         gl_PointSize = 1.0 + (0.5 - 0.5 * (gl_Position.z / gl_Position.w)) * 20.0;
     }
 )0B3R0N";
