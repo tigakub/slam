@@ -29,14 +29,18 @@ struct CameraData {
     mat4 projMatrix;
     vec4 imuQuat;
     #ifdef __cplusplus
-    CameraData() : viewMatrix(1.0f), projMatrix(1.0f), imuQuat(vec4(0.0, 0.0, 0.0, 1.0)) { }
+    CameraData() : viewMatrix(), projMatrix(), imuQuat(vec4(0.0, 0.0, 0.0, 1.0)) { }
     #endif
 };
 
 struct ContextData {
     mat4 modelMatrix;
+    vec4 dummy0;
+    vec4 dummy1;
+    vec4 dummy2;
+    vec4 tint;
     #ifdef __cplusplus
-    ContextData(): modelMatrix(1.0f) { }
+    ContextData(): modelMatrix(), dummy0(), dummy1(), dummy2(), tint(1.0, 1.0, 1.0, 1.0) { }
     #endif
 };
 

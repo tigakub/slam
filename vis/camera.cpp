@@ -1,13 +1,10 @@
 #include "camera.h"
-#include "usedsa.h"
 
-Camera::Camera(GLsizei iWidth, GLsizei iHeight, bool iIsDynamic)
-: UniformBuffer(iIsDynamic),
+Camera::Camera(GLuint iBindPoint, GLsizei iWidth, GLsizei iHeight, bool iIsDynamic)
+: UniformBuffer(iBindPoint, iIsDynamic),
   width(iWidth),
   height(iHeight),
   data() {  }
-
-Camera::~Camera() { }
 
 void Camera::resize(GLsizei iWidth, GLsizei iHeight) {
     width = iWidth;
@@ -49,15 +46,15 @@ void Camera::setImuQuat(const vec4 & iImuQuat) {
 
 void Camera::initData() {
     fov = radians(90.0f);
-    eye = vec3(0.3f, 0.3f, 0.3f);
-    center = vec3(0.0f, 0.0f, 0.0f);
+    eye = vec3(0.5f, 0.5f, 0.5f);
+    center = vec3(0.0f, 0.0f, 0.25f);
     up = vec3(0.0f, 0.0f, 1.0f);
     dirty = true;
 }
 
 void Camera::update() {
     if(dirty) {
-        data.viewMatrix = lookAt(-eye, -center, -up);
+        data.viewMatrix = lookAt(eye, center, up);
         data.projMatrix = perspective(fov, ((float) width / height), 0.1f, 1000.0f);
         data.imuQuat = imuQuat;
         UniformBuffer::update();
@@ -65,7 +62,7 @@ void Camera::update() {
 }
 
 const void *Camera::getData() const {
-    return (void *) &data;
+    return (void *) & data;
 }
 
 GLsizei Camera::getDataSize() const {

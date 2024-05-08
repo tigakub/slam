@@ -16,12 +16,11 @@ using namespace glm;
 
 class Context: public UniformBuffer {
     protected:
-        Camera & camera;
         vector<mat4> transformStack;
         ContextData data;
 
     public:
-        Context(Camera & iCamera);
+        Context(GLuint iBindPoint, bool iIsDynamic = true);
 
         virtual const mat4 & getTopMatrix();
         virtual void pushMatrix(const mat4 & iTransform);

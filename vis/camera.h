@@ -1,7 +1,6 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
 
-// #include <GL/glew.h>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -26,8 +25,7 @@ class Camera: public UniformBuffer {
         CameraData data;
 
     public:
-        Camera(GLsizei iWidth, GLsizei iHeight, bool iIsDynamic = true);
-        virtual ~Camera();
+        Camera(GLuint iBindPoint, GLsizei iWidth, GLsizei iHeight, bool iIsDynamic = true);
 
         CameraData & getCameraData();
         

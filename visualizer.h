@@ -20,7 +20,7 @@
 #include "vis/triangle.h"
 #include "vis/box.h"
 #include "vis/mesh.h"
-#include "vis/pointCloud.h"
+#include "vis/pointCloudAccumulator.h"
 #include "vis/quaternion.h"
 #include "vis/node.h"
 
@@ -49,7 +49,7 @@ class Visualizer: OccupancyGrid::Functor {
         Light light;
         AABB boundingBox;
 
-        PointCloud & pointCloud;
+        PointCloudAccumulator & pcAccum;
         
         Context context;
         Node rootNode;
@@ -62,7 +62,7 @@ class Visualizer: OccupancyGrid::Functor {
         Visualizer(
             deque<OccupancyGrid *> & ioOccupancyQueue, 
             mutex & ioOccupancyQueueMutex, 
-            PointCloud & ioPointCloud, 
+            PointCloudAccumulator & ioPCAccum, 
             size_t iWidth = 800, 
             size_t iHeight = 600);
         virtual ~Visualizer();

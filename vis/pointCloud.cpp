@@ -18,10 +18,16 @@ void PointCloud::lockPoints() {
     mtx.lock();
 }
 
+int64_t PointCloud::age() {
+    auto elapsed = chrono::high_resolution_clock::now() - timeStamp;
+    return static_cast<int64_t>(chrono::duration_cast<chrono::nanoseconds>(elapsed).count());
+}
+
 void PointCloud::setPoints(const vector<PointUnitree> &iUnitreePoints) {
+    timeStamp = chrono::high_resolution_clock::now();
     lockPoints();
     size_t max =  2000;
-    if(max < iUnitreePoints.size()) max = iUnitreePoints.size();
+    if(max > iUnitreePoints.size()) max = iUnitreePoints.size();
     vector<PCVertex> & vData = vbo.getVertices(); // getVertexData();
     vData.clear();
     for(size_t i = 0; i < max; i++) {
@@ -50,11 +56,13 @@ void PointCloud::unlockPoints() {
 
 void PointCloud::initGeometry() { }
 
+/*
 void PointCloud::init() {
     lockPoints();
     Mesh<PCVertex, PCVertex::bufferFormat, GL_POINTS, true, 2000 * sizeof(GLuint), true, 2000 * sizeof(PCVertex)>::init();
     unlockPoints();
 }
+*/
 
 void PointCloud::update() {
     lockPoints();

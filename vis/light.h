@@ -15,7 +15,7 @@ class Light: public UniformBuffer {
         LightData data;
 
     public:
-        Light(bool iIsDynamic = false);
+        Light(GLuint iBindPoint, bool iIsDynamic = false);
         virtual ~Light();
 
     protected:

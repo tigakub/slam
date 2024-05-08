@@ -1,12 +1,12 @@
 #include "light.h"
 
-Light::Light(bool iIsDynamic)
-: UniformBuffer(iIsDynamic) { }
+Light::Light(GLuint iBindPoint, bool iIsDynamic)
+: UniformBuffer(iBindPoint, iIsDynamic) { }
 
 Light::~Light() { }
 
 void Light::initData() {
-    data.position = vec4(3.0f, 5.0f, 10.0f, 0.0f);
+    data.position = vec4(3.0f, 5.0f, -10.0f, 0.0f);
     data.ambient = vec4(0.2f, 0.2f, 0.2f, 1.0f);
     data.diffuse = vec4(1.0f);
     data.specular = vec4(0.5f);

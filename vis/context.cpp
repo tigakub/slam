@@ -1,7 +1,9 @@
 #include "context.h"
 
-Context::Context(Camera & iCamera)
-: camera(iCamera), transformStack() {
+Context::Context(GLuint iBindPoint, bool iIsDynamic)
+: UniformBuffer(iBindPoint, iIsDynamic),
+  transformStack(),
+  data() {
     transformStack.emplace_back(mat4(1.0f));
 }
 
@@ -10,11 +12,9 @@ const mat4 & Context::getTopMatrix() {
 }
 
 void Context::pushMatrix(const mat4 & iTransform) {
-    if(iTransform != mat4(1.0f)) {
-        data.modelMatrix = transformStack.back() * iTransform;
-        mark();
-        update();
-    }
+    data.modelMatrix = transformStack.back() * iTransform;
+    mark();
+    update();
     transformStack.push_back(data.modelMatrix);
 }
 
@@ -27,7 +27,8 @@ void Context::popMatrix() {
 }
 
 void Context::initData() {
-    data.modelMatrix = mat4(1.0);
+    data.modelMatrix = mat4(1.0f);
+    data.tint = vec4(1.0f, 1.0f, 1.0f, 1.0f);
     dirty = true;
 }
 

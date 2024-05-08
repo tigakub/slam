@@ -18,6 +18,7 @@ class ElementBufferBase {
     protected:
         GLuint ebo;
         bool isDynamic;
+        bool isNew;
         bool dirty;
 
     public:
@@ -27,7 +28,7 @@ class ElementBufferBase {
         virtual size_t getCount() const = 0;
         virtual GLenum getPrimitiveType() const = 0;
 
-        virtual void init();
+        // virtual void init();
         #ifdef USEDSA
         void attachToVAO(GLuint iVao);
         #endif

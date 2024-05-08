@@ -8,8 +8,7 @@ Lidar::Lidar(
   atomic<uint64_t> & ioLidarHeartBeat, 
   atomic<double> & ioImuFreq, 
   atomic<double> & ioLidarFreq, 
-  atomic<size_t> & ioPointCount,
-  PointCloud & ioPointCloud,
+  PointCloudAccumulator & ioPCAccum,
   binary_semaphore & ioSignalFirstPointCloud,
   const string & iPortName
 )
@@ -22,8 +21,7 @@ Lidar::Lidar(
   lastImuTimeStamp(chrono::high_resolution_clock::now()),
   lidarFreq(ioLidarFreq), lidarAvgFreq(100),
   lastLidarTimeStamp(chrono::high_resolution_clock::now()),
-  pointCount(ioPointCount),
-  pointCloud(ioPointCloud),
+  pcAccum(ioPCAccum),
   signalFirstPointCloud(ioSignalFirstPointCloud),
   firstPointCloud(true),
   imuQuat(0.0, 0.0, 0.0, 1.0)
@@ -130,9 +128,17 @@ void Lidar::processPointCloud(const PointCloudUnitree & iCloud) {
     auto ringNum = iCloud.ringNum;
     auto &points = iCloud.points;
     auto localPointCount = points.size();
-    pointCount = localPointCount;
 
-    pointCloud.setPoints(points);
+    PointCloud * next = pcAccum.getNextCloud();
+    if(pcAccum.getCloudCount() < pcAccum.getMaxCount()) {
+        next = new PointCloud;
+        pcAccum.addCloud(next);
+        next = pcAccum.getCurrentCloud();
+    }
+
+    if(next) {
+        next->setPoints(points);
+    }
 
     if(firstPointCloud) {
         firstPointCloud = false;

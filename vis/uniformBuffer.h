@@ -17,13 +17,14 @@ class UniformBuffer {
         GLuint ubo;
         GLuint bindPoint;
         bool isDynamic;
+        bool isNew;
         bool dirty;
 
     public:
-        UniformBuffer(bool iIsDynamic = false);
+        UniformBuffer(GLuint iBindPoint, bool iIsDynamic = false);
         virtual ~UniformBuffer();
 
-        virtual bool init(GLuint iBindPoint);
+        // virtual bool init(GLuint iBindPoint);
         virtual void mark();
         virtual void unmark();
         virtual void update();

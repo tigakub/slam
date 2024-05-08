@@ -9,7 +9,7 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
     layout (std140, binding = 0) uniform Camera {
         CameraData data;
     } uiCamera;
-    layout (std140, binding = 1) uniform Contex {
+    layout (std140, binding = 1) uniform Context {
         ContextData data;
     } uiContext;
 
@@ -23,9 +23,10 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
        
         vec4 imuPoint = conjugate(vec4(viPos.x, viPos.y, viPos.z, 0.0), uiCamera.data.imuQuat);
         imuPoint.w = 1.0;
+
         gl_Position = matrix * imuPoint;
         
-        float d = (length(viPos) - 0.5);
+        float d = (length(viPos) - 0.1) / 2.0;
         if(d > 1.0) d = 1.0;
 
         float r = 2.0 - 4.0 * d;
@@ -42,7 +43,14 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
         if(b < 0.0) b = 0.0;
         if(b > 1.0) b = 1.0;
         
-        fiColor = vec4(r * (1.0 - d * d * d), g * (1.0 - d * d * d), b * (1.0 - d * d * d), 1.0 - d * d * d);
+        vec4 tint = uiContext.data.tint;
+        float comp = 1.0 - d;
+
+        d = (length(viPos) - 0.1) / 10.0;
+        if(d > 1.0) d = 1.0;
+
+        float logComp = 1.0 - d;
+        fiColor = vec4(r * comp, g * comp, b * logComp, comp);
         gl_PointSize = 1.0 + (0.5 - 0.5 * (gl_Position.z / gl_Position.w)) * 20.0;
     }
 )0B3R0N";
@@ -85,12 +93,11 @@ const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
     void main() {
         mat4 mvMatrix = uiCamera.data.viewMatrix; // * uiContext.data.modelMatrix;
         mat4 matrix = uiCamera.data.projMatrix * mvMatrix;
-        /*
+
         vec4 imuPoint = conjugate(vec4(viPos.x, viPos.y, viPos.z, 0.0), uiCamera.data.imuQuat);
         imuPoint.w = 1.0;
+
         gl_Position = matrix * imuPoint;
-        */
-        gl_Position = matrix * vec4(viPos.x, viPos.y, viPos.z, 1.0f);
         
         vec3 sNorm = vec3(mvMatrix * vec4(viNorm.x, viNorm.y, viNorm.z, 0.0f));
         vec3 lNorm = vec3(mvMatrix * uiLight0.data.position);
@@ -118,7 +125,7 @@ const char *Visualizer::fragmentLitShaderSource = R"0B3R0N(
 Visualizer::Visualizer(
     deque<OccupancyGrid *> & ioOccupancyQueue,
     mutex & ioOccupancyQueueMutex,
-    PointCloud & ioPointCloud, 
+    PointCloudAccumulator & ioPCAccum, 
     size_t iWidth, 
     size_t iHeight)
 : glAvailable(false), 
@@ -127,10 +134,10 @@ Visualizer::Visualizer(
   occupancyQueue(ioOccupancyQueue), 
   occupancyQueueMutex(ioOccupancyQueueMutex),
   framebuffer(800, 600),
-  camera(800, 600, true),
-  light(false),
-  pointCloud(ioPointCloud),
-  context(camera),
+  camera(0, 800, 600, true),
+  context(1),
+  light(2, false),
+  pcAccum(ioPCAccum),
   rootNode(),
   // testBox(),
   testTriangle() {
@@ -240,41 +247,34 @@ Visualizer::Visualizer(
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // GLint bindPoint = glGetUniformLocation(shaderProgram, "camera");
-
-    // camera.setFocus(boundingBox);
+    /*
     camera.init(0);
     context.init(1);
     light.init(2);
-    /*
-    bindPoint = glGetUniformLocation(vertexShader, "light0");
-    light.init(bindPoint);
-    */
-    /*
-    framebuffer.init();
-
-    testBox.expand(boundingBox);
-    testBox.init();
     */
 
     Box * box = new Box;
     Geometry<Box> * boxGeom = new Geometry<Box>(box, litShaderProgram);
     Node * node = new Node;
+    // mat4 yRot = ::rotate(mat4(1.0f), (float) radians(30.0), vec3(0.0, 1.0, 0.0));
+    // node->setTransform(yRot);
+    node->setTransform(mat4(1.0f));
     node->addGeometry(boxGeom);
     rootNode.addChild(node);
 
-    UnmanagedGeometry<PointCloud> * pointCloudGeom = new UnmanagedGeometry<PointCloud>(pointCloud, pointShaderProgram);
+    UnmanagedGeometry<PointCloudAccumulator> * pointCloudGeom = new UnmanagedGeometry<PointCloudAccumulator>(pcAccum, pointShaderProgram);
     node = new Node;
-    // mat4 xRot = ::rotate(mat4(1.0f), (float) radians(180.0), vec3(0.0, 1.0, 0.0));
+    // mat4 xRot = ::rotate(mat4(1.0f), (float) radians(180.0), vec3(1.0, 0.0, 0.0));
+    // node->setTransform(xRot);
     node->setTransform(mat4(1.0f));
     node->addGeometry(pointCloudGeom);
     rootNode.addChild(node);
 
+    /*
     boxGeom->init();
     pointCloudGeom->init();
-    // pointCloud.init();
-    // testBox.init();
     testTriangle.init();
+    */
 
     float vertices[] = {
         -1.0f, -0.5f,  0.0f, 1.0, 0.0, 0.0, 1.0,
@@ -302,7 +302,6 @@ Visualizer::Visualizer(
     glDepthFunc(GL_LESS);                                                                                                                                           
     glEnable(GL_CULL_FACE);
     glEnable(GL_PROGRAM_POINT_SIZE);
-    //glPointSize(5.0);
 
     glAvailable = true;
 }
@@ -335,11 +334,13 @@ int Visualizer::loop() {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             camera.bind();
+            context.bind();
             light.bind();
             
             render();
 
             light.unbind();
+            context.unbind();
             camera.unbind();
         }
         frequency = 1000000.0 / double(elapsed);
@@ -351,6 +352,7 @@ int Visualizer::loop() {
 
 void Visualizer::update() {
     camera.update();
+    // context.update();
     // pointCloud.update();
     rootNode.update();
     // light.update();

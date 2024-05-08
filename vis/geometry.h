@@ -17,7 +17,7 @@ class GeometryBase {
         GeometryBase();
         virtual ~GeometryBase();
 
-        virtual void init() = 0;
+        // virtual void init() = 0;
         virtual void update() = 0;
         virtual void draw() = 0;
 };
@@ -39,14 +39,16 @@ class Geometry: public GeometryBase {
 
         virtual ~Geometry() { }
 
+        /*
         virtual void init() {
             if(mesh.get()) mesh->init();
         }
+        */
 
         virtual void update() {
             if(mesh.get()) mesh->update();
         }
-
+       
         virtual void draw() {
             glUseProgram(program);
             if(mesh.get()) mesh->draw();
@@ -71,9 +73,11 @@ class UnmanagedGeometry: public GeometryBase {
 
         virtual ~UnmanagedGeometry() { }
 
+        /*
         virtual void init() {
             mesh.init();
         }
+        */
 
         virtual void update() {
             mesh.update();

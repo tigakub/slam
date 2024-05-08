@@ -9,13 +9,16 @@
 
 class MeshBase {
     protected:
-        VertexArray vao;
+        bool isNew;
 
     public:
-        MeshBase(): vao() { }
+        MeshBase(): isNew(true) { }
         virtual ~MeshBase() { }
 
-        virtual void init() = 0;
+        virtual ElementBufferBase & getEBO() = 0;
+        virtual VertexBufferBase & getVBO() = 0;
+
+        //virtual void init() = 0;
         virtual void update() = 0;
         virtual void draw() = 0;
         virtual void expand(AABB &ioBoundingBox) = 0;
@@ -28,23 +31,41 @@ class MeshBase {
 template<class VertexType, const BufferFormat & iBufferFormat, GLenum iPrimitiveType, bool iEboIsFixedSize = false, GLsizei iEboSize = 0, bool iVboIsFixedSize = false, GLsizei iVboSize = 0>
 class Mesh: public MeshBase {
     protected:
+        VertexArray vao;
         ElementBuffer<GLuint, iPrimitiveType, iEboIsFixedSize, iEboSize> ebo;
         VertexBuffer<VertexType, iBufferFormat, iVboIsFixedSize, iVboSize> vbo;
 
     public:
         Mesh(bool iVboIsDynamic = false, bool iEboIsDynamic = false)
-        : MeshBase(), ebo(iEboIsDynamic), vbo(iVboIsDynamic) { }
+        : MeshBase(), vao(), ebo(iEboIsDynamic), vbo(iVboIsDynamic) { }
 
         virtual ~Mesh() { }
 
+        /*
         virtual void init() {
             initGeometry();
             vao.init(ebo, vbo);
         }
+        */
+
+        virtual ElementBufferBase & getEBO() {
+            return ebo;
+        }
+
+        virtual VertexBufferBase & getVBO() {
+            return vbo;
+        }
         
         virtual void update() {
-            ebo.update();
-            vbo.update();
+            if(isNew) {
+                initGeometry();
+                vao.init(ebo, vbo);
+                vao.unbind();
+                isNew = false;
+            } else {
+                ebo.update();
+                vbo.update();
+            }
         }
         
         virtual void draw() {

@@ -20,6 +20,7 @@
 #include "lidar.h"
 #include "visualizer.h"
 #include "vis/pointCloud.h"
+#include "vis/pointCloudAccumulator.h"
 #include "vis/quaternion.h"
 
 using namespace std;
@@ -57,7 +58,7 @@ class Slam {
         mutex occupancyQueueMutex;
 
         // shared_ptr<PointCloud> pointCloud;
-        PointCloud * pointCloud;
+        PointCloudAccumulator pcAccum;
 
         vec4 imuQuat;
         mutex imuQuatMutex;
@@ -76,7 +77,7 @@ class Slam {
           waitForFirstPointCloud(1),
           occupancyQueue(),
           occupancyQueueMutex(),
-          pointCloud(new PointCloud) { }
+          pcAccum(4) { }
 
         virtual ~Slam() {
             stop();
@@ -160,7 +161,10 @@ class Slam {
         }
 
         size_t getPointCount() {
-            return pointCount;
+            PointCloud * currentCloud = pcAccum.getCurrentCloud();
+            if(!currentCloud) return 0;
+            return currentCloud->getEBO().getCount();
+            // return pointCount;
         }
 
         void lockOutput() {
@@ -176,6 +180,7 @@ class Slam {
             glfwInit();
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+            glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true); 
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
             window = glfwCreateWindow(width, height, "Unitree 4D LiDAR L1", NULL, NULL);
             THROW_IF_NULL(window, "Failed to create GLFW window");
@@ -192,26 +197,28 @@ class Slam {
 
             try {
                 waitForFirstPointCloud.acquire();                
-                Visualizer visualizer(occupancyQueue, occupancyQueueMutex, *pointCloud, width, height);
+                Visualizer visualizer(occupancyQueue, occupancyQueueMutex, pcAccum, width, height);
                 waitForFirstPointCloud.release();
 
                 auto lastTime = chrono::high_resolution_clock::now();
                 while(!shouldTerminate()) {
                     if(glfwWindowShouldClose(window)) {
+                        // pcAccum.cleanUp();
                         setShouldTerminate(true);
+                    } else {
+                        visualizer.setViewportSize(width, height);
+                        waitForFirstPointCloud.acquire();   
+                        imuQuatMutex.lock();
+                        visualizer.setImuQuat(imuQuat);
+                        imuQuatMutex.unlock();
+                        visualizer.update();
+                        visualizer.loop();
+                        glfwSwapBuffers(window);
+                        glfwPollEvents();
+                        waitForFirstPointCloud.release();
+                        setVisFreq(visualizer.getFrequency());
+                        processInput();
                     }
-                    visualizer.setViewportSize(width, height);
-                    waitForFirstPointCloud.acquire();   
-                    imuQuatMutex.lock();
-                    visualizer.setImuQuat(imuQuat);
-                    imuQuatMutex.unlock();
-                    visualizer.update();
-                    visualizer.loop();
-                    glfwSwapBuffers(window);
-                    glfwPollEvents();
-                    waitForFirstPointCloud.release();
-                    setVisFreq(visualizer.getFrequency());
-                    processInput();
                 }
 
             } catch (Exception e) {
@@ -220,14 +227,15 @@ class Slam {
                 cerr << e << endl;
                 unlockOutput();
             }
-            if(pointCloud) delete pointCloud;
-            pointCloud = nullptr;
+            // if(pointCloud) delete pointCloud;
+            // pointCloud = nullptr;
+            pcAccum.cleanUp();
             glfwTerminate();
         }
 
         void lidarProc() {
             try {
-                Lidar lidar(occupancyQueue, occupancyQueueMutex, imuHeartBeat, lidarHeartBeat, imuFreq, lidarFreq, pointCount, *pointCloud, waitForFirstPointCloud);
+                Lidar lidar(occupancyQueue, occupancyQueueMutex, imuHeartBeat, lidarHeartBeat, imuFreq, lidarFreq, pcAccum, waitForFirstPointCloud);
                 
                 // lidar.setMode(STANDBY);
                 // sleep(1);

@@ -19,6 +19,7 @@ class VertexBufferBase {
     protected:
         GLuint vbo;
         bool isDynamic;
+        bool isNew;
         bool dirty;
 
     public:
@@ -28,7 +29,7 @@ class VertexBufferBase {
         virtual size_t getCount() const = 0;
         virtual const BufferFormat &getBufferFormat() const = 0;
 
-        virtual void init();
+        //virtual void init();
         #ifdef USEDSA
         void attachToVAO(GLuint iVao, GLuint iBindPoint, GLint iOffset);
         #endif

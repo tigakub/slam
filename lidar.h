@@ -12,6 +12,7 @@
 #include "unitree_lidar_sdk.h"
 #include "occupancyGrid.h"
 #include "vis/pointCloud.h"
+#include "vis/pointCloudAccumulator.h"
 #include "vis/quaternion.h"
 
 using namespace std;
@@ -36,8 +37,7 @@ class Lidar {
         atomic<double> & lidarFreq;
         Average lidarAvgFreq;
 
-        atomic<size_t> & pointCount;
-        PointCloud & pointCloud;
+        PointCloudAccumulator & pcAccum;
 
         binary_semaphore & signalFirstPointCloud;
         bool firstPointCloud;
@@ -52,8 +52,7 @@ class Lidar {
             atomic<uint64_t> & ioLidarHeartBeat, 
             atomic<double> & ioImuFreq, 
             atomic<double> & ioLidarFreq, 
-            atomic<size_t> & ioPointCount,
-            PointCloud & ioPointCloud,
+            PointCloudAccumulator & ioPCAccum,
             binary_semaphore & ioSignalFirstPointCloud,
             const string & iPortName = string("/dev/serial/by-id/usb-Silicon_Labs_CP2104_USB_to_UART_Bridge_Controller_02AF54A2-if00-port0"));
 

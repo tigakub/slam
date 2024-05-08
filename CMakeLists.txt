@@ -30,6 +30,7 @@ add_executable(slam
     vis/box.cpp
     vis/triangle.cpp
     vis/pointCloud.cpp
+    vis/pointCloudAccumulator.cpp
     vis/camera.cpp
     vis/light.cpp
     vis/framebuffer.cpp
