@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory> // for shared_ptr
+#include <mutex>
 
 using namespace std;
 
@@ -10,6 +11,7 @@ using namespace std;
 
 class PointCloudAccumulator : MeshBase {
     protected:
+        mutex accessMutex;
         vector<PointCloud *> clouds;
         size_t maxClouds;
         size_t nextCloud;

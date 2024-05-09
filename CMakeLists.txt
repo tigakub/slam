@@ -17,9 +17,9 @@ add_executable(slam
     gl.c 
     lidar.cpp 
     visualizer.cpp 
-    container.cpp 
-    link.cpp 
-    occupancyGrid.cpp
+    vis/container.cpp 
+    vis/link.cpp 
+    vis/occupancyGrid.cpp
     vis/quaternion.cpp
     vis/vertex.cpp
     vis/aabb.cpp

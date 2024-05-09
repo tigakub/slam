@@ -33,7 +33,7 @@ class VertexBufferBase {
         #ifdef USEDSA
         void attachToVAO(GLuint iVao, GLuint iBindPoint, GLint iOffset);
         #endif
-        virtual void update();
+        virtual void update(bool iDeferUnbind = false);
         virtual void mark();
         virtual void unmark();
         virtual void bind();

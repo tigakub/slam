@@ -37,13 +37,13 @@ void UniformBuffer::unmark() {
     dirty = false;
 }
 
-void UniformBuffer::update() {
+void UniformBuffer::update(bool iDeferUnbind) {
     if(isNew) {
         initData();
         glGenBuffers(1, &ubo);
         bind();
         glBufferData(GL_UNIFORM_BUFFER, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-        unbind();
+        if(!iDeferUnbind) unbind();
         isNew = false;
     } else {
         if(dirty && isDynamic && getData() && getDataSize()) {

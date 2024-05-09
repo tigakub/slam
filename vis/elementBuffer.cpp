@@ -32,13 +32,14 @@ void ElementBufferBase::attachToVAO(GLuint iVao) {
 }
 #endif
 
-void ElementBufferBase::update() {
+void ElementBufferBase::update(bool iDeferUnbind) {
     if(isNew) {
         glGenBuffers(1, &ebo);
         bind();
         GLsizei dataSize = getDataSize();
         const void * data = getData();
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, dataSize, data, isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+        if(!iDeferUnbind) unbind();
         isNew = false;
     } else {
         if(dirty && isDynamic && getData() && getDataSize()) {

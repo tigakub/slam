@@ -11,7 +11,7 @@
 #include <mutex>
 #include <memory>
 
-#include <occupancyGrid.h>
+#include "vis/occupancyGrid.h"
 
 #include "vis/framebuffer.h"
 #include "vis/camera.h"
@@ -46,7 +46,8 @@ class Visualizer: OccupancyGrid::Functor {
 
         Framebuffer framebuffer;
         Camera camera;
-        Light light;
+        Light light0;
+        Light light1;
         AABB boundingBox;
 
         PointCloudAccumulator & pcAccum;
@@ -55,8 +56,8 @@ class Visualizer: OccupancyGrid::Functor {
         Node rootNode;
 
         // Box testBox;
-        Triangle testTriangle;
-        GLuint testTriangleVAO;
+        // Triangle testTriangle;
+        // GLuint testTriangleVAO;
 
     public:
         Visualizer(

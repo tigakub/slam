@@ -10,7 +10,7 @@
 
 #include "average.h"
 #include "unitree_lidar_sdk.h"
-#include "occupancyGrid.h"
+#include "vis/occupancyGrid.h"
 #include "vis/pointCloud.h"
 #include "vis/pointCloudAccumulator.h"
 #include "vis/quaternion.h"

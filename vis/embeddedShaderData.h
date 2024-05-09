@@ -49,6 +49,9 @@ struct LightData {
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
+    #ifdef __cplusplus
+    LightData(): position(0.0, 0.0, 10.0, 0.0), ambient(0.2, 0.2, 0.2, 1.0), diffuse(1.0, 1.0, 1.0, 1.0), specular(0.0, 0.0, 0.0, 1.0) { }
+    #endif
 };
 
 #define UB_CAMERA		0

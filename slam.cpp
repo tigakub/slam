@@ -85,6 +85,7 @@ class Slam {
 
         void debugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message) const {
             cerr << message << endl;
+            cerr << endl;
         }
 
         void framebufferSizeCallback(size_t iWidth, size_t iHeight) {

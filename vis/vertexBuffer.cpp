@@ -32,13 +32,14 @@ void VertexBufferBase::attachToVAO(GLuint iVao, GLuint iBindPoint, GLint iOffset
 }
 #endif
 
-void VertexBufferBase::update() {
+void VertexBufferBase::update(bool iDeferUnbind) {
     if(isNew) {
         glGenBuffers(1, &vbo);
         bind();
         GLsizei dataSize = getDataSize();
         const void * data = getData();
         glBufferData(GL_ARRAY_BUFFER, dataSize, data, isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+        if(!iDeferUnbind) unbind();
         isNew = false;
     } else {
         if(dirty && isDynamic && getData() && getDataSize()) {
