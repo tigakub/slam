@@ -1,0 +1,117 @@
+[
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/slam.cpp.o -c /home/tigakub/Documents/Robotics/slam/slam.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/slam.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-gcc  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -o CMakeFiles/slam.dir/gl.c.o -c /home/tigakub/Documents/Robotics/slam/gl.c",
+  "file": "/home/tigakub/Documents/Robotics/slam/gl.c"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/lidar.cpp.o -c /home/tigakub/Documents/Robotics/slam/lidar.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/lidar.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/visualizer.cpp.o -c /home/tigakub/Documents/Robotics/slam/visualizer.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/visualizer.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/container.cpp.o -c /home/tigakub/Documents/Robotics/slam/container.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/container.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/link.cpp.o -c /home/tigakub/Documents/Robotics/slam/link.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/link.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/occupancyGrid.cpp.o -c /home/tigakub/Documents/Robotics/slam/occupancyGrid.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/occupancyGrid.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/quaternion.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/quaternion.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/quaternion.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/vertex.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/vertex.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/vertex.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/aabb.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/aabb.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/aabb.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/uniformBuffer.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/uniformBuffer.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/uniformBuffer.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/vertexBuffer.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/vertexBuffer.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/vertexBuffer.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/elementBuffer.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/elementBuffer.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/elementBuffer.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/vertexArray.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/vertexArray.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/vertexArray.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/box.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/box.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/box.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/triangle.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/triangle.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/triangle.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/pointCloud.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/pointCloud.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/pointCloud.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/camera.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/camera.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/camera.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/light.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/light.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/light.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/framebuffer.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/framebuffer.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/framebuffer.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/context.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/context.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/context.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/node.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/node.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/node.cpp"
+},
+{
+  "directory": "/home/tigakub/Documents/Robotics/slam/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++  -I/home/tigakub/Documents/Robotics/slam -I/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include -I\"/home/tigakub/Documents/Robotics/slam/unitree_lidar_sdk/include*\" -g -std=gnu++20 -o CMakeFiles/slam.dir/vis/geometry.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/geometry.cpp",
+  "file": "/home/tigakub/Documents/Robotics/slam/vis/geometry.cpp"
+}
+]
