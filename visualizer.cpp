@@ -103,13 +103,14 @@ const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
         vec3 lNorm = vec3(mvMatrix * uiLight0.data.position);
 
         const vec3 n = normalize(sNorm);
-        const vec3 l = normalize(-lNorm);
+        const vec3 l = normalize(lNorm);
         
-        float cosAngle = dot(n, l);
+        float cosAngle = clamp(dot(n, l), 0, 1);
 
         fiColor = 
-            // vec4(1.0, 0.4, 0.0, 1.0);
-            vec4(vec3(viColor) * cosAngle, 1.0f);
+            // vec4(0.4, 0.0, 1.0, 1.0);
+            // vec4(viColor.x, viColor.y, viColor.z, 1.0f);
+            vec4(viColor.x * cosAngle, viColor.y * cosAngle, viColor.z * cosAngle, 1.0f);
             // vec4(vec3(viColor) * (vec3(uiLight0.data.ambient) + vec3(uiLight0.data.diffuse) * cosAngle), 1.0f);
     }
 )0B3R0N";
@@ -138,9 +139,9 @@ Visualizer::Visualizer(
   context(1),
   light(2, false),
   pcAccum(ioPCAccum),
-  rootNode(),
+  rootNode() {
   // testBox(),
-  testTriangle() {
+  // testTriangle() {
     /*
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -275,7 +276,7 @@ Visualizer::Visualizer(
     pointCloudGeom->init();
     testTriangle.init();
     */
-
+    /*
     float vertices[] = {
         -1.0f, -0.5f,  0.0f, 1.0, 0.0, 0.0, 1.0,
          0.0f, -0.5f,  0.0f, 0.0, 1.0, 0.0, 1.0,
@@ -297,6 +298,7 @@ Visualizer::Visualizer(
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    */
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);                                                                                                                                           

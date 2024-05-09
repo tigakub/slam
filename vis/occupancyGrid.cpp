@@ -1,7 +1,15 @@
-#include "occupancyGrid.h"
+#include "vis/occupancyGrid.h"
 
 OccupancyGrid::Cell::Cell(size_t iIndex)
-: Link(iIndex) { }
+: Link(iIndex), count(0) { }
+
+void OccupancyGrid::Cell::inc() {
+    count++;
+}
+
+bool OccupancyGrid::Cell::dec() {
+    return count-- > 0;
+}
 
 OccupancyGrid::Row::Row(size_t iIndex)
 : Container(), Link(iIndex) { }

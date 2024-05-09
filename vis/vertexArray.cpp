@@ -28,7 +28,7 @@ void VertexArray::init(ElementBufferBase & iEBuf, VertexBufferBase & iVBuf) {
 
         const BufferFormat & bufferFormat = iVBuf.getBufferFormat();
 
-        iVBuf.update();
+        iVBuf.update(true);
         GLuint i = 0;
         GLuint offset = 0;
         for(auto & vtxFmt: bufferFormat.format) {
@@ -39,10 +39,8 @@ void VertexArray::init(ElementBufferBase & iEBuf, VertexBufferBase & iVBuf) {
         }
 
         iEBuf.update();
-
-        unbind();
         iVBuf.unbind();
-        iEBuf.unbind();
+        unbind();
     #endif
 }
 

@@ -13,8 +13,14 @@ class OccupancyGrid: public Container {
     protected:
 
         class Cell: public Link {
+            protected:
+                size_t count;
+
             public:
                 Cell(size_t iIndex);
+
+                void inc();
+                bool dec();
         };
 
         class Row: public Container, public Link {

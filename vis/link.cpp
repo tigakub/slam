@@ -1,4 +1,4 @@
-#include "link.h"
+#include "vis/link.h"
 
 Link::Link(size_t iIndex)
 : next(nullptr), index(iIndex) { }

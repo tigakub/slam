@@ -27,7 +27,7 @@ class UniformBuffer {
         // virtual bool init(GLuint iBindPoint);
         virtual void mark();
         virtual void unmark();
-        virtual void update();
+        virtual void update(bool iDeferUnbind = false);
         virtual void bind();
         virtual void unbind();
 

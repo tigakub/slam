@@ -32,7 +32,7 @@ class ElementBufferBase {
         #ifdef USEDSA
         void attachToVAO(GLuint iVao);
         #endif
-        virtual void update();
+        virtual void update(bool iDeferUnbind = false);
         virtual void mark();
         virtual void unmark();
         virtual void bind();

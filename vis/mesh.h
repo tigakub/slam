@@ -60,7 +60,6 @@ class Mesh: public MeshBase {
             if(isNew) {
                 initGeometry();
                 vao.init(ebo, vbo);
-                vao.unbind();
                 isNew = false;
             } else {
                 ebo.update();
