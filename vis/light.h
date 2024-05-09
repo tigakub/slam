@@ -18,6 +18,8 @@ class Light: public UniformBuffer {
         Light(GLuint iBindPoint, bool iIsDynamic = false);
         virtual ~Light();
 
+        LightData &getLightData();
+
     protected:
         virtual void initData();
         virtual const void *getData() const;

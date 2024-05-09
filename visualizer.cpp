@@ -80,9 +80,12 @@ const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
     layout (std140, binding = 1) uniform Context {
         ContextData data;
     } uiContext;
-    layout (std140, binding = 2) uniform Light {
+    layout (std140, binding = 2) uniform Light0 {
         LightData data;
     } uiLight0;
+    layout (std140, binding = 3) uniform Light1 {
+        LightData data;
+    } uiLight1;
 
     layout (location = 0) in vec3 viPos;
     layout (location = 1) in vec4 viNorm;
@@ -100,18 +103,27 @@ const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
         gl_Position = matrix * imuPoint;
         
         vec3 sNorm = vec3(mvMatrix * vec4(viNorm.x, viNorm.y, viNorm.z, 0.0f));
-        vec3 lNorm = vec3(mvMatrix * uiLight0.data.position);
+        vec3 l0Norm = vec3(mvMatrix * uiLight0.data.position);
+        vec3 l1Norm = vec3(mvMatrix * uiLight1.data.position);
 
         const vec3 n = normalize(sNorm);
-        const vec3 l = normalize(lNorm);
+        const vec3 l0 = normalize(l0Norm);
+        const vec3 l1 = normalize(l1Norm);
         
-        float cosAngle = clamp(dot(n, l), 0, 1);
+        float cosAngle0 = clamp(dot(n, l0), 0.0f, 1.0f);
+        float cosAngle1 = clamp(dot(n, l1), 0.0f, 1.0f);
+
+        float lightContrib = clamp(cosAngle0 + cosAngle1, 0.0f, 1.0f);
+
+        vec3 lightContrib0 = vec3(uiLight0.data.ambient) + vec3(uiLight0.data.diffuse) * cosAngle0;
+        vec3 lightContrib1 = vec3(uiLight1.data.ambient) + vec3(uiLight1.data.diffuse) * cosAngle1;
+        vec3 totalContrib = clamp(lightContrib0 + lightContrib1, vec3(0.0f), vec3(1.0f));
 
         fiColor = 
             // vec4(0.4, 0.0, 1.0, 1.0);
             // vec4(viColor.x, viColor.y, viColor.z, 1.0f);
-            vec4(vec3(viColor) * cosAngle, 1.0f);
-            // vec4(vec3(viColor) * (vec3(uiLight0.data.ambient) + vec3(uiLight0.data.diffuse) * cosAngle), 1.0f);
+            // vec4(vec3(viColor) * lightContrib, 1.0f);
+            vec4(vec3(viColor) * totalContrib, 1.0f);
     }
 )0B3R0N";
 
@@ -137,7 +149,8 @@ Visualizer::Visualizer(
   framebuffer(800, 600),
   camera(0, 800, 600, true),
   context(1),
-  light(2, false),
+  light0(2, false),
+  light1(3, false),
   pcAccum(ioPCAccum),
   rootNode() {
   // testBox(),
@@ -254,6 +267,13 @@ Visualizer::Visualizer(
     light.init(2);
     */
 
+    LightData & lightData0 = light0.getLightData();
+    lightData0.position = vec4(2.0f, 3.0f, 5.0f, 0.0f);
+    lightData0.diffuse = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    LightData & lightData1 = light1.getLightData();
+    lightData1.position = vec4(-2.0f, -3.0f, -5.0f, 0.0f);
+    lightData1.diffuse = vec4(0.5f, 0.5f, 0.5f, 1.0f);
+
     Box * box = new Box;
     Geometry<Box> * boxGeom = new Geometry<Box>(box, litShaderProgram);
     Node * node = new Node;
@@ -337,11 +357,13 @@ int Visualizer::loop() {
 
             camera.bind();
             context.bind();
-            light.bind();
+            light0.bind();
+            light1.bind();
             
             render();
 
-            light.unbind();
+            light1.unbind();
+            light0.unbind();
             context.unbind();
             camera.unbind();
         }
@@ -357,7 +379,8 @@ void Visualizer::update() {
     // context.update();
     // pointCloud.update();
     rootNode.update();
-    light.update();
+    light0.update();
+    light1.update();
     
     OccupancyGrid *grid = nullptr;
     occupancyQueueMutex.lock();

@@ -46,7 +46,8 @@ class Visualizer: OccupancyGrid::Functor {
 
         Framebuffer framebuffer;
         Camera camera;
-        Light light;
+        Light light0;
+        Light light1;
         AABB boundingBox;
 
         PointCloudAccumulator & pcAccum;
