@@ -38,7 +38,7 @@ void VertexArray::init(ElementBufferBase & iEBuf, VertexBufferBase & iVBuf) {
             offset += vtxFmt.byteSize;
         }
 
-        iEBuf.update();
+        iEBuf.update(true);
         iVBuf.unbind();
         unbind();
     #endif
