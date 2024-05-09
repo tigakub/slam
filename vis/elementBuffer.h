@@ -27,7 +27,7 @@ class ElementBufferBase {
         virtual size_t getCount() const = 0;
         virtual GLenum getPrimitiveType() const = 0;
 
-        virtual void init();
+        virtual void init(bool iDeferUnbind = false);
         #ifdef USEDSA
         void attachToVAO(GLuint iVao);
         #endif

@@ -8,9 +8,9 @@ ElementBufferBase::~ElementBufferBase() {
     if(ebo) glDeleteBuffers(1, &ebo);
 }
 
-void ElementBufferBase::init() {
+void ElementBufferBase::init(bool iDeferUnbind) {
     if(getData() && getDataSize()) {
-        dirty = true;
+        dirty = false;
         #ifdef USEDSA
             glCreateBuffers(1, &ebo);
             glNamedBufferStorage(ebo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW_BIT : 0);
@@ -18,6 +18,7 @@ void ElementBufferBase::init() {
             glGenBuffers(1, &ebo);
             bind();
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+            if(!iDeferUnbind) unbind();
         #endif
     }
 }

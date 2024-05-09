@@ -12,7 +12,7 @@ bool UniformBuffer::init(GLuint iBindPoint) {
     initData();
     bindPoint = iBindPoint;
     if(getData() && getDataSize()) {
-        dirty = true;
+        dirty = false;
         #ifdef USEDSA
             glCreateBuffers(1, (GLuint *) &data);
             glNamedBufferStorage(ubo, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_STORAGE_BIT : GL_STATIC_STORAGE_BIT);

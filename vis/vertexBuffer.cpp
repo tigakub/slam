@@ -8,7 +8,7 @@ VertexBufferBase::~VertexBufferBase() {
     if(vbo) glDeleteBuffers(1, &vbo);
 }
 
-void VertexBufferBase::init() {
+void VertexBufferBase::init(bool iDeferUnbind) {
     if(getData() && getDataSize()) {
         dirty = true;
         #ifdef USEDSA
@@ -18,6 +18,7 @@ void VertexBufferBase::init() {
             glGenBuffers(1, &vbo);
             bind();
             glBufferData(GL_ARRAY_BUFFER, getDataSize(), getData(), isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+            if(!iDeferUnbind) unbind();
         #endif
     }
 }

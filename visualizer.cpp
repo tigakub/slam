@@ -96,7 +96,7 @@ const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
         vec3 lNorm = vec3(mvMatrix * uiLight0.data.position);
 
         const vec3 n = normalize(sNorm);
-        const vec3 l = normalize(-lNorm);
+        const vec3 l = normalize(lNorm);
         
         float cosAngle = dot(n, l);
 

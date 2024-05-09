@@ -57,7 +57,7 @@ void Camera::initData() {
 
 void Camera::update() {
     if(dirty) {
-        data.viewMatrix = lookAt(-eye, -center, -up);
+        data.viewMatrix = lookAt(eye, center, up);
         data.projMatrix = perspective(fov, ((float) width / height), 0.1f, 1000.0f);
         data.imuQuat = imuQuat;
         UniformBuffer::update();

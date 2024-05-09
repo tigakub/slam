@@ -1,7 +1,7 @@
 #include "context.h"
 
 Context::Context(Camera & iCamera)
-: camera(iCamera), transformStack() {
+: UniformBuffer(true), camera(iCamera), transformStack() {
     transformStack.emplace_back(mat4(1.0f));
 }
 

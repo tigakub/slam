@@ -28,7 +28,7 @@ void VertexArray::init(ElementBufferBase & iEBuf, VertexBufferBase & iVBuf) {
 
         const BufferFormat & bufferFormat = iVBuf.getBufferFormat();
 
-        iVBuf.init();
+        iVBuf.init(true);
         GLuint i = 0;
         GLuint offset = 0;
         for(auto & vtxFmt: bufferFormat.format) {
@@ -38,7 +38,11 @@ void VertexArray::init(ElementBufferBase & iEBuf, VertexBufferBase & iVBuf) {
             offset += vtxFmt.byteSize;
         }
 
-        iEBuf.init();
+        // If you unbind an EBO, OpenGL will free any associated vram, even if the EBO is associated with a VAO.
+        iEBuf.init(true);
+        // The above is NOT the case with VBOs.
+        iVBuf.unbind();
+        unbind();
     #endif
 }
 
