@@ -110,7 +110,7 @@ const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
         fiColor = 
             // vec4(0.4, 0.0, 1.0, 1.0);
             // vec4(viColor.x, viColor.y, viColor.z, 1.0f);
-            vec4(viColor.x * cosAngle, viColor.y * cosAngle, viColor.z * cosAngle, 1.0f);
+            vec4(vec3(viColor) * cosAngle, 1.0f);
             // vec4(vec3(viColor) * (vec3(uiLight0.data.ambient) + vec3(uiLight0.data.diffuse) * cosAngle), 1.0f);
     }
 )0B3R0N";
@@ -357,7 +357,7 @@ void Visualizer::update() {
     // context.update();
     // pointCloud.update();
     rootNode.update();
-    // light.update();
+    light.update();
     
     OccupancyGrid *grid = nullptr;
     occupancyQueueMutex.lock();
