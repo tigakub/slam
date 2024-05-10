@@ -22,9 +22,13 @@ class Lidar {
     protected:
         UnitreeLidarReader * reader;
         uint32_t timeDelay;
-
+        /*
         deque<OccupancyGrid *> & occupancyQueue;
         mutex & occupancyQueueMutex;
+        */
+
+        OccupancyGrid & occupancyGrid;
+        mutex & occupancyGridMutex;
 
         atomic<uint64_t> & imuHeartBeat;
         atomic<uint64_t> & lidarHeartBeat;
@@ -45,9 +49,13 @@ class Lidar {
         vec4 imuQuat;
 
     public:
-        Lidar(  
+        Lidar(
+            /*
             deque<OccupancyGrid *> & ioOccupancyQueue, 
             mutex & ioOccupancyQueueMutex, 
+            */
+            OccupancyGrid & ioOccupancyGrid,
+            mutex & ioOccupancyGridMutex,
             atomic<uint64_t> & ioImuHeartBeat, 
             atomic<uint64_t> & ioLidarHeartBeat, 
             atomic<double> & ioImuFreq, 

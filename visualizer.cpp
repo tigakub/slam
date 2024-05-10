@@ -5,6 +5,8 @@
 #include "vis/node.h"
 #include "vis/embeddedShaderData.h"
 
+using namespace glm;
+
 const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
     layout (std140, binding = 0) uniform Camera {
         CameraData data;
@@ -18,13 +20,11 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
 
     out vec4 fiColor;
     void main() {
-        mat4 mvMatrix = uiCamera.data.viewMatrix; // * uiContext.data.modelMatrix;
+        mat4 qMatrix = quatToMat(uiCamera.data.imuQuat);
+        mat4 mvMatrix = uiCamera.data.viewMatrix * qMatrix * uiContext.data.modelMatrix;
         mat4 matrix = uiCamera.data.projMatrix * mvMatrix;
-       
-        vec4 imuPoint = conjugate(vec4(viPos.x, viPos.y, viPos.z, 0.0), uiCamera.data.imuQuat);
-        imuPoint.w = 1.0;
 
-        gl_Position = matrix * imuPoint;
+        gl_Position = matrix * vec4(viPos, 1.0f);
         
         float d = (length(viPos) - 0.1) / 2.0;
         if(d > 1.0) d = 1.0;
@@ -94,13 +94,11 @@ const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
 
     out vec4 fiColor;
     void main() {
-        mat4 mvMatrix = uiCamera.data.viewMatrix; // * uiContext.data.modelMatrix;
+        mat4 qMatrix = quatToMat(uiCamera.data.imuQuat);
+        mat4 mvMatrix = uiCamera.data.viewMatrix * qMatrix * uiContext.data.modelMatrix;
         mat4 matrix = uiCamera.data.projMatrix * mvMatrix;
-
-        vec4 imuPoint = conjugate(vec4(viPos.x, viPos.y, viPos.z, 0.0), uiCamera.data.imuQuat);
-        imuPoint.w = 1.0;
-
-        gl_Position = matrix * imuPoint;
+        
+        gl_Position = matrix * vec4(viPos, 1.0f);
         
         vec3 sNorm = vec3(mvMatrix * vec4(viNorm.x, viNorm.y, viNorm.z, 0.0f));
         vec3 l0Norm = vec3(mvMatrix * uiLight0.data.position);
@@ -136,23 +134,33 @@ const char *Visualizer::fragmentLitShaderSource = R"0B3R0N(
 )0B3R0N";
 
 Visualizer::Visualizer(
+    /*
     deque<OccupancyGrid *> & ioOccupancyQueue,
     mutex & ioOccupancyQueueMutex,
+    */
+    OccupancyGrid & ioOccupancyGrid,
+    mutex & ioOccupancyGridMutex,
     PointCloudAccumulator & ioPCAccum, 
     size_t iWidth, 
     size_t iHeight)
 : glAvailable(false), 
   width(iWidth), height(iHeight), 
   lastTimeStamp(), frequency(0.0), 
+  /*
   occupancyQueue(ioOccupancyQueue), 
   occupancyQueueMutex(ioOccupancyQueueMutex),
+  */
+  occupancyGrid(ioOccupancyGrid),
+  occupancyGridMutex(ioOccupancyGridMutex),
   framebuffer(800, 600),
   camera(0, 800, 600, true),
   context(1),
   light0(2, false),
   light1(3, false),
   pcAccum(ioPCAccum),
-  rootNode() {
+  rootNode(),
+  cell(0.001, 0.001, 0.001),
+  cellGeom(nullptr) {
   // testBox(),
   // testTriangle() {
     /*
@@ -267,6 +275,9 @@ Visualizer::Visualizer(
     light.init(2);
     */
 
+    cellGeom = new UnmanagedGeometry<Box>(cell, litShaderProgram);
+    cellGeom->update();
+
     LightData & lightData0 = light0.getLightData();
     lightData0.position = vec4(2.0f, 3.0f, 5.0f, 0.0f);
     lightData0.diffuse = vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -274,12 +285,14 @@ Visualizer::Visualizer(
     lightData1.position = vec4(-2.0f, -3.0f, -5.0f, 0.0f);
     lightData1.diffuse = vec4(0.5f, 0.5f, 0.5f, 1.0f);
 
+    mat4 zOffset = translate(mat4(1.0f), vec3(0.0, 0.0, 0.05));
+
     Box * box = new Box;
     Geometry<Box> * boxGeom = new Geometry<Box>(box, litShaderProgram);
     Node * node = new Node;
     // mat4 yRot = ::rotate(mat4(1.0f), (float) radians(30.0), vec3(0.0, 1.0, 0.0));
     // node->setTransform(yRot);
-    node->setTransform(mat4(1.0f));
+    node->setTransform(zOffset);
     node->addGeometry(boxGeom);
     rootNode.addChild(node);
 
@@ -287,7 +300,7 @@ Visualizer::Visualizer(
     node = new Node;
     // mat4 xRot = ::rotate(mat4(1.0f), (float) radians(180.0), vec3(1.0, 0.0, 0.0));
     // node->setTransform(xRot);
-    node->setTransform(mat4(1.0f));
+    // node->setTransform(zOffset);
     node->addGeometry(pointCloudGeom);
     rootNode.addChild(node);
 
@@ -382,6 +395,7 @@ void Visualizer::update() {
     light0.update();
     light1.update();
     
+    /*
     OccupancyGrid *grid = nullptr;
     occupancyQueueMutex.lock();
     if(occupancyQueue.size() > 0) {
@@ -389,11 +403,7 @@ void Visualizer::update() {
         occupancyQueue.pop_front();
     }
     occupancyQueueMutex.unlock();
-
-    if(grid) {
-        grid->map(*this);
-        delete grid;
-    }
+    */
 }
 
 void Visualizer::render() {
@@ -412,6 +422,14 @@ void Visualizer::render() {
     // testBox.draw();
 
     rootNode.draw(context);
+
+    // Drawing up to 2000 separate boxes is too slow.
+    // Have to do this with instancing.
+    /*
+    occupancyGridMutex.lock();
+    occupancyGrid.map(*this);
+    occupancyGridMutex.unlock();
+    */
 }
 
 double Visualizer::getFrequency() const {
@@ -419,7 +437,14 @@ double Visualizer::getFrequency() const {
 }
 
 void Visualizer::operator()(size_t x, size_t y, size_t z) {
-    
+    if(cellGeom) {
+        const vec3 position(double(x) * 0.001, double(y) * 0.001, double(z) * 0.001);
+        const mat4 identity(1.0f);
+        auto trans = translate(identity, position);
+        context.pushMatrix(trans);
+        cellGeom->draw();
+        context.popMatrix();
+    }
 }
 
 string Visualizer::processGLSLSource(const char * iSource) {

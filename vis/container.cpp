@@ -10,8 +10,20 @@ Container::Container(Container &&iOther)
 
 Container::~Container() { delete head; }
 
+void Container::removeLink(size_t iIndex) {
+    if(head) {
+        if(head->index == iIndex) {
+            auto cell = head;
+            head = head->next;
+            cell->next = nullptr;
+            delete cell;
+        } else {
+            head->remove(iIndex);
+        }
+    }
+}
+
 Link * Container::getLink(size_t iIndex, bool &ioCreateIfNeeded) {
-    ioCreateIfNeeded = false;
     Link * link = head;
     if(link) link = link->find(iIndex);
     if(!link && ioCreateIfNeeded) {
@@ -29,6 +41,8 @@ Link * Container::getLink(size_t iIndex, bool &ioCreateIfNeeded) {
             head = link;
             ioCreateIfNeeded = true;
         }
+    } else {
+        ioCreateIfNeeded = false;
     }
     return link;
 }

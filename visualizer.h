@@ -25,6 +25,7 @@
 #include "vis/node.h"
 
 using namespace std;
+using namespace glm;
 
 class Visualizer: OccupancyGrid::Functor {
     protected:
@@ -41,8 +42,12 @@ class Visualizer: OccupancyGrid::Functor {
         chrono::high_resolution_clock::time_point lastTimeStamp;
         double frequency;
 
+        /*
         deque<OccupancyGrid *> & occupancyQueue;
         mutex & occupancyQueueMutex;
+        */
+        OccupancyGrid & occupancyGrid;
+        mutex & occupancyGridMutex;
 
         Framebuffer framebuffer;
         Camera camera;
@@ -54,6 +59,8 @@ class Visualizer: OccupancyGrid::Functor {
         
         Context context;
         Node rootNode;
+        Box cell;
+        UnmanagedGeometry<Box> *cellGeom;
 
         // Box testBox;
         // Triangle testTriangle;
@@ -61,8 +68,12 @@ class Visualizer: OccupancyGrid::Functor {
 
     public:
         Visualizer(
+            /*
             deque<OccupancyGrid *> & ioOccupancyQueue, 
             mutex & ioOccupancyQueueMutex, 
+            */
+            OccupancyGrid & ioOccupancyGrid,
+            mutex & ioOccupancyGridMutex,
             PointCloudAccumulator & ioPCAccum, 
             size_t iWidth = 800, 
             size_t iHeight = 600);

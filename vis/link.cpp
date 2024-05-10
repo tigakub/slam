@@ -32,3 +32,16 @@ Link * Link::find(size_t iIndex) {
     if(next) return next->find(iIndex);
     return nullptr;
 }
+
+void Link::remove(size_t iIndex) {
+    if(next) {
+        if(next->index == iIndex) {
+            auto cell = next;
+            next = next->next;
+            cell->next = nullptr;
+            delete cell;
+        } else {
+            next->remove(iIndex);
+        }
+    }
+}

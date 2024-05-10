@@ -20,6 +20,8 @@ class Container {
         Link * getLink(size_t iIndex, bool &ioCreateIfNeeded);
         Link * getHead();
 
+        void removeLink(size_t iIndex);
+
     protected:
         virtual Link * create(size_t iIndex) = 0;
 };

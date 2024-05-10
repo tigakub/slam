@@ -7,13 +7,21 @@
 using namespace glm;
 #endif
 
+#ifdef __cplusplus
+struct alignas(16) Plane {
+#else
 struct Plane {
+#endif
     float nx, ny, nz;
     float offset;
     int px, py, pz;
 };
 
+#ifdef __cplusplus
+struct alignas(16) FrustumData {
+#else
 struct FrustumData {
+#endif
     Plane near;
     Plane left;
     Plane right;
@@ -22,27 +30,36 @@ struct FrustumData {
     Plane far;
 };
 
+#ifdef __cplusplus
+struct alignas(16) CameraData {
+#else
 struct CameraData {
+#endif
     mat4 viewMatrix;
     mat4 projMatrix;
     vec4 imuQuat;
     #ifdef __cplusplus
-    CameraData() : viewMatrix(), projMatrix(), imuQuat(vec4(0.0, 0.0, 0.0, 1.0)) { }
+    CameraData() : viewMatrix(1.0f), projMatrix(1.0f), imuQuat(vec4(0.0, 0.0, 0.0, 1.0)) { }
     #endif
 };
 
+#ifdef __cplusplus
+struct alignas(16) ContextData {
+#else
 struct ContextData {
+#endif
     mat4 modelMatrix;
-    vec4 dummy0;
-    vec4 dummy1;
-    vec4 dummy2;
     vec4 tint;
     #ifdef __cplusplus
-    ContextData(): modelMatrix(), dummy0(), dummy1(), dummy2(), tint(1.0, 1.0, 1.0, 1.0) { }
+    ContextData(): modelMatrix(1.0f), tint(1.0, 1.0, 1.0, 1.0) { }
     #endif
 };
 
+#ifdef __cplusplus
+struct alignas(16) LightData {
+#else
 struct LightData {
+#endif
     vec4 position;
     vec4 ambient;
     vec4 diffuse;
@@ -101,4 +118,45 @@ vec4 invertQuaternion(vec4 q) {
 vec4 conjugate(vec4 p, vec4 q) {
     return hamiltonion(hamiltonion(q, p), invertQuaternion(q));
 }
+
+mat4 quatToMat(vec4 q) {
+    float qx = q.x;
+    float qy = q.y;
+    float qz = q.z;
+    float qw = q.w;
+
+    float xx = qx * qx;
+    float yy = qy * qy;
+    float zz = qz * qz;
+    float xy = qx * qy;
+    float xz = qx * qz;
+    float yz = qy * qz;
+    float wx = qw * qx;
+    float wy = qw * qy;
+    float wz = qw * qz;
+
+    mat4 result;
+    result[0][0] = 1.0 - 2.0 * (yy + zz);
+    result[0][1] = 2.0 * (xy + wz);
+    result[0][2] = 2.0 * (xz - wy);
+    result[0][3] = 0.0;
+
+    result[1][0] = 2.0 * (xy - wz);
+    result[1][1] = 1.0 - 2.0 * (xx + zz);
+    result[1][2] = 2.0 * (yz + wx);
+    result[1][3] = 0.0;
+
+    result[2][0] = 2.0 * (xz + wy);
+    result[2][1] = 2.0 * (yz - wx);
+    result[2][2] = 1.0 - 2.0 * (xx + yy);
+    result[2][3] = 0.0;
+
+    result[3][0] = 0.0;
+    result[3][1] = 0.0;
+    result[3][2] = 0.0;
+    result[3][3] = 1.0;
+
+    return result;
+}
+
 #endif

@@ -22,6 +22,9 @@ class Link {
         bool insert(Link * iOther);
 
         Link * find(size_t iIndex);
+
+    protected:
+        void remove(size_t iIndex);
 };
 
 #endif

@@ -1,9 +1,14 @@
 #include "lidar.h"
 #include "exception.h"
+#include <chrono>
 
 Lidar::Lidar(
+  /*
   deque<OccupancyGrid *> & ioOccupancyQueue, 
   mutex & ioOccupancyQueueMutex, 
+  */
+  OccupancyGrid & ioOccupancyGrid,
+  mutex & ioOccupancyGridMutex,
   atomic<uint64_t> & ioImuHeartBeat, 
   atomic<uint64_t> & ioLidarHeartBeat, 
   atomic<double> & ioImuFreq, 
@@ -13,8 +18,12 @@ Lidar::Lidar(
   const string & iPortName
 )
 : reader(createUnitreeLidarReader()), timeDelay(0), 
+  /*
   occupancyQueue(ioOccupancyQueue), 
   occupancyQueueMutex(ioOccupancyQueueMutex),
+  */
+  occupancyGrid(ioOccupancyGrid),
+  occupancyGridMutex(ioOccupancyGridMutex),
   imuHeartBeat(ioImuHeartBeat),
   lidarHeartBeat(ioLidarHeartBeat), 
   imuFreq(ioImuFreq), imuAvgFreq(100),
@@ -159,15 +168,22 @@ void Lidar::processPointCloud(const PointCloudUnitree & iCloud) {
         if(point.z < minz) minz = point.z;
         if(maxz < point.z) maxz = point.z;
     }
+    */
 
     /*
     OccupancyGrid *grid = new OccupancyGrid(1000, 1000, 1000, minx, maxx, miny, maxy, minz, maxz);
-
-    for(size_t i = 0; i < pointCount; i++) {
+    */
+    /*
+    occupancyGridMutex.lock();
+    for(size_t i = 0; i < localPointCount; i++) {
         auto point = points[i];
-        grid->insertCell(point.x, point.y, point.z);
+        occupancyGrid.insertCell(point.x, point.y, point.z);
     }
-
+    occupancyGrid.prune();
+    occupancyGridMutex.unlock();
+    */
+    
+    /*
     occupancyQueueMutex.lock();
     occupancyQueue.push_back(grid);
     occupancyQueueMutex.unlock();

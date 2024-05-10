@@ -19,6 +19,7 @@
 #include "exception.h"
 #include "lidar.h"
 #include "visualizer.h"
+#include "vis/occupancyGrid.h"
 #include "vis/pointCloud.h"
 #include "vis/pointCloudAccumulator.h"
 #include "vis/quaternion.h"
@@ -52,10 +53,16 @@ class Slam {
         atomic<uint64_t> pointCount;
 
         mutex outputMutex;
-        binary_semaphore waitForFirstPointCloud;
 
+        binary_semaphore waitForFirstPointCloud;
+        
+        /*
         deque<OccupancyGrid *> occupancyQueue;
         mutex occupancyQueueMutex;
+        */
+
+        OccupancyGrid occupancyGrid;
+        mutex occupancyGridMutex;
 
         // shared_ptr<PointCloud> pointCloud;
         PointCloudAccumulator pcAccum;
@@ -75,8 +82,12 @@ class Slam {
           imuHeartBeat(0), lidarHeartBeat(0),
           outputMutex(),
           waitForFirstPointCloud(1),
+          /*
           occupancyQueue(),
           occupancyQueueMutex(),
+          */
+          occupancyGrid(100, 100, 100, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f),
+          occupancyGridMutex(),
           pcAccum(4) { }
 
         virtual ~Slam() {
@@ -198,7 +209,7 @@ class Slam {
 
             try {
                 waitForFirstPointCloud.acquire();                
-                Visualizer visualizer(occupancyQueue, occupancyQueueMutex, pcAccum, width, height);
+                Visualizer visualizer(/*occupancyQueue, occupancyQueueMutex, */ occupancyGrid, occupancyGridMutex, pcAccum, width, height);
                 waitForFirstPointCloud.release();
 
                 auto lastTime = chrono::high_resolution_clock::now();
@@ -236,7 +247,7 @@ class Slam {
 
         void lidarProc() {
             try {
-                Lidar lidar(occupancyQueue, occupancyQueueMutex, imuHeartBeat, lidarHeartBeat, imuFreq, lidarFreq, pcAccum, waitForFirstPointCloud);
+                Lidar lidar(/*occupancyQueue, occupancyQueueMutex, */occupancyGrid, occupancyGridMutex, imuHeartBeat, lidarHeartBeat, imuFreq, lidarFreq, pcAccum, waitForFirstPointCloud);
                 
                 // lidar.setMode(STANDBY);
                 // sleep(1);
@@ -285,7 +296,7 @@ int main(int argc, char **argv) {
     slam.start();
 
     while(!slam.shouldTerminate()) {
-        /*
+        
         auto visFreq = slam.getVisFreq();
         auto imuHeartBeat = slam.getImuHeartBeat();
         auto imuFreq = slam.getImuFreq();
@@ -305,7 +316,7 @@ int main(int argc, char **argv) {
             << "           \r";
         cout.flush();
         slam.unlockOutput();
-        */
+        
     }
 
     slam.join();

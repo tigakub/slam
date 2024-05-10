@@ -13,6 +13,8 @@
         "string_view": "cpp",
         "atomic": "cpp",
         "semaphore": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "iomanip": "cpp",
+        "cmath": "cpp"
     }
 }
