@@ -396,7 +396,7 @@ Visualizer::Visualizer(
     // node->setTransform(xRot);
     // node->setTransform(zOffset);
     node->addGeometry(pointCloudGeom);
-    //rootNode.addChild(node);
+    rootNode.addChild(node);
 
     /*
     boxGeom->init();
