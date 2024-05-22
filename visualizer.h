@@ -35,6 +35,7 @@ class Visualizer: OccupancyGrid::Functor {
         static const char *pointVertexShaderSource;
         static const char *pointFragmentShaderSource;
         static const char *vertexLitShaderSource;
+        static const char *instanceVertexLitShaderSource;
         static const char *fragmentLitShaderSource;
         unsigned int pointShaderProgram;
         unsigned int litShaderProgram;

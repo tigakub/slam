@@ -18,6 +18,16 @@ struct Plane {
 };
 
 #ifdef __cplusplus
+struct alignas(16) GridData {
+#else
+struct GridData {
+#endif
+    float ox, oy, oz;
+    float dx, dy, dz;
+    int sx, sy, sz;
+};
+
+#ifdef __cplusplus
 struct alignas(16) FrustumData {
 #else
 struct FrustumData {
