@@ -26,7 +26,7 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
 
         gl_Position = matrix * vec4(viPos, 1.0f);
         
-        float d = (length(viPos) - 0.1) / 2.0;
+        float d = (length(viPos) - 0.1) / 5.0;
         if(d > 1.0) d = 1.0;
 
         float r = 2.0 - 4.0 * d;
@@ -48,9 +48,12 @@ const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
 
         d = (length(viPos) - 0.1) / 10.0;
         if(d > 1.0) d = 1.0;
-
+        
         float logComp = 1.0 - d * d * d;
-        fiColor = vec4(r * comp, g * comp * comp, b * logComp, comp);
+        fiColor = vec4(r * comp, g * comp * comp, b * logComp, 1.0); // comp);
+        
+        // fiColor = vec4(1.0, 1.0, 1.0, 1.0);
+
         gl_PointSize = 1.0 + (0.5 - 0.5 * (gl_Position.z / gl_Position.w)) * 20.0;
     }
 )0B3R0N";
@@ -158,9 +161,9 @@ Visualizer::Visualizer(
   light0(2, false),
   light1(3, false),
   pcAccum(ioPCAccum),
-  rootNode(),
-  cell(0.001, 0.001, 0.001),
-  cellGeom(nullptr) {
+  rootNode() {
+  // cell(0.001, 0.001, 0.001),
+  // cellGeom(nullptr) {
   // testBox(),
   // testTriangle() {
     /*
@@ -275,8 +278,10 @@ Visualizer::Visualizer(
     light.init(2);
     */
 
+    /*
     cellGeom = new UnmanagedGeometry<Box>(cell, litShaderProgram);
     cellGeom->update();
+    */
 
     LightData & lightData0 = light0.getLightData();
     lightData0.position = vec4(2.0f, 3.0f, 5.0f, 0.0f);
@@ -287,7 +292,7 @@ Visualizer::Visualizer(
 
     mat4 zOffset = translate(mat4(1.0f), vec3(0.0, 0.0, 0.05));
 
-    Box * box = new Box;
+    Box * box = new Box(0.1f, 0.1f, 0.02f, Box::full, Box::full, Box::positive);
     Geometry<Box> * boxGeom = new Geometry<Box>(box, litShaderProgram);
     Node * node = new Node;
     // mat4 yRot = ::rotate(mat4(1.0f), (float) radians(30.0), vec3(0.0, 1.0, 0.0));
@@ -302,7 +307,7 @@ Visualizer::Visualizer(
     // node->setTransform(xRot);
     // node->setTransform(zOffset);
     node->addGeometry(pointCloudGeom);
-    rootNode.addChild(node);
+    //rootNode.addChild(node);
 
     /*
     boxGeom->init();
@@ -437,6 +442,7 @@ double Visualizer::getFrequency() const {
 }
 
 void Visualizer::operator()(size_t x, size_t y, size_t z) {
+    /*
     if(cellGeom) {
         const vec3 position(double(x) * 0.001, double(y) * 0.001, double(z) * 0.001);
         const mat4 identity(1.0f);
@@ -445,6 +451,7 @@ void Visualizer::operator()(size_t x, size_t y, size_t z) {
         cellGeom->draw();
         context.popMatrix();
     }
+    */
 }
 
 string Visualizer::processGLSLSource(const char * iSource) {

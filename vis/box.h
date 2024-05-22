@@ -42,11 +42,19 @@ class Box {
 */
 
 class Box: public Mesh<PNCUVertex, PNCUVertex::bufferFormat, GL_TRIANGLES> {
+    public:
+        typedef enum {
+            full,
+            positive,
+            negative
+        } HalfMode;
+
     protected:
         float width, height, depth;
+        HalfMode wHalfMode, hHalfMode, dHalfMode;
 
     public:
-        Box(float iWidth = 0.1, float iHeight = 0.1, float iDepth = 0.1);
+        Box(float iWidth = 0.1f, float iHeight = 0.1f, float iDepth = 0.1f, HalfMode iWHalfMode = full, HalfMode iHHalfMode = full, HalfMode iDHalfMode = full);
 
     protected:
         virtual void initGeometry();

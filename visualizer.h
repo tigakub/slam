@@ -59,8 +59,8 @@ class Visualizer: OccupancyGrid::Functor {
         
         Context context;
         Node rootNode;
-        Box cell;
-        UnmanagedGeometry<Box> *cellGeom;
+        // Box cell;
+        // UnmanagedGeometry<Box> *cellGeom;
 
         // Box testBox;
         // Triangle testTriangle;
