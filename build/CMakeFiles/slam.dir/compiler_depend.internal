@@ -7551,4 +7551,8 @@ CMakeFiles/slam.dir/visualizer.cpp.o
  /home/tigakub/Documents/Robotics/slam/exception.h
  /home/tigakub/Documents/Robotics/slam/vis/geometry.h
  /home/tigakub/Documents/Robotics/slam/vis/embeddedShaderData.h
+ /home/tigakub/Documents/Robotics/slam/vis/shaders/shaders.h
+ /home/tigakub/Documents/Robotics/slam/vis/shaders/pointVertex.h
+ /home/tigakub/Documents/Robotics/slam/vis/shaders/litVertex.h
+ /home/tigakub/Documents/Robotics/slam/vis/shaders/litInstance.h
 

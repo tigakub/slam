@@ -34,11 +34,12 @@ class Visualizer: OccupancyGrid::Functor {
 
         static const char *pointVertexShaderSource;
         static const char *pointFragmentShaderSource;
-        static const char *vertexLitShaderSource;
-        static const char *instanceVertexLitShaderSource;
-        static const char *fragmentLitShaderSource;
+        static const char *litVertexShaderSource;
+        static const char *litInstanceShaderSource;
+        static const char *litFragmentShaderSource;
         unsigned int pointShaderProgram;
         unsigned int litShaderProgram;
+        unsigned int litInstanceShaderProgram;
 
         chrono::high_resolution_clock::time_point lastTimeStamp;
         double frequency;

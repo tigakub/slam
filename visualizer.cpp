@@ -7,196 +7,7 @@
 
 using namespace glm;
 
-const char *Visualizer::pointVertexShaderSource = R"0B3R0N(
-    layout (std140, binding = 0) uniform Camera {
-        CameraData data;
-    } uiCamera;
-    layout (std140, binding = 1) uniform Context {
-        ContextData data;
-    } uiContext;
-
-    layout (location = 0) in vec3 viPos;
-    layout (location = 1) in vec4 viColor;
-
-    out vec4 fiColor;
-    void main() {
-        mat4 qMatrix = quatToMat(uiCamera.data.imuQuat);
-        mat4 mvMatrix = uiCamera.data.viewMatrix * qMatrix * uiContext.data.modelMatrix;
-        mat4 matrix = uiCamera.data.projMatrix * mvMatrix;
-
-        gl_Position = matrix * vec4(viPos, 1.0f);
-        
-        float d = (length(viPos) - 0.1) / 5.0;
-        if(d > 1.0) d = 1.0;
-
-        float r = 2.0 - 4.0 * d;
-        if(r < 0.0) r = 0.0;
-        if(r > 1.0) r = 1.0;
-        
-        float g = 1.0;
-        if(d < 0.25) g = 4.0 * d;
-        if(d > 0.75) g = 4.0 - 4.0 * d;
-        if(g < 0.0) g = 0.0;
-        if(g > 1.0) g = 1.0;
-        
-        float b = 4.0 * d - 2.0;
-        if(b < 0.0) b = 0.0;
-        if(b > 1.0) b = 1.0;
-        
-        vec4 tint = uiContext.data.tint;
-        float comp = 1.0 - d;
-
-        d = (length(viPos) - 0.1) / 10.0;
-        if(d > 1.0) d = 1.0;
-        
-        float logComp = 1.0 - d * d * d;
-        fiColor = vec4(r * comp, g * comp * comp, b * logComp, 1.0); // comp);
-        
-        // fiColor = vec4(1.0, 1.0, 1.0, 1.0);
-
-        gl_PointSize = 1.0 + (0.5 - 0.5 * (gl_Position.z / gl_Position.w)) * 20.0;
-    }
-)0B3R0N";
-
-const char *Visualizer::pointFragmentShaderSource = R"0B3R0N(
-    in vec4 fiColor;
-    layout (location = OUT_COLOR) out vec4 fragColor;
-    void main() {
-        
-        vec2 coord = gl_PointCoord - vec2(0.5, 0.5);
-        float radius = 0.5;
-        float distance = length(coord);
-
-        if(distance > radius) {
-            discard;
-        }
-        
-
-        fragColor = fiColor;
-    }
-)0B3R0N";
-
-const char *Visualizer::vertexLitShaderSource = R"0B3R0N(
-    layout (std140, binding = 0) uniform Camera {
-        CameraData data;
-    } uiCamera;
-    layout (std140, binding = 1) uniform Context {
-        ContextData data;
-    } uiContext;
-    layout (std140, binding = 2) uniform Light0 {
-        LightData data;
-    } uiLight0;
-    layout (std140, binding = 3) uniform Light1 {
-        LightData data;
-    } uiLight1;
-
-    layout (location = 0) in vec3 viPos;
-    layout (location = 1) in vec4 viNorm;
-    layout (location = 2) in vec4 viColor;
-    layout (location = 3) in vec2 vUV;
-
-    out vec4 fiColor;
-    void main() {
-        mat4 qMatrix = quatToMat(uiCamera.data.imuQuat);
-        mat4 mvMatrix = uiCamera.data.viewMatrix * qMatrix * uiContext.data.modelMatrix;
-        mat4 matrix = uiCamera.data.projMatrix * mvMatrix;
-        
-        gl_Position = matrix * vec4(viPos, 1.0f);
-        
-        vec3 sNorm = vec3(mvMatrix * vec4(viNorm.x, viNorm.y, viNorm.z, 0.0f));
-        vec3 l0Norm = vec3(mvMatrix * uiLight0.data.position);
-        vec3 l1Norm = vec3(mvMatrix * uiLight1.data.position);
-
-        const vec3 n = normalize(sNorm);
-        const vec3 l0 = normalize(l0Norm);
-        const vec3 l1 = normalize(l1Norm);
-        
-        float cosAngle0 = clamp(dot(n, l0), 0.0f, 1.0f);
-        float cosAngle1 = clamp(dot(n, l1), 0.0f, 1.0f);
-
-        float lightContrib = clamp(cosAngle0 + cosAngle1, 0.0f, 1.0f);
-
-        vec3 lightContrib0 = vec3(uiLight0.data.ambient) + vec3(uiLight0.data.diffuse) * cosAngle0;
-        vec3 lightContrib1 = vec3(uiLight1.data.ambient) + vec3(uiLight1.data.diffuse) * cosAngle1;
-        vec3 totalContrib = clamp(lightContrib0 + lightContrib1, vec3(0.0f), vec3(1.0f));
-
-        fiColor = 
-            // vec4(0.4, 0.0, 1.0, 1.0);
-            // vec4(viColor.x, viColor.y, viColor.z, 1.0f);
-            // vec4(vec3(viColor) * lightContrib, 1.0f);
-            vec4(vec3(viColor) * totalContrib, 1.0f);
-    }
-)0B3R0N";
-
-const char *Visualizer::instanceVertexLitShaderSource = R"0B3R0N(
-    layout (std140, binding = 0) uniform Camera {
-        CameraData data;
-    } uiCamera;
-    layout (std140, binding = 1) uniform Context {
-        ContextData data;
-    } uiContext;
-    layout (std140, binding = 2) uniform Light0 {
-        LightData data;
-    } uiLight0;
-    layout (std140, binding = 3) uniform Light1 {
-        LightData data;
-    } uiLight1;
-    layout (std140, binding = 4) uniform Grid {
-        GridData data;
-    } uiGrid;
-
-    layout (location = 0) in vec3 viPos;
-    layout (location = 1) in vec4 viNorm;
-    layout (location = 2) in vec4 viColor;
-    layout (location = 3) in vec2 vUV;
-
-    out vec4 fiColor;
-    void main() {
-        mat4 qMatrix = quatToMat(uiCamera.data.imuQuat);
-        mat4 mvMatrix = uiCamera.data.viewMatrix * qMatrix * uiContext.data.modelMatrix;
-        mat4 matrix = uiCamera.data.projMatrix * mvMatrix;
-        
-        int instanceID = gl_InstanceID;
-        float k = float(instanceID / (uiGrid.data.sx * uiGrid.data.sy));
-        int ij = instanceID % (uiGrid.data.sx * uiGrid.data.sy);
-        float j = float(ij / uiGrid.data.sx);
-        float i = float(ij % uiGrid.data.sx);
-
-        vec3 instOff = vec3(uiGrid.data.ox + uiGrid.data.dx * i, uiGrid.data.oy + uiGrid.data.dy * j, uiGrid.data.oz + uiGrid.data.dz * k);
-        gl_Position = matrix * vec4(viPos + instOff, 1.0f);
-
-        vec3 sNorm = vec3(mvMatrix * vec4(viNorm.x, viNorm.y, viNorm.z, 0.0f));
-        vec3 l0Norm = vec3(mvMatrix * uiLight0.data.position);
-        vec3 l1Norm = vec3(mvMatrix * uiLight1.data.position);
-
-        const vec3 n = normalize(sNorm);
-        const vec3 l0 = normalize(l0Norm);
-        const vec3 l1 = normalize(l1Norm);
-        
-        float cosAngle0 = clamp(dot(n, l0), 0.0f, 1.0f);
-        float cosAngle1 = clamp(dot(n, l1), 0.0f, 1.0f);
-
-        float lightContrib = clamp(cosAngle0 + cosAngle1, 0.0f, 1.0f);
-
-        vec3 lightContrib0 = vec3(uiLight0.data.ambient) + vec3(uiLight0.data.diffuse) * cosAngle0;
-        vec3 lightContrib1 = vec3(uiLight1.data.ambient) + vec3(uiLight1.data.diffuse) * cosAngle1;
-        vec3 totalContrib = clamp(lightContrib0 + lightContrib1, vec3(0.0f), vec3(1.0f));
-
-        fiColor = 
-            // vec4(0.4, 0.0, 1.0, 1.0);
-            // vec4(viColor.x, viColor.y, viColor.z, 1.0f);
-            // vec4(vec3(viColor) * lightContrib, 1.0f);
-            vec4(vec3(viColor) * totalContrib, 1.0f);
-    }
-)0B3R0N";
-
-const char *Visualizer::fragmentLitShaderSource = R"0B3R0N(
-    in vec4 fiColor;
-    layout (location = OUT_COLOR) out vec4 fragColor;
-    void main() {
-        fragColor = fiColor;
-    }
-)0B3R0N";
+#include "vis/shaders/shaders.h"
 
 Visualizer::Visualizer(
     /*
@@ -293,7 +104,7 @@ Visualizer::Visualizer(
     glDeleteShader(fragmentShader);
 
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    vertexSource = processGLSLSource(vertexLitShaderSource);
+    vertexSource = processGLSLSource(litVertexShaderSource);
     vtxSrc = vertexSource.c_str();
     glShaderSource(vertexShader, 1, &vtxSrc, NULL);
     glCompileShader(vertexShader);
@@ -306,7 +117,7 @@ Visualizer::Visualizer(
     }
 
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    fragmentSource = processGLSLSource(fragmentLitShaderSource);
+    fragmentSource = processGLSLSource(litFragmentShaderSource);
     frgSrc = fragmentSource.c_str();
     glShaderSource(fragmentShader, 1, &frgSrc, NULL);
     glCompileShader(fragmentShader);
@@ -334,7 +145,7 @@ Visualizer::Visualizer(
     glDeleteShader(vertexShader);
 
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    vertexSource = processGLSLSource(instanceVertexLitShaderSource);
+    vertexSource = processGLSLSource(litInstanceShaderSource);
     vtxSrc = vertexSource.c_str();
     glShaderSource(vertexShader, 1, &vtxSrc, NULL);
     glCompileShader(vertexShader);
@@ -343,7 +154,7 @@ Visualizer::Visualizer(
     if (!success) {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         glDeleteShader(vertexShader);
-        THROW(string("Error: failed to compile instance lit vertex shader: ") + infoLog + "\n\n" + vertexSource);
+        THROW(string("Error: failed to compile lit instance shader: ") + infoLog + "\n\n" + vertexSource);
     }
 
     litShaderProgram = glCreateProgram();
@@ -357,6 +168,19 @@ Visualizer::Visualizer(
         glDeleteProgram(litShaderProgram);
         litShaderProgram = 0;
         THROW(string("Error: failed to link instance lit shader program: ") + infoLog);
+    }
+
+    litInstanceShaderProgram = glCreateProgram();
+    glAttachShader(litInstanceShaderProgram, vertexShader);
+    glAttachShader(litInstanceShaderProgram, fragmentShader);
+    glLinkProgram(litInstanceShaderProgram);
+
+    glGetProgramiv(litInstanceShaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(litInstanceShaderProgram, 512, NULL, infoLog);
+        glDeleteProgram(litInstanceShaderProgram);
+        litInstanceShaderProgram = 0;
+        THROW(string("Error: failed to link lit instance shader program: ") + infoLog);
     }
 
     glDeleteShader(vertexShader);

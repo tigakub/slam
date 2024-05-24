@@ -30,6 +30,15 @@ struct GridData {
 };
 
 #ifdef __cplusplus
+struct alignas(16) InstanceData {
+#else
+struct InstanceData {
+#endif
+    float ox, oy, oz;
+    float sx, sy, sz;
+};
+
+#ifdef __cplusplus
 struct alignas(16) FrustumData {
 #else
 struct FrustumData {

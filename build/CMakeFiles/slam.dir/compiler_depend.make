@@ -7526,8 +7526,18 @@ CMakeFiles/slam.dir/visualizer.cpp.o: ../visualizer.cpp \
   ../vis/geometry.h \
   ../exception.h \
   ../vis/geometry.h \
-  ../vis/embeddedShaderData.h
+  ../vis/embeddedShaderData.h \
+  ../vis/shaders/shaders.h \
+  ../vis/shaders/pointVertex.h \
+  ../vis/shaders/litVertex.h \
+  ../vis/shaders/litInstance.h
 
+
+../vis/shaders/litInstance.h:
+
+../vis/shaders/litVertex.h:
+
+../vis/shaders/shaders.h:
 
 ../vis/vertexArray.cpp:
 
@@ -8036,6 +8046,8 @@ CMakeFiles/slam.dir/visualizer.cpp.o: ../visualizer.cpp \
 /usr/include/aarch64-linux-gnu/asm/unistd.h:
 
 /usr/include/c++/11/bits/ostream.tcc:
+
+../vis/shaders/pointVertex.h:
 
 /usr/include/aarch64-linux-gnu/bits/types/__fpos64_t.h:
 
