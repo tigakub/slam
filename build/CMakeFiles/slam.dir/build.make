@@ -265,10 +265,24 @@ CMakeFiles/slam.dir/vis/vertexArray.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/slam.dir/vis/vertexArray.cpp.s"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tigakub/Documents/Robotics/slam/vis/vertexArray.cpp -o CMakeFiles/slam.dir/vis/vertexArray.cpp.s
 
+CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o: CMakeFiles/slam.dir/flags.make
+CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o: ../vis/shaderStorageBuffer.cpp
+CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o -MF CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o.d -o CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/shaderStorageBuffer.cpp
+
+CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.i"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/tigakub/Documents/Robotics/slam/vis/shaderStorageBuffer.cpp > CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.i
+
+CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.s"
+	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/tigakub/Documents/Robotics/slam/vis/shaderStorageBuffer.cpp -o CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.s
+
 CMakeFiles/slam.dir/vis/box.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/vis/box.cpp.o: ../vis/box.cpp
 CMakeFiles/slam.dir/vis/box.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/slam.dir/vis/box.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/slam.dir/vis/box.cpp.o"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/box.cpp.o -MF CMakeFiles/slam.dir/vis/box.cpp.o.d -o CMakeFiles/slam.dir/vis/box.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/box.cpp
 
 CMakeFiles/slam.dir/vis/box.cpp.i: cmake_force
@@ -282,7 +296,7 @@ CMakeFiles/slam.dir/vis/box.cpp.s: cmake_force
 CMakeFiles/slam.dir/vis/triangle.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/vis/triangle.cpp.o: ../vis/triangle.cpp
 CMakeFiles/slam.dir/vis/triangle.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/slam.dir/vis/triangle.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/slam.dir/vis/triangle.cpp.o"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/triangle.cpp.o -MF CMakeFiles/slam.dir/vis/triangle.cpp.o.d -o CMakeFiles/slam.dir/vis/triangle.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/triangle.cpp
 
 CMakeFiles/slam.dir/vis/triangle.cpp.i: cmake_force
@@ -296,7 +310,7 @@ CMakeFiles/slam.dir/vis/triangle.cpp.s: cmake_force
 CMakeFiles/slam.dir/vis/pointCloud.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/vis/pointCloud.cpp.o: ../vis/pointCloud.cpp
 CMakeFiles/slam.dir/vis/pointCloud.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/slam.dir/vis/pointCloud.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/slam.dir/vis/pointCloud.cpp.o"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/pointCloud.cpp.o -MF CMakeFiles/slam.dir/vis/pointCloud.cpp.o.d -o CMakeFiles/slam.dir/vis/pointCloud.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/pointCloud.cpp
 
 CMakeFiles/slam.dir/vis/pointCloud.cpp.i: cmake_force
@@ -310,7 +324,7 @@ CMakeFiles/slam.dir/vis/pointCloud.cpp.s: cmake_force
 CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.o: ../vis/pointCloudAccumulator.cpp
 CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.o"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.o -MF CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.o.d -o CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/pointCloudAccumulator.cpp
 
 CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.i: cmake_force
@@ -324,7 +338,7 @@ CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.s: cmake_force
 CMakeFiles/slam.dir/vis/camera.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/vis/camera.cpp.o: ../vis/camera.cpp
 CMakeFiles/slam.dir/vis/camera.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/slam.dir/vis/camera.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/slam.dir/vis/camera.cpp.o"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/camera.cpp.o -MF CMakeFiles/slam.dir/vis/camera.cpp.o.d -o CMakeFiles/slam.dir/vis/camera.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/camera.cpp
 
 CMakeFiles/slam.dir/vis/camera.cpp.i: cmake_force
@@ -338,7 +352,7 @@ CMakeFiles/slam.dir/vis/camera.cpp.s: cmake_force
 CMakeFiles/slam.dir/vis/light.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/vis/light.cpp.o: ../vis/light.cpp
 CMakeFiles/slam.dir/vis/light.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/slam.dir/vis/light.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/slam.dir/vis/light.cpp.o"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/light.cpp.o -MF CMakeFiles/slam.dir/vis/light.cpp.o.d -o CMakeFiles/slam.dir/vis/light.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/light.cpp
 
 CMakeFiles/slam.dir/vis/light.cpp.i: cmake_force
@@ -352,7 +366,7 @@ CMakeFiles/slam.dir/vis/light.cpp.s: cmake_force
 CMakeFiles/slam.dir/vis/framebuffer.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/vis/framebuffer.cpp.o: ../vis/framebuffer.cpp
 CMakeFiles/slam.dir/vis/framebuffer.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/slam.dir/vis/framebuffer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/slam.dir/vis/framebuffer.cpp.o"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/framebuffer.cpp.o -MF CMakeFiles/slam.dir/vis/framebuffer.cpp.o.d -o CMakeFiles/slam.dir/vis/framebuffer.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/framebuffer.cpp
 
 CMakeFiles/slam.dir/vis/framebuffer.cpp.i: cmake_force
@@ -366,7 +380,7 @@ CMakeFiles/slam.dir/vis/framebuffer.cpp.s: cmake_force
 CMakeFiles/slam.dir/vis/context.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/vis/context.cpp.o: ../vis/context.cpp
 CMakeFiles/slam.dir/vis/context.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/slam.dir/vis/context.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/slam.dir/vis/context.cpp.o"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/context.cpp.o -MF CMakeFiles/slam.dir/vis/context.cpp.o.d -o CMakeFiles/slam.dir/vis/context.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/context.cpp
 
 CMakeFiles/slam.dir/vis/context.cpp.i: cmake_force
@@ -380,7 +394,7 @@ CMakeFiles/slam.dir/vis/context.cpp.s: cmake_force
 CMakeFiles/slam.dir/vis/node.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/vis/node.cpp.o: ../vis/node.cpp
 CMakeFiles/slam.dir/vis/node.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/slam.dir/vis/node.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/slam.dir/vis/node.cpp.o"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/node.cpp.o -MF CMakeFiles/slam.dir/vis/node.cpp.o.d -o CMakeFiles/slam.dir/vis/node.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/node.cpp
 
 CMakeFiles/slam.dir/vis/node.cpp.i: cmake_force
@@ -394,7 +408,7 @@ CMakeFiles/slam.dir/vis/node.cpp.s: cmake_force
 CMakeFiles/slam.dir/vis/geometry.cpp.o: CMakeFiles/slam.dir/flags.make
 CMakeFiles/slam.dir/vis/geometry.cpp.o: ../vis/geometry.cpp
 CMakeFiles/slam.dir/vis/geometry.cpp.o: CMakeFiles/slam.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/slam.dir/vis/geometry.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/slam.dir/vis/geometry.cpp.o"
 	/usr/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/slam.dir/vis/geometry.cpp.o -MF CMakeFiles/slam.dir/vis/geometry.cpp.o.d -o CMakeFiles/slam.dir/vis/geometry.cpp.o -c /home/tigakub/Documents/Robotics/slam/vis/geometry.cpp
 
 CMakeFiles/slam.dir/vis/geometry.cpp.i: cmake_force
@@ -421,6 +435,7 @@ slam_OBJECTS = \
 "CMakeFiles/slam.dir/vis/vertexBuffer.cpp.o" \
 "CMakeFiles/slam.dir/vis/elementBuffer.cpp.o" \
 "CMakeFiles/slam.dir/vis/vertexArray.cpp.o" \
+"CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o" \
 "CMakeFiles/slam.dir/vis/box.cpp.o" \
 "CMakeFiles/slam.dir/vis/triangle.cpp.o" \
 "CMakeFiles/slam.dir/vis/pointCloud.cpp.o" \
@@ -449,6 +464,7 @@ slam: CMakeFiles/slam.dir/vis/uniformBuffer.cpp.o
 slam: CMakeFiles/slam.dir/vis/vertexBuffer.cpp.o
 slam: CMakeFiles/slam.dir/vis/elementBuffer.cpp.o
 slam: CMakeFiles/slam.dir/vis/vertexArray.cpp.o
+slam: CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o
 slam: CMakeFiles/slam.dir/vis/box.cpp.o
 slam: CMakeFiles/slam.dir/vis/triangle.cpp.o
 slam: CMakeFiles/slam.dir/vis/pointCloud.cpp.o
@@ -462,7 +478,7 @@ slam: CMakeFiles/slam.dir/vis/geometry.cpp.o
 slam: CMakeFiles/slam.dir/build.make
 slam: ../unitree_lidar_sdk/lib/aarch64/libunitree_lidar_sdk.a
 slam: CMakeFiles/slam.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Linking CXX executable slam"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Linking CXX executable slam"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/slam.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

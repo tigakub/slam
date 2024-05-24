@@ -574,6 +574,30 @@ vis/quaternion.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/quaternion.cpp.s
 .PHONY : vis/quaternion.cpp.s
 
+vis/shaderStorageBuffer.o: vis/shaderStorageBuffer.cpp.o
+.PHONY : vis/shaderStorageBuffer.o
+
+# target to build an object file
+vis/shaderStorageBuffer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o
+.PHONY : vis/shaderStorageBuffer.cpp.o
+
+vis/shaderStorageBuffer.i: vis/shaderStorageBuffer.cpp.i
+.PHONY : vis/shaderStorageBuffer.i
+
+# target to preprocess a source file
+vis/shaderStorageBuffer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.i
+.PHONY : vis/shaderStorageBuffer.cpp.i
+
+vis/shaderStorageBuffer.s: vis/shaderStorageBuffer.cpp.s
+.PHONY : vis/shaderStorageBuffer.s
+
+# target to generate assembly for a file
+vis/shaderStorageBuffer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.s
+.PHONY : vis/shaderStorageBuffer.cpp.s
+
 vis/triangle.o: vis/triangle.cpp.o
 .PHONY : vis/triangle.o
 
@@ -782,6 +806,9 @@ help:
 	@echo "... vis/quaternion.o"
 	@echo "... vis/quaternion.i"
 	@echo "... vis/quaternion.s"
+	@echo "... vis/shaderStorageBuffer.o"
+	@echo "... vis/shaderStorageBuffer.i"
+	@echo "... vis/shaderStorageBuffer.s"
 	@echo "... vis/triangle.o"
 	@echo "... vis/triangle.i"
 	@echo "... vis/triangle.s"

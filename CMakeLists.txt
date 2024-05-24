@@ -27,6 +27,7 @@ add_executable(slam
     vis/vertexBuffer.cpp
     vis/elementBuffer.cpp
     vis/vertexArray.cpp
+    vis/shaderStorageBuffer.cpp
     vis/box.cpp
     vis/triangle.cpp
     vis/pointCloud.cpp

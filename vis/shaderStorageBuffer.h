@@ -19,7 +19,7 @@ class ShaderStorageBufferBase {
     protected:
         GLuint ssbo;
         GLuint bindPoint;
-        bool isDynamic;typedef
+        bool isDynamic;
         bool isNew;
         bool dirty;
     
@@ -58,7 +58,7 @@ class ShaderStorageBuffer : public ShaderStorageBufferBase {
             return iBufferFormat;
         }
 
-        vector<DataType &getVertices() {
+        vector<DataType> &getVertices() {
             return data;
         }
 

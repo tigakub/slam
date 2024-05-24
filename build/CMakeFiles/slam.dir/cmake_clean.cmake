@@ -35,6 +35,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/slam.dir/vis/pointCloudAccumulator.cpp.o.d"
   "CMakeFiles/slam.dir/vis/quaternion.cpp.o"
   "CMakeFiles/slam.dir/vis/quaternion.cpp.o.d"
+  "CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o"
+  "CMakeFiles/slam.dir/vis/shaderStorageBuffer.cpp.o.d"
   "CMakeFiles/slam.dir/vis/triangle.cpp.o"
   "CMakeFiles/slam.dir/vis/triangle.cpp.o.d"
   "CMakeFiles/slam.dir/vis/uniformBuffer.cpp.o"
