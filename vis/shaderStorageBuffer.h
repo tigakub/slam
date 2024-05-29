@@ -25,6 +25,8 @@ class ShaderStorageBufferBase {
     
     public:
         ShaderStorageBufferBase(GLuint iBindPoint, bool iIsDynamic = false);
+        ShaderStorageBufferBase(ShaderStorageBufferBase && iOther);
+
         virtual ~ShaderStorageBufferBase();
 
         virtual size_t getCount() const = 0;
@@ -48,7 +50,9 @@ class ShaderStorageBuffer : public ShaderStorageBufferBase {
 
     public:
         ShaderStorageBuffer(GLuint iBindPoint, bool iIsDynamic = false)
-        : ShaderStorageBuffer(iBindPoint, iIsDynamic) { }
+        : ShaderStorageBufferBase(iBindPoint, iIsDynamic) { }
+        ShaderStorageBuffer(ShaderStorageBuffer && iOther)
+        : ShaderStorageBufferBase(iOther) { }
 
         virtual size_t getCount() const {
             return data.size();

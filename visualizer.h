@@ -23,6 +23,7 @@
 #include "vis/pointCloudAccumulator.h"
 #include "vis/quaternion.h"
 #include "vis/node.h"
+#include "vis/instanceCloud.h"
 
 using namespace std;
 using namespace glm;
@@ -58,6 +59,9 @@ class Visualizer: OccupancyGrid::Functor {
         AABB boundingBox;
 
         PointCloudAccumulator & pcAccum;
+
+        Box gridBox;
+        InstanceCloud<InstanceData, Box, false, 0> * grid;
         
         Context context;
         Node rootNode;

@@ -260,7 +260,6 @@ CMakeFiles/slam.dir/slam.cpp.o: \
  /home/tigakub/Documents/Robotics/slam/vis/occupancyGrid.h \
  /home/tigakub/Documents/Robotics/slam/vis/container.h \
  /home/tigakub/Documents/Robotics/slam/vis/link.h \
- /home/tigakub/Documents/Robotics/slam/vis/link.h \
  /home/tigakub/Documents/Robotics/slam/vis/pointCloud.h \
  /home/tigakub/Documents/Robotics/slam/vis/mesh.h \
  /home/tigakub/Documents/Robotics/slam/vis/aabb.h \
@@ -414,4 +413,6 @@ CMakeFiles/slam.dir/slam.cpp.o: \
  /home/tigakub/Documents/Robotics/slam/vis/node.h \
  /home/tigakub/Documents/Robotics/slam/vis/context.h \
  /home/tigakub/Documents/Robotics/slam/vis/camera.h \
- /home/tigakub/Documents/Robotics/slam/vis/geometry.h
+ /home/tigakub/Documents/Robotics/slam/vis/geometry.h \
+ /home/tigakub/Documents/Robotics/slam/vis/instanceCloud.h \
+ /home/tigakub/Documents/Robotics/slam/vis/shaderStorageBuffer.h

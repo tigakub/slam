@@ -3,6 +3,11 @@
 ShaderStorageBufferBase::ShaderStorageBufferBase(GLuint iBindPoint, bool iIsDynamic)
 : ssbo(0), bindPoint(iBindPoint), isDynamic(iIsDynamic), isNew(true), dirty(false) { }
 
+ShaderStorageBufferBase::ShaderStorageBufferBase(ShaderStorageBufferBase && iOther)
+: ssbo(iOther.ssbo), bindPoint(iOther.bindPoint), isDynamic(iOther.isDynamic), isNew(iOther.isNew), dirty(iOther.dirty) {
+    iOther.ssbo = 0;
+}
+
 ShaderStorageBufferBase::~ShaderStorageBufferBase() {
     unbind();
     if(ssbo) glDeleteBuffers(1, &ssbo);

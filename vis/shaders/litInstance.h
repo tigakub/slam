@@ -14,6 +14,9 @@ const char *Visualizer::litInstanceShaderSource = R"0B3R0N(
     layout (std140, binding = 4) uniform Grid {
         GridData data;
     } uiGrid;
+    layout (std140, binding = 5) buffer Instances {
+        InstanceData data[];
+    } uiInstances;
 
     layout (location = 0) in vec3 viPos;
     layout (location = 1) in vec4 viNorm;

@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <utility>
 
-#include "vis/link.h"
+#include "link.h"
 
 using namespace std;
 

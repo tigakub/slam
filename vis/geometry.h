@@ -29,7 +29,7 @@ class Geometry: public GeometryBase {
         GLuint program;
 
     public:
-        Geometry(MeshClass * iMesh, GLuint iProgram)
+        Geometry(MeshClass * iMesh, GLuint iProgram = 0)
         : GeometryBase(), mesh(iMesh), program(iProgram) {
             static_assert(is_base_of<MeshBase, MeshClass>::value, "MeshClass not derived from MeshBase");
         }
@@ -45,13 +45,19 @@ class Geometry: public GeometryBase {
         }
         */
 
+        virtual void setProgram(GLint iProgram) {
+            program = iProgram;
+        }
+
         virtual void update() {
             if(mesh.get()) mesh->update();
         }
        
         virtual void draw() {
-            glUseProgram(program);
-            if(mesh.get()) mesh->draw();
+            if(program && mesh.get()) {
+                glUseProgram(program);
+                mesh->draw();
+            }
         }
 
 };
@@ -79,13 +85,19 @@ class UnmanagedGeometry: public GeometryBase {
         }
         */
 
+        virtual void setProgram(GLint iProgram) {
+            program = iProgram;
+        }
+
         virtual void update() {
             mesh.update();
         }
 
         virtual void draw() {
-            glUseProgram(program);
-            mesh.draw();
+            if(program) {
+                glUseProgram(program);
+                mesh.draw();
+            }
         }
 
 };

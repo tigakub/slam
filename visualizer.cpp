@@ -34,6 +34,8 @@ Visualizer::Visualizer(
   light0(2, false),
   light1(3, false),
   pcAccum(ioPCAccum),
+  gridBox(),
+  grid(nullptr),
   rootNode() {
   // cell(0.001, 0.001, 0.001),
   // cellGeom(nullptr) {
@@ -220,6 +222,26 @@ Visualizer::Visualizer(
     // node->setTransform(xRot);
     // node->setTransform(zOffset);
     node->addGeometry(pointCloudGeom);
+    rootNode.addChild(node);
+
+    grid = new InstanceCloud<InstanceData, Box, false>(gridBox, 5, false, litInstanceShaderProgram);
+    ShaderStorageBuffer<InstanceData, PointScaleVertex::bufferFormat, false> & gridInstanceDataBuffer = grid->getInstanceDataBuffer();
+    InstanceData instanceVertex;
+    for(int k = 0; k < 10; k++) {
+        instanceVertex.oz = -1.0f + float(k) * 0.2f;
+        instanceVertex.sz = 1.0f;
+        for(int j = 0; j < 10; j++) {
+            instanceVertex.oy = -1.0f + float(j) * 0.2f;
+            instanceVertex.sy = 1.0f;
+            for(int i = 0; i < 10; i++) {
+                instanceVertex.ox = -1.0f + float(i) * 0.2f;
+                instanceVertex.sx = 1.0f;
+                gridInstanceDataBuffer.addVertex(instanceVertex);
+            }
+        }
+    }
+    node = new Node;
+    node->addGeometry(grid);
     rootNode.addChild(node);
 
     /*
