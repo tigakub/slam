@@ -9,7 +9,7 @@
 #include "uniformBuffer.h"
 #include "shaderData.h"
 #include "aabb.h"
-#include "vis/quaternion.h"
+#include "quaternion.h"
 
 using namespace glm;
 

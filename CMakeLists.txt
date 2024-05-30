@@ -38,6 +38,7 @@ add_executable(slam
     vis/context.cpp
     vis/node.cpp
     vis/geometry.cpp
+    vis/grid.cpp
 )
 
 add_dependencies(slam embeddedShaderData)

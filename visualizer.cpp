@@ -4,6 +4,7 @@
 #include "vis/geometry.h"
 #include "vis/node.h"
 #include "vis/embeddedShaderData.h"
+#include "vis/grid.h"
 
 using namespace glm;
 
@@ -34,6 +35,8 @@ Visualizer::Visualizer(
   light0(2, false),
   light1(3, false),
   pcAccum(ioPCAccum),
+  gridBox(0.02f, 0.02f, 0.02f),
+  grid(nullptr),
   rootNode() {
   // cell(0.001, 0.001, 0.001),
   // cellGeom(nullptr) {
@@ -61,6 +64,7 @@ Visualizer::Visualizer(
     int success;
     char infoLog[512];
 
+    // pointVertexShader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     string vertexSource(processGLSLSource(pointVertexShaderSource));
     const char * vtxSrc = vertexSource.c_str();
@@ -74,6 +78,7 @@ Visualizer::Visualizer(
         THROW(string("Error: failed to compile point vertex shader: ") + infoLog);
     }
 
+    // pointFragmentShader
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     string fragmentSource(processGLSLSource(pointFragmentShaderSource));
     const char * frgSrc = fragmentSource.c_str();
@@ -87,6 +92,7 @@ Visualizer::Visualizer(
         THROW(string("Error: failed to compile point fragment shader: ") + infoLog);
     }
 
+    // pointShaderProgram
     pointShaderProgram = glCreateProgram();
     glAttachShader(pointShaderProgram, vertexShader);
     glAttachShader(pointShaderProgram, fragmentShader);
@@ -103,6 +109,7 @@ Visualizer::Visualizer(
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    // litVertexShaderSource
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     vertexSource = processGLSLSource(litVertexShaderSource);
     vtxSrc = vertexSource.c_str();
@@ -116,6 +123,7 @@ Visualizer::Visualizer(
         THROW(string("Error: failed to compile lit vertex shader: ") + infoLog + "\n\n" + vertexSource);
     }
 
+    // litFragmentShaderSource
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     fragmentSource = processGLSLSource(litFragmentShaderSource);
     frgSrc = fragmentSource.c_str();
@@ -128,7 +136,8 @@ Visualizer::Visualizer(
         glDeleteShader(fragmentShader);
         THROW(string("Error: failed to compile lit fragment shader: ") + infoLog);
     }
-
+    
+    // litShaderProgram
     litShaderProgram = glCreateProgram();
     glAttachShader(litShaderProgram, vertexShader);
     glAttachShader(litShaderProgram, fragmentShader);
@@ -144,6 +153,7 @@ Visualizer::Visualizer(
 
     glDeleteShader(vertexShader);
 
+    // litInstanceShaderSource
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     vertexSource = processGLSLSource(litInstanceShaderSource);
     vtxSrc = vertexSource.c_str();
@@ -157,19 +167,7 @@ Visualizer::Visualizer(
         THROW(string("Error: failed to compile lit instance shader: ") + infoLog + "\n\n" + vertexSource);
     }
 
-    litShaderProgram = glCreateProgram();
-    glAttachShader(litShaderProgram, vertexShader);
-    glAttachShader(litShaderProgram, fragmentShader);
-    glLinkProgram(litShaderProgram);
-
-    glGetProgramiv(litShaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(litShaderProgram, 512, NULL, infoLog);
-        glDeleteProgram(litShaderProgram);
-        litShaderProgram = 0;
-        THROW(string("Error: failed to link instance lit shader program: ") + infoLog);
-    }
-
+    // litInstanceShaderProgram
     litInstanceShaderProgram = glCreateProgram();
     glAttachShader(litInstanceShaderProgram, vertexShader);
     glAttachShader(litInstanceShaderProgram, fragmentShader);
@@ -205,6 +203,7 @@ Visualizer::Visualizer(
 
     mat4 zOffset = translate(mat4(1.0f), vec3(0.0, 0.0, 0.05));
 
+    /*
     Box * box = new Box(0.1f, 0.1f, 0.02f, Box::full, Box::full, Box::positive);
     Geometry<Box> * boxGeom = new Geometry<Box>(box, litShaderProgram);
     Node * node = new Node;
@@ -213,13 +212,36 @@ Visualizer::Visualizer(
     node->setTransform(zOffset);
     node->addGeometry(boxGeom);
     rootNode.addChild(node);
+    */
 
     UnmanagedGeometry<PointCloudAccumulator> * pointCloudGeom = new UnmanagedGeometry<PointCloudAccumulator>(pcAccum, pointShaderProgram);
-    node = new Node;
+    Node * node = new Node;
     // mat4 xRot = ::rotate(mat4(1.0f), (float) radians(180.0), vec3(1.0, 0.0, 0.0));
     // node->setTransform(xRot);
     // node->setTransform(zOffset);
     node->addGeometry(pointCloudGeom);
+    rootNode.addChild(node);
+
+    grid = new Grid(gridBox, 4, false, litInstanceShaderProgram);
+    Grid::StorageBuffer & gridInstanceDataBuffer = grid->getInstanceDataBuffer();
+    InstanceData instanceVertex;
+    const void * ptr = nullptr;
+    for(int k = 0; k < 10; k++) {
+        instanceVertex.pos.z = -1.0f + float(k) * 0.222222222f;
+        instanceVertex.scale.z = 1.0f;
+        for(int j = 0; j < 10; j++) {
+            instanceVertex.pos.y = -1.0f + float(j) * 0.222222222f;
+            instanceVertex.scale.y = 1.0f;
+            for(int i = 0; i < 10; i++) {
+                instanceVertex.pos.x = -1.0f + float(i) * 0.222222222f;
+                instanceVertex.scale.x = 1.0f;
+                gridInstanceDataBuffer.addVertex(instanceVertex);
+                ptr = gridInstanceDataBuffer.getData();
+            }
+        }
+    }
+    node = new Node;
+    node->addGeometry(grid);
     rootNode.addChild(node);
 
     /*

@@ -25,6 +25,8 @@ class ShaderStorageBufferBase {
     
     public:
         ShaderStorageBufferBase(GLuint iBindPoint, bool iIsDynamic = false);
+        ShaderStorageBufferBase(ShaderStorageBufferBase && iOther);
+
         virtual ~ShaderStorageBufferBase();
 
         virtual size_t getCount() const = 0;
@@ -48,7 +50,9 @@ class ShaderStorageBuffer : public ShaderStorageBufferBase {
 
     public:
         ShaderStorageBuffer(GLuint iBindPoint, bool iIsDynamic = false)
-        : ShaderStorageBuffer(iBindPoint, iIsDynamic) { }
+        : ShaderStorageBufferBase(iBindPoint, iIsDynamic) { }
+        ShaderStorageBuffer(ShaderStorageBuffer && iOther)
+        : ShaderStorageBufferBase(iOther) { }
 
         virtual size_t getCount() const {
             return data.size();
@@ -66,8 +70,8 @@ class ShaderStorageBuffer : public ShaderStorageBufferBase {
             data.push_back(iVertex);
         }
 
-    protected:
-        virtual const void *getData() const { return (void *) &data[0]; }
+    // protected:
+        virtual const void *getData() const { return (const void *) &(data[0]) ; }
         virtual GLsizei getDataSize() const { return (GLsizei) (iIsFixedSize ? iBufferSize : data.size() * sizeof(DataType)); }
         virtual GLsizei getVertexSize() const { return (GLsizei) sizeof(DataType); }
 };

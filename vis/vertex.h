@@ -42,23 +42,26 @@ struct BufferFormat {
     }
 };
 
-/*
-struct Vertex {
-    virtual void expand(AABB &ioBoundingBox) const = 0;
-};
-*/
-
-struct PNCUVertex {
+struct PointScaleVertex {
     static BufferFormat initBufferFormat();
 
     alignas(4) vec3 position;
-    alignas(4) vec3 normal;
-    alignas(4) vec4 color;
-    alignas(4) vec2 uv;
+    alignas(4) vec3 scale;
 
     static BufferFormat bufferFormat;
 
-    PNCUVertex(vec3 iPosition, vec3 iNormal, vec4 iColor, vec2 iUV);
+    PointScaleVertex(vec3 iPosition, vec3 iScale);
+};
+
+struct PCVertex {
+    static BufferFormat initBufferFormat();
+
+    alignas(4) vec3 position;
+    alignas(4) vec4 color;
+
+    static BufferFormat bufferFormat;
+
+    PCVertex(vec3 iPosition, vec4 iColor);
     /*
     virtual const BufferFormat &getBufferFormat() const { 
         return bufferFormat;
@@ -71,15 +74,17 @@ struct PNCUVertex {
     */
 };
 
-struct PCVertex {
+struct PNCUVertex {
     static BufferFormat initBufferFormat();
 
     alignas(4) vec3 position;
+    alignas(4) vec3 normal;
     alignas(4) vec4 color;
+    alignas(4) vec2 uv;
 
     static BufferFormat bufferFormat;
 
-    PCVertex(vec3 iPosition, vec4 iColor);
+    PNCUVertex(vec3 iPosition, vec3 iNormal, vec4 iColor, vec2 iUV);
     /*
     virtual const BufferFormat &getBufferFormat() const { 
         return bufferFormat;

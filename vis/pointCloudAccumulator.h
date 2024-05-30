@@ -7,7 +7,7 @@
 
 using namespace std;
 
-#include "vis/pointCloud.h"
+#include "pointCloud.h"
 
 class PointCloudAccumulator : MeshBase {
     protected:

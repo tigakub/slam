@@ -19,28 +19,6 @@
 using namespace std;
 using namespace glm;
 
-/*
-class Box {
-    protected:
-        vector<GLuint> elements;
-        vector<Vertex> vertices;
-
-        ElementBuffer<GLuint> ebo;
-        VertexBuffer<Vertex> vbo;
-        VertexArray vao;
-
-    public:
-        Box(float iWidth = 100.0f, float iHeight = 100.0f, float iDepth = 100.0f);
-
-        void init();
-        void update();
-        
-        void draw();
-
-        void expand(AABB &ioBoundingBox);
-};
-*/
-
 class Box: public Mesh<PNCUVertex, PNCUVertex::bufferFormat, GL_TRIANGLES> {
     public:
         typedef enum {

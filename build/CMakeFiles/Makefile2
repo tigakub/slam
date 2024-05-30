@@ -108,12 +108,12 @@ CMakeFiles/embeddedShaderData.dir/clean:
 CMakeFiles/slam.dir/all: CMakeFiles/embeddedShaderData.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26 "Built target slam"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tigakub/Documents/Robotics/slam/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27 "Built target slam"
 .PHONY : CMakeFiles/slam.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/slam.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tigakub/Documents/Robotics/slam/build/CMakeFiles 26
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tigakub/Documents/Robotics/slam/build/CMakeFiles 27
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/slam.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tigakub/Documents/Robotics/slam/build/CMakeFiles 0
 .PHONY : CMakeFiles/slam.dir/rule

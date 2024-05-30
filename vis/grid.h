@@ -1,24 +1,25 @@
 #ifndef __GRID_H__
 #define __GRID_H__
 
+#include <glad/gl.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "shaderData.h"
 #include "uniformBuffer.h"
+#include "instanceCloud.h"
 #include "box.h"
 
-class Grid: public UniformBuffer {
-    protected:
-        GridData grid;
-
+class Grid: public InstanceCloud<InstanceData, Box, false, 0> {
     public:
-        Grid(GLuint iBindPoint, bool iIsDynamic = false);
-        virtual ~Grid();
+        typedef ShaderStorageBuffer<InstanceData, PointScaleVertex::bufferFormat, false> StorageBuffer;
+        
+    public:
+        Grid(Box & iGridBox, GLuint iInstanceDataBindPoint = 4, bool iIsDynamic = false, GLuint iShaderProgram = 0);
 
-        GridData &getGridData();
-
-    protected:
-        virtual void initData();
-        virtual const void *getData() const;
-        virtual GLsizei getDataSize() const;
+        virtual void update();
+        virtual void draw();
 };
 
 #endif

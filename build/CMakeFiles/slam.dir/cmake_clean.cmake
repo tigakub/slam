@@ -21,6 +21,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/slam.dir/vis/framebuffer.cpp.o.d"
   "CMakeFiles/slam.dir/vis/geometry.cpp.o"
   "CMakeFiles/slam.dir/vis/geometry.cpp.o.d"
+  "CMakeFiles/slam.dir/vis/grid.cpp.o"
+  "CMakeFiles/slam.dir/vis/grid.cpp.o.d"
   "CMakeFiles/slam.dir/vis/light.cpp.o"
   "CMakeFiles/slam.dir/vis/light.cpp.o.d"
   "CMakeFiles/slam.dir/vis/link.cpp.o"
