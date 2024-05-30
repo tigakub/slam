@@ -398,6 +398,9 @@ CMakeFiles/slam.dir/visualizer.cpp.o: \
  /home/tigakub/Documents/Robotics/slam/exception.h \
  /home/tigakub/Documents/Robotics/slam/vis/geometry.h \
  /home/tigakub/Documents/Robotics/slam/vis/embeddedShaderData.h \
+ /home/tigakub/Documents/Robotics/slam/vis/grid.h \
+ /home/tigakub/Documents/Robotics/slam/vis/instanceCloud.h \
+ /home/tigakub/Documents/Robotics/slam/vis/box.h \
  /home/tigakub/Documents/Robotics/slam/vis/shaders/shaders.h \
  /home/tigakub/Documents/Robotics/slam/vis/shaders/pointVertex.h \
  /home/tigakub/Documents/Robotics/slam/vis/shaders/litVertex.h \

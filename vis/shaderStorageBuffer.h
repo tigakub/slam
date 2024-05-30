@@ -70,8 +70,8 @@ class ShaderStorageBuffer : public ShaderStorageBufferBase {
             data.push_back(iVertex);
         }
 
-    protected:
-        virtual const void *getData() const { return (void *) &data[0]; }
+    // protected:
+        virtual const void *getData() const { return (const void *) &(data[0]) ; }
         virtual GLsizei getDataSize() const { return (GLsizei) (iIsFixedSize ? iBufferSize : data.size() * sizeof(DataType)); }
         virtual GLsizei getVertexSize() const { return (GLsizei) sizeof(DataType); }
 };

@@ -11,10 +11,7 @@ const char *Visualizer::litInstanceShaderSource = R"0B3R0N(
     layout (std140, binding = 3) uniform Light1 {
         LightData data;
     } uiLight1;
-    layout (std140, binding = 4) uniform Grid {
-        GridData data;
-    } uiGrid;
-    layout (std140, binding = 5) buffer Instances {
+    layout (std430, binding = 4) buffer Instances {
         InstanceData data[];
     } uiInstances;
 
@@ -25,18 +22,15 @@ const char *Visualizer::litInstanceShaderSource = R"0B3R0N(
 
     out vec4 fiColor;
     void main() {
+        int instanceID = gl_InstanceID;
+        vec3 instOff = vec3(uiInstances.data[instanceID].pos);
+        // vec3 instOff = vec3(0.0f, 0.0f, float(instanceID) * 0.2);
         mat4 qMatrix = quatToMat(uiCamera.data.imuQuat);
-        mat4 mvMatrix = uiCamera.data.viewMatrix * qMatrix * uiContext.data.modelMatrix;
+        mat4 iMatrix = translate(instOff);
+        mat4 mvMatrix = uiCamera.data.viewMatrix * qMatrix * uiContext.data.modelMatrix * iMatrix;
         mat4 matrix = uiCamera.data.projMatrix * mvMatrix;
         
-        int instanceID = gl_InstanceID;
-        float k = float(instanceID / (uiGrid.data.sx * uiGrid.data.sy));
-        int ij = instanceID % (uiGrid.data.sx * uiGrid.data.sy);
-        float j = float(ij / uiGrid.data.sx);
-        float i = float(ij % uiGrid.data.sx);
-
-        vec3 instOff = vec3(uiGrid.data.ox + uiGrid.data.dx * i, uiGrid.data.oy + uiGrid.data.dy * j, uiGrid.data.oz + uiGrid.data.dz * k);
-        gl_Position = matrix * vec4(viPos + instOff, 1.0f);
+        gl_Position = matrix * vec4(viPos, 1.0f);
 
         vec3 sNorm = vec3(mvMatrix * vec4(viNorm.x, viNorm.y, viNorm.z, 0.0f));
         vec3 l0Norm = vec3(mvMatrix * uiLight0.data.position);

@@ -4,10 +4,10 @@
 #include "geometry.h"
 #include "shaderStorageBuffer.h"
 
-template <typename InstanceData, class MeshClass, bool iInstanceBufferIsFixed = false, GLsizei iInstanceBufferSize = 0>
+template <typename InstanceDataType, class MeshClass, bool iInstanceBufferIsFixed = false, GLsizei iInstanceBufferSize = 0>
 class InstanceCloud: public UnmanagedGeometry<MeshClass> {
     protected:
-        ShaderStorageBuffer<InstanceData, PointScaleVertex::bufferFormat, iInstanceBufferIsFixed, iInstanceBufferSize> instanceSSBO;
+        ShaderStorageBuffer<InstanceDataType, PointScaleVertex::bufferFormat, iInstanceBufferIsFixed, iInstanceBufferSize> instanceSSBO;
 
     public:
         InstanceCloud(MeshClass & iMesh, GLuint iInstanceDataBindPoint, bool iInstanceDataIsDynamic = false, GLuint iProgram = 0)
@@ -16,14 +16,14 @@ class InstanceCloud: public UnmanagedGeometry<MeshClass> {
             static_assert(is_base_of<MeshBase, MeshClass>::value, "MeshClass not dericed from MeshBase");
         }
 
-        InstanceCloud(InstanceCloud<InstanceData, MeshClass, iInstanceBufferIsFixed, iInstanceBufferSize> && iOther)
+        InstanceCloud(InstanceCloud<InstanceDataType, MeshClass, iInstanceBufferIsFixed, iInstanceBufferSize> && iOther)
         : UnmanagedGeometry<MeshClass>(iOther),
           instanceSSBO(::move(iOther.instanceSSBO)) {
         }
 
         virtual ~InstanceCloud() { }
 
-        ShaderStorageBuffer<InstanceData, PointScaleVertex::bufferFormat, iInstanceBufferIsFixed, iInstanceBufferSize> &getInstanceDataBuffer() { return instanceSSBO; }
+        ShaderStorageBuffer<InstanceDataType, PointScaleVertex::bufferFormat, iInstanceBufferIsFixed, iInstanceBufferSize> &getInstanceDataBuffer() { return instanceSSBO; }
 
         virtual void update() {
             instanceSSBO.update();
@@ -31,13 +31,11 @@ class InstanceCloud: public UnmanagedGeometry<MeshClass> {
         }
 
         virtual void draw() {
-            if(program) {
+            if(this->program) {
                 instanceSSBO.bind();
-                mesh.bind();
-                glUseProgram(program);
-                glDrawElementInstances(instanceSSBO.getCount());
+                glUseProgram(this->program);
+                this->mesh.drawInstanced(instanceSSBO.getCount());
                 glUseProgram(0);
-                mesh.unbind();
                 instanceSSBO.unbind();
             }
         }

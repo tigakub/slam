@@ -23,8 +23,6 @@ struct alignas(16) GridData {
 struct GridData {
 #endif
     float ox, oy, oz;
-    float dx, dy, dz;
-    int sx, sy, sz;
 };
 
 #ifdef __cplusplus
@@ -32,8 +30,16 @@ struct alignas(16) InstanceData {
 #else
 struct InstanceData {
 #endif
-    float ox, oy, oz;
-    float sx, sy, sz;
+    vec4 pos;
+    vec4 scale;
+
+    #ifdef __cplusplus
+    InstanceData()
+    : pos(0.0f, 0.0f, 0.0f, 0.0f), scale(1.0f, 1.0f, 1.0f, 0.0f) { }
+    
+    InstanceData(float iOX, float iOY, float iOZ, float iSX, float iSY, float iSZ)
+    : pos(iOX, iOY, iOZ, 0.0f), scale(iSX, iSY, iSZ, 0.0f) { }
+    #endif
 };
 
 #ifdef __cplusplus
@@ -116,6 +122,16 @@ struct LightData {
 #define NUM_FRAG_OUT    1
 
 #ifndef __cplusplus
+
+mat4 translate(vec3 translation) {
+    return mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        translation.x, translation.y, translation.z, 1.0
+    );
+}
+
 vec4 hamiltonion(vec4 a, vec4 b) {
     vec4 result;
     result.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;

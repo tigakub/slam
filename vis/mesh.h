@@ -74,6 +74,12 @@ class Mesh: public MeshBase {
             vao.unbind();
         }
 
+        virtual void drawInstanced(GLsizei iInstanceCount) {
+            vao.bind();
+            glDrawElementsInstanced(ebo.getPrimitiveType(), ebo.getCount(), GL_UNSIGNED_INT, 0, iInstanceCount);
+            vao.unbind();
+        }
+
         // This does not take into account model transformations.
         virtual void expand(AABB &ioBoundingBox) {
             for(auto vertex: vbo.getVertices()) {

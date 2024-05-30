@@ -406,6 +406,30 @@ vis/geometry.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/geometry.cpp.s
 .PHONY : vis/geometry.cpp.s
 
+vis/grid.o: vis/grid.cpp.o
+.PHONY : vis/grid.o
+
+# target to build an object file
+vis/grid.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/grid.cpp.o
+.PHONY : vis/grid.cpp.o
+
+vis/grid.i: vis/grid.cpp.i
+.PHONY : vis/grid.i
+
+# target to preprocess a source file
+vis/grid.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/grid.cpp.i
+.PHONY : vis/grid.cpp.i
+
+vis/grid.s: vis/grid.cpp.s
+.PHONY : vis/grid.s
+
+# target to generate assembly for a file
+vis/grid.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slam.dir/build.make CMakeFiles/slam.dir/vis/grid.cpp.s
+.PHONY : vis/grid.cpp.s
+
 vis/light.o: vis/light.cpp.o
 .PHONY : vis/light.o
 
@@ -785,6 +809,9 @@ help:
 	@echo "... vis/geometry.o"
 	@echo "... vis/geometry.i"
 	@echo "... vis/geometry.s"
+	@echo "... vis/grid.o"
+	@echo "... vis/grid.i"
+	@echo "... vis/grid.s"
 	@echo "... vis/light.o"
 	@echo "... vis/light.i"
 	@echo "... vis/light.s"

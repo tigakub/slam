@@ -49,6 +49,10 @@ class Geometry: public GeometryBase {
             program = iProgram;
         }
 
+        virtual GLint getProgram() {
+            return program;
+        }
+
         virtual void update() {
             if(mesh.get()) mesh->update();
         }
@@ -87,6 +91,10 @@ class UnmanagedGeometry: public GeometryBase {
 
         virtual void setProgram(GLint iProgram) {
             program = iProgram;
+        }
+
+        virtual GLint getProgram() {
+            return program;
         }
 
         virtual void update() {

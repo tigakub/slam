@@ -42,6 +42,7 @@ void ShaderStorageBufferBase::unmark() {
 
 void ShaderStorageBufferBase::bind() {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindPoint, ssbo);
 }
 
 void ShaderStorageBufferBase::unbind() {
